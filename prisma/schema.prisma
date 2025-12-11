@@ -1,0 +1,119 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PLAN {
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+model User {
+  id            String    @id
+  name          String    @db.Text
+  email         String
+  emailVerified Boolean
+  image         String?   @db.Text
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  tenant        Tenant?   @relation(fields: [tenantId], references: [id])
+  tenantId      Int?
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?  @db.Text
+  userAgent String?  @db.Text
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String    @db.Text
+  providerId            String    @db.Text
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?   @db.Text
+  password              String?   @db.Text
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String    @db.Text
+  value      String    @db.Text
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model Tenant {
+  id        Int      @id @default(autoincrement())
+  company   String?
+  name      String
+  email     String   @unique
+  events    Event[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  name        String
+  tenantId    Int
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  plan        PLAN
+  description String?  @db.Text
+  date        DateTime @db.Date
+  location    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  photos      Photo[]
+  token       String
+
+  @@unique([tenantId, name])
+}
+
+model Photo {
+  id           Int      @id @default(autoincrement())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  eventId      Int
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  approved     Boolean  @default(true)
+  blurHash     String? // optional, falls du Placeholder speichern willst
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}

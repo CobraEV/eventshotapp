@@ -1,0 +1,107 @@
+
+# =========================================================
+# 🧱 NODE / DEPENDENCIES
+# =========================================================
+node_modules
+.pnpm-store
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================================================
+# ⚡ NEXT.JS BUILD OUTPUTS
+# =========================================================
+.next/cache
+.next/trace
+.next/types
+.next/standalone
+.next/static
+out
+dist
+build
+coverage
+*.tsbuildinfo
+
+# =========================================================
+# 🗃️ PRISMA
+# =========================================================
+.prisma/cache
+.prisma/client/query-engine*
+.prisma/client/schema.prisma.md5
+*.db-journal
+src/generated
+
+# =========================================================
+# 🔐 ENV & CONFIG
+# =========================================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.env.*
+
+# =========================================================
+# 🧠 IDE / OS FILES
+# =========================================================
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+*.swp
+*.swo
+
+# =========================================================
+# 🪵 LOGS / TEMP
+# =========================================================
+logs
+*.pid
+*.seed
+*.tgz
+*.bak
+*.tmp
+*.lock
+*.orig
+
+# =========================================================
+# 🪄 GIT / DOCKER META
+# =========================================================
+.git
+.gitignore
+.gitattributes
+.gitmodules
+Dockerfile
+docker-compose.yml
+
+# =========================================================
+# 🧪 TESTING / STORYBOOK / DOCS
+# =========================================================
+__tests__/
+__mocks__/
+jest.config.*
+vitest.config.*
+playwright.config.*
+cypress/
+storybook/
+stories/
+examples/
+docs/
+
+# =========================================================
+# 📸 UPLOADS / MEDIA
+# (werden in Container als Volume gemountet)
+# =========================================================
+uploads
+public/uploads
+
+# =========================================================
+# 🧩 TURBOREPO / MONOREPO SUPPORT
+# =========================================================
+turbo
+.turbo
+turbo.json
+apps/*/.next
+apps/*/node_modules
+packages/*/node_modules
