@@ -57,11 +57,7 @@ export async function addTenant(
       },
     })
 
-    // callback URL (no subdomain anymore)
-    const base = process.env.BASE_URL ?? 'https://eventshot.ch'
-    const callbackURL = input.callbackPath
-      ? `${base}${input.callbackPath}`
-      : base
+    const callbackURL = '/admin'
 
     // send magic link
     await auth.api.signInMagicLink({
