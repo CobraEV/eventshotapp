@@ -2,12 +2,12 @@ import { HomeIcon, PartyPopperIcon } from 'lucide-react'
 
 export const adminRoutes = [
   {
-    url: '/dashboard',
+    url: '/tenant',
     label: 'Dashboard',
     icon: HomeIcon,
   },
   {
-    url: '/events',
+    url: '/tenant/events',
     label: 'Events',
     icon: PartyPopperIcon,
   },

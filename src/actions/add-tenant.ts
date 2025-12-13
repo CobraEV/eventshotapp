@@ -57,7 +57,7 @@ export async function addTenant(
       },
     })
 
-    const callbackURL = '/admin'
+    const callbackURL = '/tenant'
 
     // send magic link
     await auth.api.signInMagicLink({

@@ -37,7 +37,7 @@ export const sendLogin = async (email: string) => {
     }
 
     // Final callback → always same domain (flat)
-    const callbackURL = `/admin`
+    const callbackURL = `/tenant`
 
     // --- 3. Send magic link ---
     const result = await auth.api.signInMagicLink({

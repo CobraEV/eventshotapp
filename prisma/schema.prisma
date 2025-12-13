@@ -87,33 +87,40 @@ model Tenant {
 }
 
 model Event {
-  id          Int      @id @default(autoincrement())
-  name        String
-  tenantId    Int
-  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id       String @id @default(cuid())
+  name     String
+  tenantId Int
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
   plan        PLAN
   description String?  @db.Text
   date        DateTime @db.Date
   location    String?
   isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  photos      Photo[]
-  token       String
 
-  @@unique([tenantId, name])
+  // Public QR / Gästezugriff
+  publicCode String  @unique @default(uuid())
+  pin        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photos Photo[]
 }
 
 model Photo {
-  id           Int      @id @default(autoincrement())
+  id           String @id @default(cuid())
   filename     String
   originalName String
   mimeType     String
   size         Int
-  eventId      Int
-  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  approved     Boolean  @default(true)
-  blurHash     String? // optional, falls du Placeholder speichern willst
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+
+  eventId String
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  approved Boolean @default(true)
+  blurHash String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
