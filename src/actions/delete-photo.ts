@@ -3,6 +3,7 @@
 import prisma from '@/lib/prisma'
 import { s3 } from '@/lib/s3'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { revalidatePath } from 'next/cache'
 
 export async function deletePhoto({
   id,
@@ -48,6 +49,9 @@ export async function deletePhoto({
       id: photo.id,
     },
   })
+
+  revalidatePath(`/tenant/event/${eventId}`)
+  revalidatePath(`/event/${eventId}`)
 
   return { success: true }
 }
