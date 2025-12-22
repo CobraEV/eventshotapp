@@ -15,20 +15,25 @@ type Photo = {
 
 interface Props {
   eventId: string
-  autoplay?: boolean
+  controls?: boolean
   interval?: number
   fullscreen?: boolean
+
+  hideWatermark?: boolean
+  brandLogoUrl?: string | null
 }
 
 export default function EventSlideshow({
   eventId,
-  autoplay = true,
   interval = 5000,
+  controls = true,
   fullscreen,
+  hideWatermark,
+  brandLogoUrl,
 }: Props) {
   const [photos, setPhotos] = useState<Photo[]>([])
   const [index, setIndex] = useState(0)
-  const [playing, setPlaying] = useState(autoplay)
+  const [playing, setPlaying] = useState(true)
   const [direction, setDirection] = useState<1 | -1>(1)
 
   const timerRef = useRef<NodeJS.Timeout | null>(null)
@@ -136,32 +141,45 @@ export default function EventSlideshow({
         {index + 1} / {photos.length}
       </div>
 
-      {/* Logo */}
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg text-white">
-        <Camera className="h-5 w-5 text-primary" />
-        <span className="font-semibold">EventShot</span>
-      </div>
+      {!hideWatermark && !brandLogoUrl && (
+        <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg text-white">
+          <Camera className="h-5 w-5 text-primary" />
+          <span className="font-semibold">EventShot</span>
+        </div>
+      )}
+
+      {brandLogoUrl && (
+        <div className="absolute bottom-4 right-4 bg-black/60 p-2 rounded-lg">
+          <img
+            src={brandLogoUrl}
+            alt="Brand Logo"
+            className="h-8 w-auto object-contain"
+          />
+        </div>
+      )}
 
       {/* Controls */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full">
-        <Button variant="ghost" size="icon" onClick={prev}>
-          <ChevronLeft className="text-white" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setPlaying((p) => !p)}
-        >
-          {playing ? (
-            <Pause className="text-white" />
-          ) : (
-            <Play className="text-white" />
-          )}
-        </Button>
-        <Button variant="ghost" size="icon" onClick={next}>
-          <ChevronRight className="text-white" />
-        </Button>
-      </div>
+      {controls && (
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full">
+          <Button variant="ghost" size="icon" onClick={prev}>
+            <ChevronLeft className="text-white" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setPlaying((p) => !p)}
+          >
+            {playing ? (
+              <Pause className="text-white" />
+            ) : (
+              <Play className="text-white" />
+            )}
+          </Button>
+          <Button variant="ghost" size="icon" onClick={next}>
+            <ChevronRight className="text-white" />
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

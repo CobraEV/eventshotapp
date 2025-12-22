@@ -93,19 +93,36 @@ model Event {
   tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 
   plan        PLAN
-  description String?  @db.Text
+  description String?
   date        DateTime @db.Date
   location    String?
   isActive    Boolean  @default(true)
 
-  // Public QR / Gästezugriff
   publicCode String  @unique @default(uuid())
   pin        String?
 
+  photos    Photo[]
+  slideshow EventSlideshowSettings?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
-  photos Photo[]
+model EventSlideshowSettings {
+  id String @id @default(cuid())
+
+  eventId String @unique
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  intervalMs   Int     @default(5000)
+  showControls Boolean @default(true)
+
+  // 🆕 ENTERPRISE Features
+  hideWatermark Boolean @default(false)
+  brandLogoUrl  String? // optional: eigenes Logo
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Photo {
