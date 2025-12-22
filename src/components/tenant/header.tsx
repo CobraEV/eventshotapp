@@ -1,18 +1,17 @@
-import Nav from '@/components/tenant/nav'
+import AdminNav from '@/components/tenant/admin-nav'
 import { Camera } from 'lucide-react'
 import Link from 'next/link'
 
 const Header = async () => {
   return (
-    <header className="py-6 px-4 md:px-6 border-border border-b bg-muted/30">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link href={`/`} className="text-2xl font-bold flex items-center gap-2">
-          <Camera className="h-6 w-6 text-primary" />
+    <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold">
+          <Camera className="h-5 w-5 text-primary" />
           <span>EventShot</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <Nav />
-        </div>
+
+        <AdminNav />
       </div>
     </header>
   )

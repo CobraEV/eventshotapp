@@ -1,20 +1,25 @@
-import { HomeIcon, ImagesIcon, ProjectorIcon } from 'lucide-react'
+import { HomeIcon, ImagesIcon, MonitorPlayIcon, UploadIcon } from 'lucide-react'
 
-export const eventRoutes = [
+export const getEventRoutes = (eventId: string) => [
   {
-    url: '/',
+    url: `/event/${eventId}`,
     label: 'Startseite',
     icon: HomeIcon,
   },
   {
-    url: '/slideshow',
-    label: 'Slideshow',
-    icon: ProjectorIcon,
-    target: '_blank',
-  },
-  {
-    url: '/gallery',
+    url: `/event/${eventId}/gallery`,
     label: 'Galerie',
     icon: ImagesIcon,
+  },
+  {
+    url: `/event/${eventId}/slideshow`,
+    label: 'Slideshow',
+    icon: MonitorPlayIcon,
+    newTab: true,
+  },
+  {
+    url: `/event/${eventId}/upload`,
+    label: 'Hochladen',
+    icon: UploadIcon,
   },
 ]

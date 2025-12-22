@@ -109,8 +109,12 @@ model Event {
 }
 
 model Photo {
-  id           String @id @default(cuid())
-  filename     String
+  id String @id @default(cuid())
+
+  bucket    String
+  objectKey String @unique
+  url       String
+
   originalName String
   mimeType     String
   size         Int
@@ -123,4 +127,7 @@ model Photo {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([approved])
 }
