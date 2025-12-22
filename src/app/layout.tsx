@@ -3,6 +3,7 @@ import 'moment/locale/de'
 import type { Metadata } from 'next'
 import { Poppins } from 'next/font/google'
 import Script from 'next/script'
+import { Toaster } from 'sonner'
 
 const poppins = Poppins({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
@@ -87,6 +88,7 @@ export default function RootLayout({
         className={`${poppins.className} min-h-svh flex flex-col relative antialiased`}
       >
         <main className="flex-1 flex flex-col">{children}</main>
+        <Toaster />
         <Script
           defer
           src="https://umami.edelbyte.ch/script.js"
