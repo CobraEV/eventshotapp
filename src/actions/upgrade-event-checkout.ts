@@ -1,6 +1,6 @@
 'use server'
 
-import { PLAN_PRICES, stripe } from '@/lib/stripe'
+import { PLAN_PRICES, getStripe } from '@/lib/stripe'
 import { PLAN } from '@/generated/prisma/enums'
 
 export async function upgradeEventCheckout({
@@ -10,6 +10,8 @@ export async function upgradeEventCheckout({
   eventId: string
   plan: PLAN
 }) {
+  const stripe = getStripe() // 🔑 Runtime only
+
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
     payment_method_types: ['card', 'twint'],
