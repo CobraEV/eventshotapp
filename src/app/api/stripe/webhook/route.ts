@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
 import prisma from '@/lib/prisma'
 import { PLAN } from '@/generated/prisma/enums'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -11,6 +11,8 @@ export async function POST(req: NextRequest) {
   if (!sig) {
     return new NextResponse('Missing signature', { status: 400 })
   }
+
+  const stripe = getStripe() // 🔑 Runtime only
 
   let event: Stripe.Event
 

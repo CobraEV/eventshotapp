@@ -1,11 +1,24 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
-})
+let stripe: Stripe | null = null
+
+export function getStripe() {
+  if (!stripe) {
+    const key = process.env.STRIPE_SECRET_KEY
+    if (!key) {
+      throw new Error('STRIPE_SECRET_KEY is not set')
+    }
+
+    stripe = new Stripe(key, {
+      apiVersion: '2025-12-15.clover',
+    })
+  }
+
+  return stripe
+}
 
 export const PLAN_PRICES = {
-  BASIC: 9900, // CHF 99.-
-  PREMIUM: 14900, // CHF 149.-
-  ENTERPRISE: 19900, // CHF 199.-
+  BASIC: 9900,
+  PREMIUM: 14900,
+  ENTERPRISE: 19900,
 } as const
