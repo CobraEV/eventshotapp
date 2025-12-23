@@ -5,7 +5,7 @@ import { siteConfig } from '@/lib/constants'
 import { initLenis } from '@/lib/lenis'
 import { cn } from '@/lib/utils'
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
-import { Camera, Menu, X } from 'lucide-react'
+import { Camera, LogInIcon, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -93,6 +93,12 @@ export function Header() {
               >
                 Jetzt starten
               </Button>
+              <Button size="sm" variant={'outline'} asChild>
+                <Link href={`/login`}>
+                  <LogInIcon className='text-primary'/>
+                  Login
+                </Link>
+              </Button>
             </nav>
 
             <Button
@@ -177,6 +183,17 @@ export function Header() {
                 onClick={(e) => handleSmoothScroll(e, '#application')}
               >
                 Jetzt starten
+              </Button>
+              <Button
+                size="lg"
+                variant={'outline'}
+                className="mt-4 w-full"
+                asChild
+              >
+                <Link href={`/login`}>
+                  <LogInIcon />
+                  Anmelden
+                </Link>
               </Button>
             </motion.div>
           </motion.nav>
