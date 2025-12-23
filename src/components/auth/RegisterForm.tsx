@@ -208,22 +208,18 @@ export default function RegisterForm() {
               </div>
             )}
 
-            {/* Success Popup */}
-            {(success || pendingUrl) && (
-              <Card className="fixed inset-0 z-50 grid place-items-center bg-black/50 backdrop-blur">
-                <CardContent className="p-8 text-center bg-background rounded-3xl">
-                  <MailIcon className="mx-auto mb-4" />
-                  <h2 className="text-lg font-semibold">
-                    Bitte Postfach prüfen
-                  </h2>
-                  <p className="mt-2 text-sm">
-                    Wir haben einen Magic-Link an {email} gesendet.
+            {/* Success message – inline wie Login */}
+            {success && !errorMsg && (
+              <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary animate-in fade-in duration-300">
+                <MailIcon size={18} className="mt-0.5 shrink-0 text-primary" />
+                <div>
+                  <p className="font-medium">E-Mail gesendet</p>
+                  <p className="text-muted-foreground">
+                    Bitte prüfe dein Postfach und klicke auf den Link in der
+                    E-Mail, um dich anzumelden.
                   </p>
-                  <Button asChild className="mt-6 w-full">
-                    <a href="mailto:">Mail-App öffnen</a>
-                  </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             )}
 
             {/* Submit */}
