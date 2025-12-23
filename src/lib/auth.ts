@@ -23,11 +23,6 @@ export const auth = betterAuth({
   advanced: {
     cookiePrefix: 'eventshot',
     useSecureCookies: process.env.NODE_ENV === 'production',
-    cookie: {
-      domain:
-        process.env.NODE_ENV === 'production' ? '.eventshot.ch' : undefined,
-      sameSite: 'lax',
-    },
   },
 
   // --------------------------------------------------

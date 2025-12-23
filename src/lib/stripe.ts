@@ -18,7 +18,7 @@ export function getStripe() {
 }
 
 export const PLAN_PRICES = {
-  BASIC: 9900,
+  BASIC: 1,
   PREMIUM: 14900,
   ENTERPRISE: 19900,
 } as const
