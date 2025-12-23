@@ -1,7 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { FadeInUp, ScrollReveal } from "@/components/ui/motion";
-import CtaBg from "./cta-bg";
-import Link from "next/link";
+import { Button } from '@/components/ui/button'
+import { FadeInUp, ScrollReveal } from '@/components/ui/motion'
+import CtaBg from './cta-bg'
+import Link from 'next/link'
 
 export function CTA() {
   return (
@@ -27,7 +27,7 @@ export function CTA() {
 
             <FadeInUp className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" className="text-base" asChild>
-                <Link href={`mailto:info@eventshot.ch`}>Kostenlos starten</Link>
+                <Link href={`/register`}>Kostenlos starten</Link>
               </Button>
               <Button size="lg" variant="outline" className="text-base" asChild>
                 <Link href={`mailto:info@eventshot.ch`}>Demo vereinbaren</Link>
@@ -42,5 +42,5 @@ export function CTA() {
         </ScrollReveal>
       </div>
     </section>
-  );
+  )
 }

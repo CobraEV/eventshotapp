@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function DatenschutzPage() {
   return (
@@ -8,7 +8,7 @@ export default function DatenschutzPage() {
           Datenschutzerklärung
         </h1>
         <p className="text-muted-foreground">
-          Gültig für alle Nutzer:innen von{" "}
+          Gültig für alle Nutzer:innen von{' '}
           <span className="text-primary">eventshot.ch</span> – Stand: Juni 2025
         </p>
       </div>
@@ -18,19 +18,32 @@ export default function DatenschutzPage() {
           1. Verantwortliche Stelle
         </h2>
         <p>
-          Verantwortlich für die Datenverarbeitung ist:
+          Verantwortlich für die Datenverarbeitung im Sinne des Schweizer DSG
+          ist:
           <br />
-          EventShot
+          <strong>EdelByte – IT mit Leidenschaft</strong>
+          <br />
+          Betreiber der Plattform EventShot
           <br />
           8488 Turbenthal, Schweiz
           <br />
-          E-Mail:{" "}
+          E-Mail:{' '}
           <Link
             href="mailto:info@eventshot.ch"
             className="text-primary underline hover:opacity-80"
           >
             info@eventshot.ch
           </Link>
+          <br />
+          Website:{' '}
+          <a
+            href="https://edelbyte.ch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline hover:opacity-80"
+          >
+            https://edelbyte.ch
+          </a>
         </p>
       </section>
 
@@ -69,7 +82,7 @@ export default function DatenschutzPage() {
         <p>
           Alle gespeicherten Inhalte (Bilder, Subdomain-Daten) werden
           automatisch <strong>7 Tage</strong> nach Event-Ende gelöscht.
-          Zahlungsdaten werden gemäß gesetzlichen Vorgaben{" "}
+          Zahlungsdaten werden gemäß gesetzlichen Vorgaben{' '}
           <strong>10 Jahre</strong> aufbewahrt.
         </p>
       </section>
@@ -90,16 +103,16 @@ export default function DatenschutzPage() {
         </h2>
         <p>
           Diese Datenschutzerklärung kann jederzeit angepasst werden. Es gilt
-          jeweils die auf{" "}
+          jeweils die auf{' '}
           <Link href="/" className="text-primary underline hover:opacity-80">
             eventshot.ch
-          </Link>{" "}
+          </Link>{' '}
           veröffentlichte Version.
         </p>
       </section>
 
       <div className="border-t pt-8 text-sm text-muted-foreground text-center">
-        Fragen zum Datenschutz?{" "}
+        Fragen zum Datenschutz?{' '}
         <Link
           href="mailto:info@eventshot.ch"
           className="text-primary underline hover:opacity-80"
@@ -108,5 +121,5 @@ export default function DatenschutzPage() {
         </Link>
       </div>
     </div>
-  );
+  )
 }

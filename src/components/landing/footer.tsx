@@ -1,7 +1,5 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { FadeIn } from '@/components/ui/motion'
 import {
   Camera,
@@ -82,6 +80,19 @@ export function Footer() {
         <FadeIn>
           <div className="border-t border-border pt-8 text-center text-sm text-muted-foreground space-y-2">
             <p>&copy; {currentYear} EventShot. Alle Rechte vorbehalten.</p>
+
+            <p>
+              EventShot ist ein Produkt von{' '}
+              <a
+                href="https://edelbyte.ch"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                EdelByte – IT mit Leidenschaft
+              </a>
+            </p>
+
             <div className="flex justify-center gap-4">
               <Link href="/agb" className="hover:underline text-primary">
                 AGB
@@ -91,6 +102,9 @@ export function Footer() {
                 className="hover:underline text-primary"
               >
                 Datenschutz
+              </Link>
+              <Link href="/impressum" className="hover:underline text-primary">
+                Impressum
               </Link>
             </div>
           </div>

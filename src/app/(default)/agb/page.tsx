@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from 'next/link'
 
 export default function AGBPage() {
   return (
@@ -8,10 +8,30 @@ export default function AGBPage() {
           Allgemeine Geschäftsbedingungen
         </h1>
         <p className="text-muted-foreground">
-          Stand: Juni 2025 – gültig für alle kostenpflichtigen Leistungen auf{" "}
+          Stand: Juni 2025 – gültig für alle kostenpflichtigen Leistungen auf{' '}
           <span className="text-primary">eventshot.ch</span>
         </p>
       </div>
+
+      <section className="space-y-4">
+        <h2 className="text-2xl font-semibold text-primary">Anbieter</h2>
+        <p>
+          Anbieter der Plattform EventShot ist:
+          <br />
+          <strong>EdelByte – IT mit Leidenschaft</strong>
+          <br />
+          8488 Turbenthal, Schweiz
+          <br />
+          <a
+            href="https://edelbyte.ch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary underline"
+          >
+            https://edelbyte.ch
+          </a>
+        </p>
+      </section>
 
       <section className="space-y-4">
         <h2 className="text-2xl font-semibold text-primary">
@@ -19,9 +39,14 @@ export default function AGBPage() {
         </h2>
         <p>
           Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Verträge
-          und Leistungen im Zusammenhang mit der Nutzung von EventShot,
-          insbesondere für Buchungen kostenpflichtiger Pläne. Mit
-          Vertragsabschluss stimmen Kund:innen diesen Bedingungen zu.
+          und Leistungen im Zusammenhang mit der Nutzung von EventShot.
+          <br />
+          <br />
+          <strong>
+            EventShot ist ein Produkt der EdelByte – IT mit Leidenschaft
+          </strong>
+          , Einzelunternehmen mit Sitz in 8488 Turbenthal, Schweiz (nachfolgend
+          „EdelByte“ genannt).
         </p>
       </section>
 
@@ -76,7 +101,7 @@ export default function AGBPage() {
         <p>
           Personenbezogene Daten und hochgeladene Fotos werden ausschliesslich
           zur Durchführung des Events gespeichert und automatisch 7 Tage nach
-          Ende des gebuchten Zeitraums gelöscht. Weitere Details siehe{" "}
+          Ende des gebuchten Zeitraums gelöscht. Weitere Details siehe{' '}
           <Link
             href="/datenschutz"
             className="underline text-primary hover:opacity-80"
@@ -121,7 +146,7 @@ export default function AGBPage() {
       </section>
 
       <div className="border-t pt-8 text-sm text-muted-foreground text-center">
-        Fragen zu den AGB?{" "}
+        Fragen zu den AGB?{' '}
         <Link
           href="mailto:info@eventshot.ch"
           className="text-primary underline hover:opacity-80"
@@ -130,5 +155,5 @@ export default function AGBPage() {
         </Link>
       </div>
     </div>
-  );
+  )
 }
