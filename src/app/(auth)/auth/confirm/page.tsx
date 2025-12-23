@@ -1,11 +1,24 @@
 import { redirect } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function ConfirmPage({
+export default async function ConfirmPage({
   searchParams,
 }: {
-  searchParams: { token?: string }
+  searchParams: Promise<{ token?: string }>
 }) {
-  const token = searchParams.token
+  return (
+    <Suspense>
+      <PageContent searchParams={searchParams} />
+    </Suspense>
+  )
+}
+
+const PageContent = async ({
+  searchParams,
+}: {
+  searchParams: Promise<{ token?: string }>
+}) => {
+  const { token } = await searchParams
 
   if (!token) {
     redirect('/login?error=invalid_link')
