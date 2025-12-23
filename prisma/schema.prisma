@@ -102,7 +102,7 @@ model Event {
   pin        String?
 
   // 🔑 Stripe
-  stripeSessionId String @unique
+  stripeSessionId String? @unique
 
   photos    Photo[]
   slideshow EventSlideshowSettings?
