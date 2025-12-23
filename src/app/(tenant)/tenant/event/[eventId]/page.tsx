@@ -63,7 +63,11 @@ const PageContent = async ({
         <div className="mt-6">
           {/* ---------------- Fotos ---------------- */}
           <TabsContent value="photos">
-            <InteractiveGallery admin photos={photos} eventId={eventId} />
+            <InteractiveGallery
+              admin={true}
+              photos={photos}
+              eventId={eventId}
+            />
           </TabsContent>
 
           {/* ---------------- QR ---------------- */}
