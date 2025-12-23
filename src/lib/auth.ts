@@ -30,9 +30,9 @@ export const auth = betterAuth({
           throw new Error('Kein Tenant für diese E-Mail gefunden.')
         }
 
-        const confirmUrl = `https://eventshot.ch/auth/confirm?token=${encodeURIComponent(
-          token
-        )}`
+        const confirmUrl = `${
+          process.env.BETTER_AUTH_URL
+        }/auth/confirm?token=${encodeURIComponent(token)}`
 
         // ✉️ Mail versenden
         await sendMail({
