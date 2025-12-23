@@ -34,6 +34,9 @@ export const auth = betterAuth({
           process.env.BETTER_AUTH_URL
         }/auth/confirm?token=${encodeURIComponent(token)}`
 
+        console.log('token', token)
+        console.log('url', confirmUrl)
+
         // ✉️ Mail versenden
         await sendMail({
           to: email,
