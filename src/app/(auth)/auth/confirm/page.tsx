@@ -1,27 +1,24 @@
-import { redirect } from 'next/navigation'
-import { Suspense } from 'react'
+'use client'
 
-export default async function ConfirmPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string }>
-}) {
-  return (
-    <Suspense>
-      <PageContent searchParams={searchParams} />
-    </Suspense>
-  )
-}
+import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect } from 'react'
 
-const PageContent = async ({
-  searchParams,
-}: {
-  searchParams: Promise<{ token?: string }>
-}) => {
-  const { token } = await searchParams
+export default function ConfirmPage() {
+  const params = useSearchParams()
+  const router = useRouter()
+
+  const token = params.get('token')
+
+  // Falls kein Token → zurück zum Login
+  useEffect(() => {
+    if (!token) {
+      router.replace('/login?error=invalid_link')
+    }
+  }, [token, router])
 
   if (!token) {
-    redirect('/login?error=invalid_link')
+    return null
   }
 
   const verifyUrl = `/api/auth/magic-link/verify?token=${encodeURIComponent(
@@ -37,12 +34,14 @@ const PageContent = async ({
           Klicke auf den Button, um dich bei EventShot anzumelden.
         </p>
 
-        <a
+        {/* WICHTIG: prefetch={false}, echter User-Klick */}
+        <Link
           href={verifyUrl}
+          prefetch={false}
           className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90 transition"
         >
           Jetzt anmelden
-        </a>
+        </Link>
       </div>
     </div>
   )
