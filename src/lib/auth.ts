@@ -7,7 +7,7 @@ import { sendMail } from './mailer'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: 'mysql',
+    provider: 'postgresql',
   }),
 
   advanced: {
@@ -15,7 +15,6 @@ export const auth = betterAuth({
   },
 
   trustedOrigins: async () => {
-    // Entwicklungs- und Produktions-URLs erlauben
     const baseOrigins = ['http://localhost:3000', 'https://eventshot.ch']
     return baseOrigins
   },
