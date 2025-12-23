@@ -2,8 +2,8 @@ import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
 import { magicLink } from 'better-auth/plugins'
-import prisma from './prisma'
 import { sendMail } from './mailer'
+import prisma from './prisma'
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -21,7 +21,7 @@ export const auth = betterAuth({
 
   plugins: [
     magicLink({
-      sendMagicLink: async ({ email, url, token }) => {
+      sendMagicLink: async ({ email, token }) => {
         // Tenant anhand der Email finden
         const tenant = await prisma.tenant.findFirst({
           where: { email },
@@ -33,9 +33,6 @@ export const auth = betterAuth({
         const confirmUrl = `${
           process.env.BETTER_AUTH_URL
         }/auth/confirm?token=${encodeURIComponent(token)}`
-
-        console.log('token', token)
-        console.log('url', confirmUrl)
 
         // ✉️ Mail versenden
         await sendMail({
