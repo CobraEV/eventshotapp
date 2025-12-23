@@ -1,6 +1,5 @@
 'use client'
 
-import { sendLogin } from '@/actions/sendLogin'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -15,38 +14,56 @@ import {
   Loader2Icon,
   LogInIcon,
   MailIcon,
+  LockIcon,
   MessageSquareWarning,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { authClient } from '@/lib/auth-client'
 
 export default function LoginForm() {
+  const router = useRouter()
+
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-
-    if (!isValidEmail) return
-
-    setIsLoading(true)
     setError(null)
 
-    const res = await sendLogin(email)
-
-    if (!res.ok) {
-      setError(res.message)
-      setIsLoading(false)
-      setSent(false)
+    if (!isValidEmail || !password) {
+      setError('Bitte E-Mail-Adresse und Passwort eingeben.')
       return
     }
 
-    setSent(true)
-    setIsLoading(false)
+    setIsLoading(true)
+
+    try {
+      const { error } = await authClient.signIn.email({
+        email: email.trim(),
+        password,
+        callbackURL: '/tenant',
+        rememberMe: true,
+      })
+
+      if (error?.message) {
+        setError(error.message)
+        return
+      }
+
+      // Erfolgreich eingeloggt
+      router.push('/tenant')
+    } catch (err) {
+      console.error(err)
+      setError('Netzwerkfehler. Bitte versuche es erneut.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -57,30 +74,24 @@ export default function LoginForm() {
             <LogInIcon className="text-primary" size={24} />
           </div>
           <CardTitle className="text-2xl font-bold tracking-tight">
-            Willkommen
+            Willkommen zurück
           </CardTitle>
           <CardDescription className="text-muted-foreground text-sm">
-            Gib deine E-Mail-Adresse ein – wir senden dir einen sicheren
-            Anmelde-Link.
+            Melde dich mit deiner E-Mail-Adresse und deinem Passwort an.
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-6">
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            {/* Email */}
             <div className="relative">
               <Input
                 type="email"
-                name="email"
                 placeholder="E-Mail-Adresse"
                 value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value)
-                  setError(null)
-                  setSent(false)
-                }}
-                disabled={isLoading || sent}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
                 autoComplete="email"
-                autoFocus
                 className={`ps-10 ${
                   error
                     ? 'border-destructive focus-visible:ring-destructive'
@@ -93,20 +104,45 @@ export default function LoginForm() {
               />
             </div>
 
+            {/* Password */}
+            <div className="relative">
+              <Input
+                type="password"
+                placeholder="Passwort"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                autoComplete="current-password"
+                className={`ps-10 ${
+                  error
+                    ? 'border-destructive focus-visible:ring-destructive'
+                    : ''
+                }`}
+              />
+              <LockIcon
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+            </div>
+
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-sm text-muted-foreground hover:text-foreground underline-offset-2 hover:underline"
+              >
+                Passwort vergessen?
+              </Link>
+            </div>
+
             <Button
               type="submit"
-              disabled={isLoading || sent || !isValidEmail}
+              disabled={isLoading}
               className="w-full font-medium"
             >
               {isLoading ? (
                 <>
                   <Loader2Icon className="animate-spin mr-2 h-4 w-4" />
-                  Wird gesendet…
-                </>
-              ) : sent ? (
-                <>
-                  <MailIcon className="mr-2 h-4 w-4" />
-                  Link gesendet
+                  Anmeldung läuft…
                 </>
               ) : (
                 <>
@@ -117,7 +153,7 @@ export default function LoginForm() {
             </Button>
           </form>
 
-          {/* Error message */}
+          {/* Error */}
           {error && (
             <div className="flex items-start gap-3 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive animate-in fade-in duration-300">
               <MessageSquareWarning
@@ -127,20 +163,6 @@ export default function LoginForm() {
               <div>
                 <p className="font-medium">Fehler</p>
                 <p className="text-muted-foreground">{error}</p>
-              </div>
-            </div>
-          )}
-
-          {/* Success message */}
-          {sent && !error && (
-            <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary animate-in fade-in duration-300">
-              <MailIcon size={18} className="mt-0.5 shrink-0 text-primary" />
-              <div>
-                <p className="font-medium">E-Mail gesendet</p>
-                <p className="text-muted-foreground">
-                  Bitte prüfe dein Postfach und klicke auf den Link in der
-                  E-Mail, um dich anzumelden.
-                </p>
               </div>
             </div>
           )}

@@ -9,57 +9,33 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Input } from '@/components/ui/input'
+import { authClient } from '@/lib/auth-client'
 import {
   BuildingIcon,
   Loader2Icon,
+  LockIcon,
   MailIcon,
-  UserIcon,
   MessageSquareWarning,
+  UserIcon,
 } from 'lucide-react'
 import Link from 'next/link'
-import { FormEvent, useEffect, useState, useTransition } from 'react'
-import { checkEmailAvailable } from '@/actions/check-email-available'
-
-type Availability = 'idle' | 'checking' | 'free' | 'taken' | 'invalid' | 'error'
+import { FormEvent, useState } from 'react'
 
 export default function RegisterForm() {
   const [company, setCompany] = useState('')
   const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [password2, setPassword2] = useState('')
   const [termsAccepted, setTermsAccepted] = useState(false)
 
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [pendingUrl, setPendingUrl] = useState<string | null>(null)
-
-  const [emailAvail, setEmailAvail] = useState<Availability>('idle')
-  const [isPending, startTransition] = useTransition()
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-
-  // E-Mail availability check
-  useEffect(() => {
-    const val = email.trim()
-    if (!val) return setEmailAvail('idle')
-    if (!isValidEmail) return setEmailAvail('invalid')
-
-    setEmailAvail('checking')
-    const t = setTimeout(() => {
-      startTransition(async () => {
-        try {
-          const res = await checkEmailAvailable(val)
-          setEmailAvail(res.available ? 'free' : 'taken')
-        } catch {
-          setEmailAvail('error')
-        }
-      })
-    }, 350)
-
-    return () => clearTimeout(t)
-  }, [email, isValidEmail, startTransition])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -67,34 +43,41 @@ export default function RegisterForm() {
     setErrorMsg(null)
     setSuccess(false)
 
-    if (!termsAccepted)
+    if (!termsAccepted) {
       return setErrorMsg('Bitte akzeptiere die AGBs, um fortzufahren.')
+    }
 
-    if (!isValidEmail || emailAvail === 'taken' || emailAvail === 'invalid')
-      return setErrorMsg('Diese E-Mail ist ungültig oder bereits vergeben.')
+    if (!isValidEmail) {
+      return setErrorMsg('Bitte gib eine gültige E-Mail-Adresse ein.')
+    }
 
     if (!fullName.trim()) {
       return setErrorMsg('Bitte gib deinen vollständigen Namen an.')
     }
 
+    if (password.length < 8) {
+      return setErrorMsg('Das Passwort muss mindestens 8 Zeichen lang sein.')
+    }
+
+    if (password !== password2) {
+      return setErrorMsg('Die Passwörter stimmen nicht überein.')
+    }
+
     setLoading(true)
+
     try {
-      const payload = {
+      const res = await addTenant({
         company: company.trim() || null,
         name: fullName.trim(),
         email: email.trim(),
-      }
-
-      const res = await addTenant(payload)
+        password,
+      })
 
       if (!res.ok) {
-        if (res.fieldErrors?.email) setEmailAvail('taken')
-        setErrorMsg(res.message || 'Bitte Eingaben prüfen.')
+        setErrorMsg(res.message ?? 'Registrierung fehlgeschlagen.')
         return
       }
 
-      // callbackURL for magic link → returned from server
-      setPendingUrl(res.callbackURL ?? null)
       setSuccess(true)
     } catch (err) {
       console.error(err)
@@ -115,7 +98,7 @@ export default function RegisterForm() {
             Jetzt registrieren
           </CardTitle>
           <CardDescription className="text-muted-foreground text-sm">
-            Erstelle deinen EventShot-Zugang – schnell, sicher und kostenlos.
+            Erstelle deinen EventShot-Zugang – schnell und sicher.
           </CardDescription>
         </CardHeader>
 
@@ -161,14 +144,42 @@ export default function RegisterForm() {
                 placeholder="E-Mail-Adresse *"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`ps-10 ${
-                  emailAvail === 'invalid' || emailAvail === 'taken'
-                    ? 'border-destructive focus-visible:ring-destructive'
-                    : ''
-                }`}
+                className="ps-10"
                 disabled={loading}
               />
               <MailIcon
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+            </div>
+
+            {/* Password */}
+            <div className="relative">
+              <Input
+                type="password"
+                placeholder="Passwort *"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="ps-10"
+                disabled={loading}
+              />
+              <LockIcon
+                size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              />
+            </div>
+
+            {/* Password repeat */}
+            <div className="relative">
+              <Input
+                type="password"
+                placeholder="Passwort wiederholen *"
+                value={password2}
+                onChange={(e) => setPassword2(e.target.value)}
+                className="ps-10"
+                disabled={loading}
+              />
+              <LockIcon
                 size={18}
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               />
@@ -208,15 +219,15 @@ export default function RegisterForm() {
               </div>
             )}
 
-            {/* Success message – inline wie Login */}
-            {success && !errorMsg && (
+            {/* Success */}
+            {success && (
               <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary animate-in fade-in duration-300">
                 <MailIcon size={18} className="mt-0.5 shrink-0 text-primary" />
                 <div>
-                  <p className="font-medium">E-Mail gesendet</p>
+                  <p className="font-medium">Registrierung erfolgreich</p>
                   <p className="text-muted-foreground">
-                    Bitte prüfe dein Postfach und klicke auf den Link in der
-                    E-Mail, um dich anzumelden.
+                    Bitte prüfe dein Postfach und bestätige deine
+                    E-Mail-Adresse, um dein Konto zu aktivieren.
                   </p>
                 </div>
               </div>
@@ -225,22 +236,16 @@ export default function RegisterForm() {
             {/* Submit */}
             <Button
               type="submit"
-              disabled={
-                loading ||
-                isPending ||
-                !termsAccepted ||
-                !fullName.trim() ||
-                !email.trim()
-              }
+              disabled={loading || success}
               className="w-full font-medium"
             >
               {loading ? (
                 <>
                   <Loader2Icon className="animate-spin mr-2 h-4 w-4" />
-                  Wird gesendet…
+                  Wird registriert…
                 </>
               ) : (
-                'Jetzt starten!'
+                'Jetzt registrieren'
               )}
             </Button>
           </form>

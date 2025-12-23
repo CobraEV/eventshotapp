@@ -238,9 +238,7 @@ function EventRow({ event }: { event: EventWithCount }) {
 
         <div className="flex flex-col sm:flex-row gap-3">
           <Button variant={'secondary'} asChild>
-            <Link href={`/tenant/event/${event.id}`}>
-              Einstellungen
-            </Link>
+            <Link href={`/tenant/event/${event.id}`}>Einstellungen</Link>
           </Button>
           <Button variant={'secondary'} asChild>
             <Link target="_blank" href={`/event/${event.id}`}>
