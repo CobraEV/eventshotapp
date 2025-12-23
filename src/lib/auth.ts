@@ -21,7 +21,7 @@ export const auth = betterAuth({
 
   plugins: [
     magicLink({
-      sendMagicLink: async ({ email, url }) => {
+      sendMagicLink: async ({ email, url, token }) => {
         // Tenant anhand der Email finden
         const tenant = await prisma.tenant.findFirst({
           where: { email },
@@ -29,6 +29,10 @@ export const auth = betterAuth({
         if (!tenant) {
           throw new Error('Kein Tenant für diese E-Mail gefunden.')
         }
+
+        const confirmUrl = `https://eventshot.ch/auth/confirm?token=${encodeURIComponent(
+          token
+        )}`
 
         // ✉️ Mail versenden
         await sendMail({
@@ -109,7 +113,7 @@ export const auth = betterAuth({
                   <p>Hallo ${tenant.name},</p>
                   <p>du möchtest dich bei <strong>EventShot</strong> anmelden. Klicke einfach auf den folgenden Button, um dich einzuloggen:</p>
                   <p style="text-align: center;">
-                    <a href="${url}" class="button">Jetzt anmelden</a>
+                    <a href="${confirmUrl}" class="button">Jetzt anmelden</a>
                   </p>
                   <p>Dieser Login-Link ist nur für dich bestimmt und aus Sicherheitsgründen nur kurz gültig.</p>
                   <p>Wenn du diese Anfrage nicht selbst gestellt hast, kannst du diese E-Mail einfach ignorieren.</p>
