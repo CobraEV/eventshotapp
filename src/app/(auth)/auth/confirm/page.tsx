@@ -2,9 +2,17 @@
 
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { Suspense, useEffect } from 'react'
 
 export default function ConfirmPage() {
+  return (
+    <Suspense>
+      <PageContent />
+    </Suspense>
+  )
+}
+
+const PageContent = () => {
   const params = useSearchParams()
   const router = useRouter()
 
