@@ -1,7 +1,7 @@
 import { getEventPhotos } from '@/actions/get-event-photos'
 import EventGallery from '@/components/event/event-gallery'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, Upload } from 'lucide-react'
+import { ArrowLeft, Download, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { Suspense } from 'react'
 
@@ -34,12 +34,20 @@ const PageContent = async ({
           </Button>
         </Link>
 
-        <Link href={`/event/${eventId}/upload`}>
-          <Button size="sm" className="gap-2">
-            <Upload className="h-4 w-4" />
-            Foto hochladen
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href={`/event/${eventId}/upload`}>
+            <Button size="sm" className="gap-2">
+              <Upload className="h-4 w-4" />
+              Foto hochladen
+            </Button>
+          </Link>
+          <Link href={`/api/event/${eventId}/download`}>
+            <Button size="sm" variant="outline" className="gap-2">
+              <Download className="h-4 w-4" />
+              Alle Fotos herunterladen
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <main className="container mx-auto">

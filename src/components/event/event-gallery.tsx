@@ -1,8 +1,12 @@
 'use client'
 
-import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import { useState } from 'react'
+import Lightbox from 'yet-another-react-lightbox'
+import Counter from 'yet-another-react-lightbox/plugins/counter'
+import Download from 'yet-another-react-lightbox/plugins/download'
+import 'yet-another-react-lightbox/styles.css'
+import 'yet-another-react-lightbox/plugins/counter.css'
 
 type Photo = {
   id: string
@@ -11,7 +15,7 @@ type Photo = {
 }
 
 export default function EventGallery({ photos }: { photos: Photo[] }) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const [index, setIndex] = useState<number>(-1)
 
   if (photos.length === 0) {
     return (
@@ -25,10 +29,10 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
     <>
       {/* Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {photos.map((photo, index) => (
+        {photos.map((photo, i) => (
           <button
             key={photo.id}
-            onClick={() => setActiveIndex(index)}
+            onClick={() => setIndex(i)}
             className="relative aspect-square overflow-hidden rounded-lg bg-muted"
           >
             <Image
@@ -44,29 +48,22 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
       </div>
 
       {/* Lightbox */}
-      <AnimatePresence>
-        {activeIndex !== null && (
-          <motion.div
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur flex items-center justify-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setActiveIndex(null)}
-          >
-            <motion.img
-              key={photos[activeIndex].id}
-              src={photos[activeIndex].url}
-              alt="Event Foto"
-              className="max-w-[90vw] max-h-[90vh] object-contain"
-              initial={{ scale: 0.95 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              onClick={(e) => e.stopPropagation()}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <Lightbox
+        open={index >= 0}
+        close={() => setIndex(-1)}
+        index={index}
+        slides={photos.map((photo) => ({
+          src: photo.url,
+          download: `/api/photo/${photo.id}/download`,
+        }))}
+        plugins={[Counter, Download]}
+        controller={{
+          closeOnBackdropClick: true,
+        }}
+        on={{
+          view: ({ index }) => setIndex(index),
+        }}
+      />
     </>
   )
 }
