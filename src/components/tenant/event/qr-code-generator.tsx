@@ -50,7 +50,7 @@ export default function QRCodeGenerator({ eventId }: { eventId: string }) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <Label>Event-URL</Label>
+        <Label>Event-URL (für Gäste)</Label>
         <div className="flex gap-2">
           <Input value={url} disabled />
           <Button variant="outline" size="icon" onClick={copy}>

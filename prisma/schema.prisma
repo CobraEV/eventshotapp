@@ -101,6 +101,9 @@ model Event {
   publicCode String  @unique @default(uuid())
   pin        String?
 
+  // 🔑 Stripe
+  stripeSessionId String @unique
+
   photos    Photo[]
   slideshow EventSlideshowSettings?
 

@@ -1,6 +1,8 @@
 'use client'
 
+import { createEventCheckout } from '@/actions/create-event-checkout'
 import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
 import {
   Dialog,
   DialogContent,
@@ -12,12 +14,13 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 import { format } from 'date-fns'
 import {
   Calendar as CalendarIcon,
@@ -27,10 +30,8 @@ import {
 } from 'lucide-react'
 import * as React from 'react'
 import { useEffect } from 'react'
-import { PlanPicker } from './plan-picker'
-import { cn } from '@/lib/utils'
 import { de } from 'react-day-picker/locale'
-import { Calendar } from '@/components/ui/calendar'
+import { PlanPicker } from './plan-picker'
 
 type PlanEnum = 'BASIC' | 'PREMIUM' | 'ENTERPRISE'
 
@@ -117,8 +118,16 @@ export function NewEventDialog({
           <form
             action={async (fd) => {
               setLoading(true)
-              await onCreate(fd)
-              setOpen(false)
+              const res = await createEventCheckout({
+                tenantId,
+                name: fd.get('name') as string,
+                location: fd.get('location') as string,
+                description: fd.get('description') as string,
+                date: fd.get('date') as string,
+                plan: fd.get('plan') as any,
+              })
+
+              window.location.href = res.url
             }}
             className="space-y-6"
             id="event-form"

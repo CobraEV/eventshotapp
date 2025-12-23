@@ -52,7 +52,7 @@ export function PlanPicker({ defaultPlan = 'PREMIUM' as PlanEnum }) {
                 <div className="flex items-center gap-2 min-w-0">
                   <span
                     className={cn(
-                      'inline-block size-2 rounded-full flex-shrink-0',
+                      'inline-block size-2 rounded-full shrink-0',
                       active ? 'bg-primary' : 'bg-muted-foreground/40'
                     )}
                     aria-hidden
@@ -64,7 +64,7 @@ export function PlanPicker({ defaultPlan = 'PREMIUM' as PlanEnum }) {
                     {p.highlighted && (
                       <Badge
                         variant="secondary"
-                        className="rounded-full text-[10px] px-1 py-0.5 flex-shrink-0"
+                        className="rounded-full text-[10px] px-1 py-0.5 shrink-0"
                       >
                         Meistgewählt
                       </Badge>
@@ -74,7 +74,7 @@ export function PlanPicker({ defaultPlan = 'PREMIUM' as PlanEnum }) {
                     <PopoverTrigger asChild>
                       <button
                         type="button"
-                        className="p-2 hover:bg-muted rounded-full transition-colors touch-manipulation flex-shrink-0"
+                        className="p-2 hover:bg-muted rounded-full transition-colors touch-manipulation shrink-0"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <Info className="h-4 w-4 sm:h-3 sm:w-3 text-muted-foreground" />
@@ -94,7 +94,7 @@ export function PlanPicker({ defaultPlan = 'PREMIUM' as PlanEnum }) {
                         <ul className="space-y-2">
                           {p.features.map((feature, i) => (
                             <li key={i} className="flex gap-2 text-sm">
-                              <CheckIcon className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                              <CheckIcon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                               <span>{feature}</span>
                             </li>
                           ))}
