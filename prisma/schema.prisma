@@ -151,3 +151,9 @@ model Photo {
   @@index([eventId])
   @@index([approved])
 }
+
+model InvoiceCounter {
+  key       String   @id
+  current   Int
+  updatedAt DateTime @updatedAt
+}
