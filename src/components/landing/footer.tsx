@@ -35,7 +35,7 @@ export function Footer() {
               >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a
+              {/* <a
                 href="#"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
@@ -52,7 +52,7 @@ export function Footer() {
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
                 <Linkedin className="h-5 w-5" />
-              </a>
+              </a> */}
             </div>
           </div>
 
