@@ -21,6 +21,7 @@ import {
   UserIcon,
 } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { FormEvent, useState } from 'react'
 
 export default function RegisterForm() {
@@ -33,15 +34,15 @@ export default function RegisterForm() {
 
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
 
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  const router = useRouter()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     setErrorMsg(null)
-    setSuccess(false)
 
     if (!termsAccepted) {
       return setErrorMsg('Bitte akzeptiere die AGBs, um fortzufahren.')
@@ -78,7 +79,7 @@ export default function RegisterForm() {
         return
       }
 
-      setSuccess(true)
+      router.push('/register/success')
     } catch (err) {
       console.error(err)
       setErrorMsg('Netzwerkfehler. Bitte versuche es erneut.')
@@ -219,24 +220,10 @@ export default function RegisterForm() {
               </div>
             )}
 
-            {/* Success */}
-            {success && (
-              <div className="flex items-start gap-3 rounded-lg border border-primary/30 bg-primary/10 px-4 py-3 text-sm text-primary animate-in fade-in duration-300">
-                <MailIcon size={18} className="mt-0.5 shrink-0 text-primary" />
-                <div>
-                  <p className="font-medium">Registrierung erfolgreich</p>
-                  <p className="text-muted-foreground">
-                    Bitte prüfe dein Postfach und bestätige deine
-                    E-Mail-Adresse, um dein Konto zu aktivieren.
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* Submit */}
             <Button
               type="submit"
-              disabled={loading || success}
+              disabled={loading}
               className="w-full font-medium"
             >
               {loading ? (
