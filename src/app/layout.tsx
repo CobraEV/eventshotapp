@@ -94,6 +94,29 @@ export default function RootLayout({
           src="https://umami.edelbyte.ch/script.js"
           data-website-id="81d33849-a760-41dd-9426-f32636c2d3ed"
         />
+        <Script
+          id="jsonld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'SoftwareApplication',
+              name: 'EventShot',
+              applicationCategory: 'EventManagementApplication',
+              operatingSystem: 'Web',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'CHF',
+              },
+              publisher: {
+                '@type': 'Organization',
+                name: 'EdelByte',
+                url: 'https://edelbyte.ch',
+              },
+            }),
+          }}
+        />
       </body>
     </html>
   )
