@@ -43,20 +43,21 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://eventshot.ch/og-image.jpg',
+        url: 'https://eventshot.ch/hero-bg.jpeg',
         width: 1200,
         height: 630,
         alt: 'EventShot – Fotos live am Event',
       },
     ],
   },
+
   twitter: {
     card: 'summary_large_image',
     title: 'EventShot – Fotos live am Event',
     description:
       'QR-Code scannen, Foto hochladen, direkt auf der Leinwand sehen – EventShot macht Events interaktiver! Entwickelt von EdelByte.',
     creator: '@edelbyte',
-    images: ['https://eventshot.ch/og-image.jpg'],
+    images: ['https://eventshot.ch/hero-bg.jpeg'],
   },
   metadataBase: new URL('https://eventshot.ch'),
   alternates: {
