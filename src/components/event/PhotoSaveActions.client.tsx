@@ -15,6 +15,7 @@ export function PhotoSaveActions({
 }) {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [filename, setFilename] = useState('eventshot.jpg')
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     getPhotoDownloadUrl(photoId).then((res) => {
@@ -23,16 +24,42 @@ export function PhotoSaveActions({
     })
   }, [photoId])
 
+  async function handleDownload() {
+    if (!downloadUrl) return
+
+    try {
+      setLoading(true)
+
+      const response = await fetch(downloadUrl)
+      const blob = await response.blob()
+
+      const blobUrl = URL.createObjectURL(blob)
+
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = filename
+      document.body.appendChild(a)
+      a.click()
+
+      a.remove()
+      URL.revokeObjectURL(blobUrl)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   if (!downloadUrl) return null
 
   return (
     <div className="flex flex-col gap-3">
-      <a href={downloadUrl} download={filename}>
-        <Button className="w-full gap-2">
-          <Download className="h-4 w-4" />
-          Foto auf dein Gerät speichern
-        </Button>
-      </a>
+      <Button
+        className="w-full gap-2"
+        onClick={handleDownload}
+        disabled={loading}
+      >
+        <Download className="h-4 w-4" />
+        {loading ? 'Speichern…' : 'Foto auf dein Gerät speichern'}
+      </Button>
 
       <Link href={`/event/${eventId}/upload`}>
         <Button variant="outline" className="w-full gap-2">
