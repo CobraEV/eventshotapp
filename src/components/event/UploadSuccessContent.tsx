@@ -33,7 +33,7 @@ export default async function UploadSuccessContent({
 
         {photo && (
           <CardFooter className="flex flex-col gap-4">
-            <PhotoSaveActions photoId={photo} />
+            <PhotoSaveActions photoId={photo} eventId={eventId} />
           </CardFooter>
         )}
 
@@ -42,13 +42,6 @@ export default async function UploadSuccessContent({
             <Button variant="ghost" className="gap-2">
               <ArrowLeft className="h-4 w-4" />
               Startseite
-            </Button>
-          </Link>
-
-          <Link href={`/event/${eventId}/upload`}>
-            <Button variant="outline">
-              <Camera className="text-primary" />
-              Weiteres hochladen
             </Button>
           </Link>
         </CardFooter>

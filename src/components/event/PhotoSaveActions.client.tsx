@@ -1,11 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Download, Share2 } from 'lucide-react'
+import { Download, Camera } from 'lucide-react'
 import { getPhotoDownloadUrl } from '@/actions/get-photo-download-url'
 
-export function PhotoSaveActions({ photoId }: { photoId: string }) {
+export function PhotoSaveActions({
+  photoId,
+  eventId,
+}: {
+  photoId: string
+  eventId: string
+}) {
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null)
   const [filename, setFilename] = useState('eventshot.jpg')
 
@@ -15,18 +22,6 @@ export function PhotoSaveActions({ photoId }: { photoId: string }) {
       setFilename(res.filename)
     })
   }, [photoId])
-
-  async function handleShare() {
-    if (!downloadUrl || !navigator.share) return
-
-    const blob = await fetch(downloadUrl).then((r) => r.blob())
-    const file = new File([blob], filename, { type: blob.type })
-
-    await navigator.share({
-      title: 'Dein EventShot Foto',
-      files: [file],
-    })
-  }
 
   if (!downloadUrl) return null
 
@@ -39,17 +34,12 @@ export function PhotoSaveActions({ photoId }: { photoId: string }) {
         </Button>
       </a>
 
-      {typeof navigator !== 'undefined' &&
-        typeof navigator.share === 'function' && (
-          <Button
-            variant="outline"
-            className="w-full gap-2"
-            onClick={handleShare}
-          >
-            <Share2 className="h-4 w-4" />
-            Foto teilen
-          </Button>
-        )}
+      <Link href={`/event/${eventId}/upload`}>
+        <Button variant="outline" className="w-full gap-2">
+          <Camera className="h-4 w-4 text-primary" />
+          Weiteres hochladen
+        </Button>
+      </Link>
     </div>
   )
 }
