@@ -3,8 +3,19 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { Download, Camera } from 'lucide-react'
+import { Download, Camera, Images } from 'lucide-react'
 import { getPhotoDownloadUrl } from '@/actions/get-photo-download-url'
+
+function isIOS() {
+  if (typeof navigator === 'undefined') return false
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+}
+
+function canShareFiles() {
+  return (
+    typeof navigator !== 'undefined' && typeof navigator.share === 'function'
+  )
+}
 
 export function PhotoSaveActions({
   photoId,
@@ -48,10 +59,29 @@ export function PhotoSaveActions({
     }
   }
 
+  async function handleShareToPhotos() {
+    if (!downloadUrl || !canShareFiles()) return
+
+    const response = await fetch(downloadUrl)
+    const blob = await response.blob()
+
+    const file = new File([blob], filename, {
+      type: blob.type || 'image/jpeg',
+    })
+
+    await navigator.share({
+      title: 'Dein EventShot Foto',
+      files: [file],
+    })
+  }
+
   if (!downloadUrl) return null
+
+  const showIOSShare = isIOS() && canShareFiles()
 
   return (
     <div className="flex flex-col gap-3">
+      {/* Standard Download */}
       <Button
         className="w-full gap-2"
         onClick={handleDownload}
@@ -60,6 +90,27 @@ export function PhotoSaveActions({
         <Download className="h-4 w-4" />
         {loading ? 'Speichern…' : 'Foto auf dein Gerät speichern'}
       </Button>
+
+      {/* iOS: direkt in Fotos */}
+      {showIOSShare && (
+        <Button
+          variant="outline"
+          className="w-full gap-2"
+          onClick={handleShareToPhotos}
+        >
+          <Images className="h-4 w-4 text-primary" />
+          In Fotos sichern (iPhone)
+        </Button>
+      )}
+
+      {/* UX-Hinweis nur für iOS */}
+      {isIOS() && (
+        <p className="text-xs text-muted-foreground text-center">
+          Hinweis: „Speichern“ legt das Foto in <b>Dateien</b> ab.
+          <br />
+          Für die Galerie bitte <b>„In Fotos sichern“</b> verwenden.
+        </p>
+      )}
 
       <Link href={`/event/${eventId}/upload`}>
         <Button variant="outline" className="w-full gap-2">
