@@ -78,7 +78,7 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
         id="camera-input"
         type="file"
         accept="image/*"
-        capture="environment"
+        capture="user"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]
