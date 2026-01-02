@@ -1,4 +1,5 @@
 'use client'
+import { DownloadIcon } from 'lucide-react'
 import { Button } from '../ui/button'
 
 const EventDownloadButton = ({ eventId }: { eventId: string }) => {
@@ -10,7 +11,7 @@ const EventDownloadButton = ({ eventId }: { eventId: string }) => {
         window.location.href = `/api/event/${eventId}/download-zip`
       }}
     >
-      Alle Fotos herunterladen
+      <DownloadIcon className="h-4 w-4" /> Alle Fotos herunterladen
     </Button>
   )
 }

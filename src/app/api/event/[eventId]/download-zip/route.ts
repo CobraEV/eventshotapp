@@ -4,9 +4,10 @@ import archiver from 'archiver'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { PassThrough } from 'stream'
 import pLimit from 'p-limit'
+import { AbortController } from 'abort-controller'
 
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   const { eventId } = await params
@@ -21,42 +22,54 @@ export async function GET(
   }
 
   const zipStream = new PassThrough()
-
   const archive = archiver('zip', {
-    zlib: { level: 0 }, // 🚀 fastest
+    zlib: { level: 0 }, // 🚀 fastest (Fotos sind bereits komprimiert)
   })
 
   archive.pipe(zipStream)
 
-  // 🔥 ZIP sofort starten (wichtig!)
+  const controller = new AbortController()
+
+  req.signal.addEventListener('abort', () => {
+    controller.abort()
+    archive.destroy()
+  })
+
+  // 📦 ZIP sofort an Browser schicken
   const response = new Response(zipStream as any, {
     headers: {
       'Content-Type': 'application/zip',
       'Content-Disposition': `attachment; filename="EventShot_${event.name}.zip"`,
+      'Cache-Control': 'no-store',
+      'X-Accel-Buffering': 'no',
     },
   })
 
-  // ⬇️ ZIP-ERSTELLUNG ASYNCHRON (nicht await!)
+  // 🔁 ZIP asynchron füllen (wichtig: NICHT awaiten)
   ;(async () => {
     try {
-      const limit = pLimit(6) // parallel S3 streams
+      const limit = pLimit(6)
 
-      await Promise.all(
-        event.photos.map((photo) =>
-          limit(async () => {
-            const obj = await s3.send(
-              new GetObjectCommand({
-                Bucket: process.env.S3_BUCKET!,
-                Key: photo.objectKey,
-              })
-            )
-
-            archive.append(obj.Body as any, {
-              name: photo.originalName,
-            })
-          })
-        )
+      const photos = [...event.photos].sort(
+        (a, b) => a.createdAt.getTime() - b.createdAt.getTime()
       )
+
+      for (const photo of photos) {
+        await limit(async () => {
+          const command = new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET!,
+            Key: photo.objectKey,
+          })
+
+          const obj = await s3.send(command, {
+            abortSignal: controller.signal,
+          })
+
+          archive.append(obj.Body as any, {
+            name: `${photo.originalName}`,
+          })
+        })
+      }
 
       await archive.finalize()
     } catch (err) {
