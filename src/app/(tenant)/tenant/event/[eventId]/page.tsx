@@ -40,12 +40,18 @@ const PageContent = async ({
       id: true,
       name: true,
       isActive: true,
+      photos: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          url: true,
+          createdAt: true,
+        },
+      },
     },
   })
 
   if (!event) redirect('/')
-
-  const photos = await getEventPhotos(eventId)
 
   return (
     <main className="container mx-auto py-8 px-4 md:px-6">
@@ -65,7 +71,7 @@ const PageContent = async ({
           <TabsContent value="photos">
             <InteractiveGallery
               admin={true}
-              photos={photos}
+              photos={event.photos}
               eventId={eventId}
             />
           </TabsContent>
