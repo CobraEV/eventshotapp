@@ -39,9 +39,10 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
               src={photo.url}
               alt="Event Foto"
               fill
-              className="object-cover hover:scale-105 transition-transform"
+              className="object-cover transition-transform hover:scale-105"
               sizes="(max-width: 768px) 50vw, 25vw"
-              unoptimized
+              quality={60}
+              priority={i < 8}
             />
           </button>
         ))}

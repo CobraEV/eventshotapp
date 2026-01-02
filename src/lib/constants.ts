@@ -120,9 +120,9 @@ export const faqs = [
 export const pricingPlans = [
   {
     name: 'Basic',
-    price: 'CHF 99.-',
+    price: 'CHF 49.-',
     duration: 'pro Event',
-    description: 'Perfekt für kleine Zusammenkünfte',
+    description: 'Geburtstage, kleine Familienfeste, private Anlässe',
     features: [
       'Unbegrenzte Foto-Uploads',
       'Live-Slideshow',
@@ -133,9 +133,9 @@ export const pricingPlans = [
   },
   {
     name: 'Premium',
-    price: 'CHF 149.-',
+    price: 'CHF 99.-',
     duration: 'pro Event',
-    description: 'Ideal für Hochzeiten & Feiern',
+    description: 'Hochzeiten, runde Geburtstage, Vereinsfeste',
     features: [
       'Unbegrenzte Foto-Uploads',
       'Live-Slideshow mit einstellbarer Anzeigedauer',
@@ -148,9 +148,9 @@ export const pricingPlans = [
   },
   {
     name: 'Enterprise',
-    price: 'CHF 199.-',
+    price: 'CHF 149.-',
     duration: 'pro Event',
-    description: 'Für Konferenzen & Firmenevents',
+    description: 'Firmenanlässe, Konferenzen, Messen, Galas',
     features: [
       'Unbegrenzte Foto-Uploads',
       'Live-Slideshow mit erweiterten Einstellungen',
