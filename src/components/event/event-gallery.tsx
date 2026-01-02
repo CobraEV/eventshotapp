@@ -41,7 +41,7 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
               fill
               className="object-cover transition-transform hover:scale-105"
               sizes="(max-width: 768px) 50vw, 25vw"
-              quality={60}
+              quality={50}
               priority={i < 8}
             />
           </button>

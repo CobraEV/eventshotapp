@@ -9,11 +9,20 @@ export async function finalizeUpload(params: {
 }) {
   const { objectKey, originalName, size } = params
 
-  await prisma.photo.update({
+  const photo = await prisma.photo.update({
     where: { objectKey },
+    data: { originalName, size },
+    select: { eventId: true },
+  })
+
+  await prisma.event.update({
+    where: { id: photo.eventId },
     data: {
-      originalName,
-      size,
+      zipReady: false,
+      zipKey: null,
+      zipBuilding: false,
+      zipProgress: 0,
+      photosUpdatedAt: new Date(),
     },
   })
 

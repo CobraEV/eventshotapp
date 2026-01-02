@@ -101,11 +101,17 @@ model Event {
   publicCode String  @unique @default(uuid())
   pin        String?
 
-  // 🔑 Stripe
   stripeSessionId String? @unique
 
   photos    Photo[]
   slideshow EventSlideshowSettings?
+
+  zipKey          String?
+  zipReady        Boolean   @default(false)
+  zipBuilding     Boolean   @default(false)
+  zipProgress     Int       @default(0)
+  zipUpdatedAt    DateTime?
+  photosUpdatedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
