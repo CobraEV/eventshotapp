@@ -4,7 +4,6 @@ import archiver from 'archiver'
 import { GetObjectCommand } from '@aws-sdk/client-s3'
 import { PassThrough } from 'stream'
 import pLimit from 'p-limit'
-import { AbortController } from 'abort-controller'
 
 export async function GET(
   req: Request,
