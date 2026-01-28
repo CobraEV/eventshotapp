@@ -1,3 +1,5 @@
+import { ArrowLeft, CheckCircle2 } from 'lucide-react'
+import Link from 'next/link'
 import { PhotoSaveActions } from '@/components/event/PhotoSaveActions.client'
 import { Button } from '@/components/ui/button'
 import {
@@ -7,8 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { ArrowLeft, Camera, CheckCircle2 } from 'lucide-react'
-import Link from 'next/link'
 
 export default async function UploadSuccessContent({
   params,
@@ -21,10 +21,10 @@ export default async function UploadSuccessContent({
   const { photo } = await searchParams
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CheckCircle2 className="mx-auto h-12 w-12 text-green-500 mb-2" />
+    <div className='flex-1 flex flex-col items-center justify-center p-4'>
+      <Card className='w-full max-w-md'>
+        <CardHeader className='text-center'>
+          <CheckCircle2 className='mx-auto h-12 w-12 text-green-500 mb-2' />
           <CardTitle>Upload erfolgreich!</CardTitle>
           <CardDescription>
             Dein Foto wurde erfolgreich hochgeladen
@@ -32,15 +32,15 @@ export default async function UploadSuccessContent({
         </CardHeader>
 
         {photo && (
-          <CardFooter className="flex flex-col gap-4">
+          <CardFooter className='flex flex-col gap-4'>
             <PhotoSaveActions photoId={photo} eventId={eventId} />
           </CardFooter>
         )}
 
-        <CardFooter className="flex justify-center gap-4">
+        <CardFooter className='flex justify-center gap-4'>
           <Link href={`/event/${eventId}`}>
-            <Button variant="ghost" className="gap-2">
-              <ArrowLeft className="h-4 w-4" />
+            <Button variant='ghost' className='gap-2'>
+              <ArrowLeft className='h-4 w-4' />
               Startseite
             </Button>
           </Link>

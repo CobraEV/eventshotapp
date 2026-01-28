@@ -1,8 +1,9 @@
+import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 import { Footer } from '@/components/landing/footer'
 import { Header } from '@/components/landing/header'
 import SmoothScroll from '@/components/SmoothScroll'
-import { Metadata } from 'next'
-import { ReactNode, Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'EventShot – Dein Event, Deine Fotos',
@@ -49,12 +50,12 @@ export const metadata: Metadata = {
 
 const DefaultLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="flex-1 flex flex-col">
+    <div className='flex-1 flex flex-col'>
       <SmoothScroll />
-      <div className="h-[64px]">
+      <div className='h-16'>
         <Header />
       </div>
-      <div className="flex-1 flex flex-col">{children}</div>
+      <div className='flex-1 flex flex-col'>{children}</div>
       <Suspense>
         <Footer />
       </Suspense>

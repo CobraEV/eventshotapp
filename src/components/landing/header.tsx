@@ -1,14 +1,14 @@
 'use client'
 
-import { Button } from '@/components/ui/button'
-import { siteConfig } from '@/lib/constants'
-import { initLenis } from '@/lib/lenis'
-import { cn } from '@/lib/utils'
 import { motion, useMotionValueEvent, useScroll } from 'framer-motion'
 import { Camera, LogInIcon, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { siteConfig } from '@/lib/constants'
+import { initLenis } from '@/lib/lenis'
+import { cn } from '@/lib/utils'
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -33,7 +33,7 @@ export function Header() {
 
   const handleSmoothScroll = async (
     e: React.MouseEvent<HTMLElement>,
-    href: string
+    href: string,
   ) => {
     if (!href.startsWith('#')) return
 
@@ -62,40 +62,40 @@ export function Header() {
           'fixed top-0 left-0 right-0 z-20 py-4 transition-all duration-300',
           isScrolled
             ? 'bg-background/80 backdrop-blur-md shadow-sm'
-            : 'bg-transparent'
+            : 'bg-transparent',
         )}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <div className="container flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <Camera className="w-6 h-6 text-primary" />
-            <span className="font-bold text-xl">EventShot</span>
+        <div className='container flex items-center justify-between'>
+          <Link href='/' className='flex items-center gap-2'>
+            <Camera className='w-6 h-6 text-primary' />
+            <span className='font-bold text-xl'>EventShot</span>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <div className='flex items-center gap-2'>
             {/* Desktop-Navigation */}
-            <nav className="hidden lg:flex items-center gap-4">
+            <nav className='hidden lg:flex items-center gap-4'>
               {siteConfig.navItems.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
                   onClick={(e) => handleSmoothScroll(e, item.href)}
-                  className="text-sm font-medium hover:text-primary transition-colors"
+                  className='text-sm font-medium hover:text-primary transition-colors'
                 >
                   {item.label}
                 </Link>
               ))}
               <Button
-                size="sm"
+                size='sm'
                 onClick={(e) => handleSmoothScroll(e, '#application')}
               >
                 Jetzt starten
               </Button>
-              <Button size="sm" variant={'outline'} asChild>
+              <Button size='sm' variant={'outline'} asChild>
                 <Link href={`/login`}>
-                  <LogInIcon className='text-primary'/>
+                  <LogInIcon className='text-primary' />
                   Login
                 </Link>
               </Button>
@@ -103,22 +103,22 @@ export function Header() {
 
             <Button
               variant={'outline'}
-              className="lg:hidden border-primary!"
+              className='lg:hidden border-primary!'
               onClick={(e) => handleSmoothScroll(e, '#application')}
             >
               Jetzt starten
             </Button>
 
             <Button
-              variant="outline"
-              size="lg"
-              className="lg:hidden w-9 h-9 z-40"
+              variant='outline'
+              size='lg'
+              className='lg:hidden w-9 h-9 z-40'
               onClick={(e) => {
                 e.stopPropagation()
                 setIsOpen(!isOpen)
               }}
             >
-              {isOpen ? <X size={30} /> : <Menu className="w-32" size={30} />}
+              {isOpen ? <X size={30} /> : <Menu className='w-32' size={30} />}
             </Button>
           </div>
         </div>
@@ -127,9 +127,9 @@ export function Header() {
 
       {isOpen && (
         <motion.div
-          key="mobile-menu"
+          key='mobile-menu'
           className={cn(
-            'fixed top-0 left-0 w-full h-full z-30 flex flex-col items-center justify-center bg-background/95 backdrop-blur-lg lg:hidden'
+            'fixed top-0 left-0 w-full h-full z-30 flex flex-col items-center justify-center bg-background/95 backdrop-blur-lg lg:hidden',
           )}
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -138,10 +138,10 @@ export function Header() {
           onClick={(e) => e.stopPropagation()}
         >
           <motion.nav
-            className="flex flex-col items-start gap-6 text-lg font-medium"
-            initial="hidden"
-            animate="visible"
-            exit="hidden"
+            className='flex flex-col items-start gap-6 text-lg font-medium'
+            initial='hidden'
+            animate='visible'
+            exit='hidden'
             variants={{
               hidden: {},
               visible: {
@@ -163,7 +163,7 @@ export function Header() {
                 <Link
                   href={item.href}
                   onClick={(e) => handleSmoothScroll(e, item.href)}
-                  className="hover:text-primary text-4xl font-bold transition-colors"
+                  className='hover:text-primary text-4xl font-bold transition-colors'
                 >
                   {item.label}
                 </Link>
@@ -171,23 +171,23 @@ export function Header() {
             ))}
 
             <motion.div
-              className="flex-1 w-full"
+              className='flex-1 w-full'
               variants={{
                 hidden: { opacity: 0, y: 10 },
                 visible: { opacity: 1, y: 0 },
               }}
             >
               <Button
-                size="lg"
-                className="mt-4 w-full"
+                size='lg'
+                className='mt-4 w-full'
                 onClick={(e) => handleSmoothScroll(e, '#application')}
               >
                 Jetzt starten
               </Button>
               <Button
-                size="lg"
+                size='lg'
                 variant={'outline'}
-                className="mt-4 w-full"
+                className='mt-4 w-full'
                 asChild
               >
                 <Link href={`/login`}>
