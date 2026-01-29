@@ -1,7 +1,10 @@
 'use client'
 
-import { saveSlideshowSettings } from '@/actions/save-slideshow-settings'
+import { LinkIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { getSlideshowSettings } from '@/actions/get-slideshow-settings'
+import { saveSlideshowSettings } from '@/actions/save-slideshow-settings'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -13,9 +16,6 @@ import {
 import { Label } from '@/components/ui/label'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
-import { LinkIcon } from 'lucide-react'
-import { useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 export default function SlideshowSettings({ eventId }: { eventId: string }) {
   const [interval, setInterval] = useState(5)
@@ -51,8 +51,8 @@ export default function SlideshowSettings({ eventId }: { eventId: string }) {
         <CardTitle>Slideshow</CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-6">
-        <div className="space-y-2">
+      <CardContent className='space-y-6'>
+        <div className='space-y-2'>
           <Label>Anzeigedauer ({interval}s)</Label>
           <Slider
             min={3}
@@ -63,14 +63,14 @@ export default function SlideshowSettings({ eventId }: { eventId: string }) {
           />
         </div>
 
-        <div className="flex justify-between">
+        <div className='flex justify-between'>
           <Label>Steuerung anzeigen</Label>
           <Switch checked={controls} onCheckedChange={setControls} />
         </div>
 
         {plan === 'ENTERPRISE' && (
-          <div className="space-y-4 border-t pt-4">
-            <div className="flex justify-between items-center">
+          <div className='space-y-4 border-t pt-4'>
+            <div className='flex justify-between items-center'>
               <Label>EventShot Wasserzeichen ausblenden</Label>
               <Switch
                 checked={hideWatermark}
@@ -78,16 +78,16 @@ export default function SlideshowSettings({ eventId }: { eventId: string }) {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <Label>Eigenes Branding (Logo URL)</Label>
               <input
-                type="url"
-                placeholder="https://example.com/logo.png"
+                type='url'
+                placeholder='https://example.com/logo.png'
                 value={brandLogoUrl ?? ''}
                 onChange={(e) => setBrandLogoUrl(e.target.value || null)}
-                className="w-full rounded-md border px-3 py-2 text-sm"
+                className='w-full rounded-md border px-3 py-2 text-sm'
               />
-              <p className="text-xs text-muted-foreground">
+              <p className='text-xs text-muted-foreground'>
                 Wird unten rechts in der Slideshow angezeigt
               </p>
             </div>
@@ -95,15 +95,17 @@ export default function SlideshowSettings({ eventId }: { eventId: string }) {
         )}
       </CardContent>
 
-      <CardFooter className="flex gap-2">
-        <Button onClick={save} className="flex-1">
+      <CardFooter className='flex gap-2'>
+        <Button onClick={save} className='flex-1'>
           Speichern
         </Button>
         <Button
-          variant="secondary"
-          onClick={() => window.open(`/event/${eventId}/slideshow`, '_blank')}
+          variant='secondary'
+          onClick={() =>
+            window.open(`/tenant/event/${eventId}/slideshow`, '_blank')
+          }
         >
-          <LinkIcon className="h-4 w-4 mr-1" />
+          <LinkIcon className='h-4 w-4 mr-1' />
           Slideshow öffnen
         </Button>
       </CardFooter>
