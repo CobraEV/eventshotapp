@@ -2,14 +2,14 @@
 
 import prisma from '@/lib/prisma'
 
-export async function getEventPhotosSlideshow(eventId: string) {
+export async function getEventPhotos(eventId: string) {
   return prisma.photo.findMany({
     where: {
       eventId,
       approved: true,
     },
     orderBy: {
-      createdAt: 'asc',
+      createdAt: 'desc', // neueste zuerst (für Gallery)
     },
     select: {
       id: true,
