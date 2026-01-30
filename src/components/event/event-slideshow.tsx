@@ -24,12 +24,24 @@ interface Props {
 }
 
 /* =======================
-   Helpers
+   🔒 LRU Decode Cache
    ======================= */
-function preloadAndDecode(src: string) {
-  const img = new window.Image()
+const DECODE_CACHE_LIMIT = 6
+const decodeCache = new Map<string, HTMLImageElement>()
+
+async function preloadAndDecodeLRU(src: string) {
+  if (decodeCache.has(src)) return
+
+  const img = new Image()
   img.src = src
-  return img.decode().catch(() => {})
+  await img.decode().catch(() => {})
+
+  decodeCache.set(src, img)
+
+  if (decodeCache.size > DECODE_CACHE_LIMIT) {
+    const oldestKey = decodeCache.keys().next().value
+    decodeCache.delete(oldestKey)
+  }
 }
 
 /* =======================
@@ -48,55 +60,38 @@ export default function EventSlideshow({
   const [playing, setPlaying] = useState(true)
   const [ready, setReady] = useState(false)
 
-  /** 🔑 steuert Progress + Autoplay gemeinsam */
+  /** 🔑 Single source of truth for progress + slide */
   const [slideTick, setSlideTick] = useState(0)
 
-  const lastIdRef = useRef<string | null>(null)
-  const mountedRef = useRef(true)
-
   /* =======================
-     📥 CURSOR POLLING
+     📥 Initial Load (ONCE)
      ======================= */
   useEffect(() => {
-    mountedRef.current = true
+    let active = true
 
     const load = async () => {
-      try {
-        const data = await getEventPhotosSlideshow(
-          eventId,
-          lastIdRef.current
-        )
-
-        if (!mountedRef.current || data.length === 0) return
-
-        lastIdRef.current = data[data.length - 1].id
-
-        // 🔒 KEIN Index-Reset, KEIN Race
-        setPhotos(p => [...p, ...data])
-      } catch {}
+      const data = await getEventPhotosSlideshow(eventId)
+      if (active) setPhotos(data)
     }
 
     load()
-    const id = setInterval(load, 10_000)
-
     return () => {
-      mountedRef.current = false
-      clearInterval(id)
+      active = false
     }
   }, [eventId])
 
-  /* =======================
-     🖼 Current Photo Ready
-     ======================= */
   const current = photos[index]
 
+  /* =======================
+     🖼 Current Ready
+     ======================= */
   useEffect(() => {
     if (!current) return
 
     let active = true
     setReady(false)
 
-    preloadAndDecode(current.url).then(() => {
+    preloadAndDecodeLRU(current.url).then(() => {
       if (active) setReady(true)
     })
 
@@ -106,41 +101,36 @@ export default function EventSlideshow({
   }, [current?.url])
 
   /* =======================
-     🔮 Preload Next Photos
+     🔮 Preload Ahead (2)
      ======================= */
   useEffect(() => {
     if (photos.length < 2) return
 
-    preloadAndDecode(photos[(index + 1) % photos.length].url)
-    preloadAndDecode(photos[(index + 2) % photos.length].url)
-  }, [index, photos])
+    preloadAndDecodeLRU(photos[(index + 1) % photos.length].url)
+    preloadAndDecodeLRU(photos[(index + 2) % photos.length].url)
+  }, [index])
 
   /* =======================
-     ▶ STABILES AUTOPLAY
+     ▶ Autoplay (deterministic)
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
 
     const id = setTimeout(() => {
       setIndex(i => (i + 1) % photos.length)
-      setSlideTick(t => t + 1) // 🔑 Progress + Slide synchron
+      setSlideTick(t => t + 1)
     }, interval)
 
     return () => clearTimeout(id)
   }, [playing, ready, interval, index])
 
   /* =======================
-     Empty State
+     Empty
      ======================= */
   if (photos.length === 0) {
     return (
       <div className="flex h-full items-center justify-center text-white">
-        <div className="text-center">
-          <p className="text-xl font-semibold">Noch keine Fotos</p>
-          <p className="text-muted-foreground mt-2">
-            Fotos erscheinen hier automatisch ✨
-          </p>
-        </div>
+        <p className="text-xl font-semibold">Noch keine Fotos</p>
       </div>
     )
   }
@@ -170,7 +160,7 @@ export default function EventSlideshow({
         />
       </motion.div>
 
-      {/* PROGRESS BAR – 100 % SYNC */}
+      {/* PROGRESS – 100 % SYNC */}
       {playing && ready && photos.length > 1 && (
         <motion.div
           key={slideTick}
