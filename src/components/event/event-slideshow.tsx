@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion'
 import { Camera, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getEventPhotosSlideshow } from '@/actions/get-event-photos-slideshow'
+import { getNewEventPhotos } from '@/actions/get-new-event-photos'
 import { Button } from '@/components/ui/button'
 
 /* =======================
@@ -12,6 +13,7 @@ import { Button } from '@/components/ui/button'
 type Photo = {
   id: string
   url: string
+  createdAt: Date
 }
 
 interface Props {
@@ -44,10 +46,8 @@ async function preloadAndDecodeLRU(src: string) {
   decodeCache.set(src, img)
 
   if (decodeCache.size > DECODE_CACHE_LIMIT) {
-    const iterator = decodeCache.keys().next()
-    if (!iterator.done) {
-      decodeCache.delete(iterator.value)
-    }
+    const it = decodeCache.keys().next()
+    if (!it.done) decodeCache.delete(it.value)
   }
 }
 
@@ -70,6 +70,9 @@ export default function EventSlideshow({
   /** 🔑 synchronisiert Progress + Slide */
   const [slideTick, setSlideTick] = useState(0)
 
+  /** 🔑 merkt letzten Upload */
+  const lastCreatedAtRef = useRef<Date | null>(null)
+
   /* =======================
      📥 Initial Load (ONCE)
      ======================= */
@@ -78,13 +81,41 @@ export default function EventSlideshow({
 
     const load = async () => {
       const data = await getEventPhotosSlideshow(eventId)
-      if (active) setPhotos(data)
+      if (!active) return
+
+      setPhotos(data)
+
+      if (data.length > 0) {
+        lastCreatedAtRef.current = data[data.length - 1].createdAt
+      }
     }
 
     load()
     return () => {
       active = false
     }
+  }, [eventId])
+
+  /* =======================
+     🔄 Live Append (Polling)
+     ======================= */
+  useEffect(() => {
+    const id = setInterval(async () => {
+      if (!lastCreatedAtRef.current) return
+
+      const fresh = await getNewEventPhotos(
+        eventId,
+        lastCreatedAtRef.current
+      )
+
+      if (fresh.length === 0) return
+
+      setPhotos(p => [...p, ...fresh])
+      lastCreatedAtRef.current =
+        fresh[fresh.length - 1].createdAt
+    }, 10_000)
+
+    return () => clearInterval(id)
   }, [eventId])
 
   const current = photos[index]
@@ -118,7 +149,7 @@ export default function EventSlideshow({
   }, [index, photos])
 
   /* =======================
-     ▶ Autoplay (exakt)
+     ▶ Autoplay (deterministisch)
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
@@ -129,7 +160,7 @@ export default function EventSlideshow({
     }, interval)
 
     return () => clearTimeout(id)
-  }, [playing, ready, interval, index, photos.length])
+  }, [playing, ready, interval, index])
 
   /* =======================
      Empty
@@ -167,7 +198,7 @@ export default function EventSlideshow({
         />
       </motion.div>
 
-      {/* PROGRESS – immer synchron */}
+      {/* PROGRESS */}
       {playing && ready && photos.length > 1 && (
         <motion.div
           key={slideTick}
