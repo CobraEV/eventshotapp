@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion'
 import { Camera, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { getEventPhotosSlideshow } from '@/actions/get-event-photos-slideshow'
 import { Button } from '@/components/ui/button'
 
@@ -24,7 +24,7 @@ interface Props {
 }
 
 /* =======================
-   🔒 LRU Decode Cache
+   🔒 LRU Decode Cache (TS-safe)
    ======================= */
 const DECODE_CACHE_LIMIT = 6
 const decodeCache = new Map<string, HTMLImageElement>()
@@ -34,13 +34,20 @@ async function preloadAndDecodeLRU(src: string) {
 
   const img = new Image()
   img.src = src
-  await img.decode().catch(() => {})
+
+  try {
+    await img.decode()
+  } catch {
+    return
+  }
 
   decodeCache.set(src, img)
 
   if (decodeCache.size > DECODE_CACHE_LIMIT) {
-    const oldestKey = decodeCache.keys().next().value
-    decodeCache.delete(oldestKey)
+    const iterator = decodeCache.keys().next()
+    if (!iterator.done) {
+      decodeCache.delete(iterator.value)
+    }
   }
 }
 
@@ -60,7 +67,7 @@ export default function EventSlideshow({
   const [playing, setPlaying] = useState(true)
   const [ready, setReady] = useState(false)
 
-  /** 🔑 Single source of truth for progress + slide */
+  /** 🔑 synchronisiert Progress + Slide */
   const [slideTick, setSlideTick] = useState(0)
 
   /* =======================
@@ -108,10 +115,10 @@ export default function EventSlideshow({
 
     preloadAndDecodeLRU(photos[(index + 1) % photos.length].url)
     preloadAndDecodeLRU(photos[(index + 2) % photos.length].url)
-  }, [index])
+  }, [index, photos])
 
   /* =======================
-     ▶ Autoplay (deterministic)
+     ▶ Autoplay (exakt)
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
@@ -122,7 +129,7 @@ export default function EventSlideshow({
     }, interval)
 
     return () => clearTimeout(id)
-  }, [playing, ready, interval, index])
+  }, [playing, ready, interval, index, photos.length])
 
   /* =======================
      Empty
@@ -160,7 +167,7 @@ export default function EventSlideshow({
         />
       </motion.div>
 
-      {/* PROGRESS – 100 % SYNC */}
+      {/* PROGRESS – immer synchron */}
       {playing && ready && photos.length > 1 && (
         <motion.div
           key={slideTick}
