@@ -26,7 +26,7 @@ interface Props {
 }
 
 /* =======================
-   🔒 LRU Decode Cache (TS-safe)
+   🔒 LRU Decode Cache
    ======================= */
 const DECODE_CACHE_LIMIT = 6
 const decodeCache = new Map<string, HTMLImageElement>()
@@ -66,15 +66,12 @@ export default function EventSlideshow({
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [ready, setReady] = useState(false)
-
-  /** 🔑 synchronisiert Progress + Slide */
   const [slideTick, setSlideTick] = useState(0)
 
-  /** 🔑 merkt letzten Upload */
   const lastCreatedAtRef = useRef<Date | null>(null)
 
   /* =======================
-     📥 Initial Load (ONCE)
+     📥 Initial Load
      ======================= */
   useEffect(() => {
     let active = true
@@ -97,7 +94,7 @@ export default function EventSlideshow({
   }, [eventId])
 
   /* =======================
-     🔄 Live Append (Polling)
+     🔄 Live Append
      ======================= */
   useEffect(() => {
     const id = setInterval(async () => {
@@ -121,7 +118,7 @@ export default function EventSlideshow({
   const current = photos[index]
 
   /* =======================
-     🖼 Current Ready
+     🖼 Decode Current
      ======================= */
   useEffect(() => {
     if (!current) return
@@ -139,7 +136,7 @@ export default function EventSlideshow({
   }, [current?.url])
 
   /* =======================
-     🔮 Preload Ahead (2)
+     🔮 Preload Ahead
      ======================= */
   useEffect(() => {
     if (photos.length < 2) return
@@ -149,7 +146,7 @@ export default function EventSlideshow({
   }, [index, photos])
 
   /* =======================
-     ▶ Autoplay (deterministisch)
+     ▶ Autoplay (exakt)
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
@@ -160,7 +157,7 @@ export default function EventSlideshow({
     }, interval)
 
     return () => clearTimeout(id)
-  }, [playing, ready, interval, index])
+  }, [playing, ready, interval, index, photos.length])
 
   /* =======================
      Empty
@@ -182,13 +179,12 @@ export default function EventSlideshow({
         fullscreen ? 'fixed inset-0 z-50' : ''
       }`}
     >
-      {/* IMAGE */}
       <motion.div
         key={current.id}
         className="absolute inset-0"
         initial={{ opacity: 0 }}
         animate={{ opacity: ready ? 1 : 0 }}
-        transition={{ duration: 0.35, ease: 'easeInOut' }}
+        transition={{ duration: 0.35 }}
       >
         <img
           src={current.url}
@@ -198,7 +194,6 @@ export default function EventSlideshow({
         />
       </motion.div>
 
-      {/* PROGRESS */}
       {playing && ready && photos.length > 1 && (
         <motion.div
           key={slideTick}
@@ -210,12 +205,10 @@ export default function EventSlideshow({
         />
       )}
 
-      {/* COUNTER */}
       <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-semibold">
         {index + 1} / {photos.length}
       </div>
 
-      {/* WATERMARK */}
       {!hideWatermark && !brandLogoUrl && (
         <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg text-white">
           <Camera className="h-5 w-5 text-primary" />
@@ -225,16 +218,10 @@ export default function EventSlideshow({
 
       {brandLogoUrl && (
         <div className="absolute bottom-4 right-4 bg-black/60 p-2 rounded-lg">
-          <img
-            src={brandLogoUrl}
-            alt="Brand Logo"
-            className="h-8 w-auto"
-            draggable={false}
-          />
+          <img src={brandLogoUrl} className="h-8 w-auto" />
         </div>
       )}
 
-      {/* CONTROLS */}
       {controls && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full">
           <Button
@@ -253,11 +240,7 @@ export default function EventSlideshow({
             size="icon"
             onClick={() => setPlaying(p => !p)}
           >
-            {playing ? (
-              <Pause className="text-white" />
-            ) : (
-              <Play className="text-white" />
-            )}
+            {playing ? <Pause /> : <Play />}
           </Button>
 
           <Button
