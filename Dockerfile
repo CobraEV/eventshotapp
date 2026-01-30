@@ -1,78 +1,76 @@
-# ---------------------------------------------------------------------------
-# BASE — Debian with needed tools
-# ---------------------------------------------------------------------------
-FROM node:20-bookworm AS base
-
-# ---------------------------------------------------------------------------
-# STAGE 1 — Install deps
-# ---------------------------------------------------------------------------
-FROM base AS deps
-
+# ------------------------------------------------------------
+# Stage 1: Dependencies
+# ------------------------------------------------------------
+FROM node:20-bookworm-slim AS deps
 WORKDIR /app
-RUN npm install -g pnpm
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY package.json pnpm-lock.yaml ./
-
-ENV PNPM_RUN_BUILD_SCRIPTS=true
-RUN pnpm install --dangerously-allow-all-builds --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
 
-# ---------------------------------------------------------------------------
-# STAGE 2 — Build
-# ---------------------------------------------------------------------------
-FROM base AS builder
-
+# ------------------------------------------------------------
+# Stage 2: Build
+# ------------------------------------------------------------
+FROM node:20-bookworm-slim AS builder
 WORKDIR /app
-RUN npm install -g pnpm
+
+# Basic system deps only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates \
+  openssl \
+  && rm -rf /var/lib/apt/lists/*
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 ARG DATABASE_URL
-ENV DATABASE_URL=$DATABASE_URL
-
-ARG SMTP_HOST
-ENV SMTP_HOST=$SMTP_HOST
-
-ARG SMTP_PORT
-ENV SMTP_PORT=$SMTP_PORT
-
-ARG SMTP_SECURE
-ENV SMTP_SECURE=$SMTP_SECURE
-
-ARG SMTP_USER
-ENV SMTP_USER=$SMTP_USER
-
-ARG SMTP_PASS
-ENV SMTP_PASS=$SMTP_PASS
-
-ARG SMTP_FROM
-ENV SMTP_FROM=$SMTP_FROM
-
-RUN pnpm prisma generate
-RUN pnpm build
-
-
-# ---------------------------------------------------------------------------
-# STAGE 3 — Runtime + entrypoint
-# ---------------------------------------------------------------------------
-FROM base AS runner
-
-WORKDIR /app
+ENV DATABASE_URL=${DATABASE_URL}
 ENV NODE_ENV=production
+ENV NEXT_BUILD_WORKER_COUNT=1
 
-# Dateien aus dem Builder kopieren
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/prisma ./prisma
+# Prisma + Next.js Build
+RUN pnpm exec prisma generate \
+  && pnpm run build \
+  && rm -rf .next/cache
+
+
+# ------------------------------------------------------------
+# Stage 3: Runtime
+# ------------------------------------------------------------
+FROM node:20-bookworm-slim AS runner
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV HOME=/home/nextjs
+
+# Runtime deps only
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates \
+  openssl \
+  && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
+
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Non-root user
+RUN addgroup --system --gid 1001 nodejs \
+  && adduser --system --uid 1001 --ingroup nodejs --home /home/nextjs nextjs \
+  && chown -R nextjs:nodejs /home/nextjs
+
+# App files (Next.js standalone)
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
-COPY --from=builder /app/node_modules ./node_modules
 
-# dein ENTRYPOINT-Script kopieren
-COPY docker-entrypoint.sh ./docker-entrypoint.sh
-RUN chmod +x ./docker-entrypoint.sh
+USER nextjs
 
 EXPOSE 3000
 
-ENTRYPOINT ["./docker-entrypoint.sh"]
+CMD ["sh", "-c", "pnpm dlx prisma migrate deploy && node server.js"]
