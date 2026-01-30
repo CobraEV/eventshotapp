@@ -2,14 +2,14 @@
 
 import prisma from '@/lib/prisma'
 
-export async function getEventPhotos(eventId: string) {
-  const photos = await prisma.photo.findMany({
+export async function getEventPhotosSlideshow(eventId: string) {
+  return prisma.photo.findMany({
     where: {
       eventId,
       approved: true,
     },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: 'asc',
     },
     select: {
       id: true,
@@ -17,6 +17,4 @@ export async function getEventPhotos(eventId: string) {
       createdAt: true,
     },
   })
-
-  return photos
 }
