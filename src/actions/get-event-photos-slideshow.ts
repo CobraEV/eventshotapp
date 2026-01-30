@@ -9,11 +9,12 @@ export async function getEventPhotosSlideshow(eventId: string) {
       approved: true,
     },
     orderBy: {
-      createdAt: 'asc', // stabil & deterministisch
+      createdAt: 'asc',
     },
     select: {
       id: true,
       url: true,
+      createdAt: true,
     },
   })
 }
