@@ -8,7 +8,7 @@ export default async function Page({
   params: Promise<{ eventId: string }>
 }) {
   return (
-    <div className='fixed inset-0 bg-black'>
+    <div className="fixed inset-0 bg-black">
       <Suspense>
         <SlideShow params={params} />
       </Suspense>
