@@ -48,6 +48,9 @@ export default function EventSlideshow({
   const [playing, setPlaying] = useState(true)
   const [ready, setReady] = useState(false)
 
+  /** 🔑 steuert Progress + Autoplay gemeinsam */
+  const [slideTick, setSlideTick] = useState(0)
+
   const lastIdRef = useRef<string | null>(null)
   const mountedRef = useRef(true)
 
@@ -67,12 +70,14 @@ export default function EventSlideshow({
         if (!mountedRef.current || data.length === 0) return
 
         lastIdRef.current = data[data.length - 1].id
-        setPhotos((p) => [...p, ...data])
+
+        // 🔒 KEIN Index-Reset, KEIN Race
+        setPhotos(p => [...p, ...data])
       } catch {}
     }
 
     load()
-    const id = setInterval(load, 10000)
+    const id = setInterval(load, 10_000)
 
     return () => {
       mountedRef.current = false
@@ -106,25 +111,23 @@ export default function EventSlideshow({
   useEffect(() => {
     if (photos.length < 2) return
 
-    const next1 = photos[(index + 1) % photos.length]
-    const next2 = photos[(index + 2) % photos.length]
-
-    preloadAndDecode(next1.url)
-    preloadAndDecode(next2.url)
+    preloadAndDecode(photos[(index + 1) % photos.length].url)
+    preloadAndDecode(photos[(index + 2) % photos.length].url)
   }, [index, photos])
 
   /* =======================
-     ▶ Stable Autoplay
+     ▶ STABILES AUTOPLAY
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
 
     const id = setTimeout(() => {
-      setIndex((i) => (i + 1) % photos.length)
+      setIndex(i => (i + 1) % photos.length)
+      setSlideTick(t => t + 1) // 🔑 Progress + Slide synchron
     }, interval)
 
     return () => clearTimeout(id)
-  }, [playing, ready, photos.length, interval])
+  }, [playing, ready, interval, index])
 
   /* =======================
      Empty State
@@ -151,7 +154,7 @@ export default function EventSlideshow({
         fullscreen ? 'fixed inset-0 z-50' : ''
       }`}
     >
-      {/* IMAGE LAYER */}
+      {/* IMAGE */}
       <motion.div
         key={current.id}
         className="absolute inset-0"
@@ -167,10 +170,10 @@ export default function EventSlideshow({
         />
       </motion.div>
 
-      {/* PROGRESS BAR */}
+      {/* PROGRESS BAR – 100 % SYNC */}
       {playing && ready && photos.length > 1 && (
         <motion.div
-          key={index}
+          key={slideTick}
           className="absolute bottom-0 left-0 h-1 bg-primary"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -209,9 +212,10 @@ export default function EventSlideshow({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() =>
-              setIndex((i) => (i - 1 + photos.length) % photos.length)
-            }
+            onClick={() => {
+              setIndex(i => (i - 1 + photos.length) % photos.length)
+              setSlideTick(t => t + 1)
+            }}
           >
             <ChevronLeft className="text-white" />
           </Button>
@@ -219,7 +223,7 @@ export default function EventSlideshow({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setPlaying((p) => !p)}
+            onClick={() => setPlaying(p => !p)}
           >
             {playing ? (
               <Pause className="text-white" />
@@ -231,9 +235,10 @@ export default function EventSlideshow({
           <Button
             variant="ghost"
             size="icon"
-            onClick={() =>
-              setIndex((i) => (i + 1) % photos.length)
-            }
+            onClick={() => {
+              setIndex(i => (i + 1) % photos.length)
+              setSlideTick(t => t + 1)
+            }}
           >
             <ChevronRight className="text-white" />
           </Button>
