@@ -36,7 +36,7 @@ export function EventGalleryItem({
         alt='Event Foto'
         loading='lazy'
         decoding='async'
-        className='relative z-10 h-full w-full object-cover transition-opacity transition-transform duration-300 cursor-pointer hover:scale-105'
+        className='relative z-10 h-full w-full object-cover transition-opacity duration-300 md:transition-transform md:hover:scale-105'
         style={{ opacity: loaded ? 1 : 0 }}
         onLoad={() => setLoaded(true)}
       />

@@ -37,12 +37,16 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
     )
   }
 
+  const isMobile =
+    typeof window !== 'undefined' &&
+    window.matchMedia('(max-width: 768px)').matches
+
   return (
     <>
       <VirtuosoGrid
         data={photos}
         useWindowScroll
-        overscan={300}
+        overscan={isMobile ? 120 : 300}
         listClassName='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
         itemContent={(i, photo) => (
           <EventGalleryItem photo={photo} onClick={() => setIndex(i)} />
