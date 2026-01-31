@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/correctness/useExhaustiveDependencies: <explanation> */
 'use client'
 
 import { motion } from 'framer-motion'
@@ -21,13 +22,26 @@ interface Props {
   brandLogoUrl?: string | null
 }
 
-/* =======================
-   🔒 LRU Decode Cache
-   ======================= */
+/* -----------------------
+   Client ID (device)
+----------------------- */
+function getClientId() {
+  let id = localStorage.getItem('eventshot-client-id')
+  if (!id) {
+    id = crypto.randomUUID()
+    localStorage.setItem('eventshot-client-id', id)
+  }
+  return id
+}
+
+/* -----------------------
+   Decode Cache
+----------------------- */
 const DECODE_CACHE_LIMIT = 6
 const decodeCache = new Map<string, HTMLImageElement>()
 
-async function preloadAndDecodeLRU(src: string) {
+async function preload(src?: string) {
+  if (!src) return
   if (decodeCache.has(src)) return
 
   const img = new Image()
@@ -35,15 +49,14 @@ async function preloadAndDecodeLRU(src: string) {
 
   try {
     await img.decode()
+    decodeCache.set(src, img)
+
+    if (decodeCache.size > DECODE_CACHE_LIMIT) {
+      const firstKey = decodeCache.keys().next().value
+      if (firstKey) decodeCache.delete(firstKey)
+    }
   } catch {
-    return
-  }
-
-  decodeCache.set(src, img)
-
-  if (decodeCache.size > DECODE_CACHE_LIMIT) {
-    const it = decodeCache.keys().next()
-    if (!it.done) decodeCache.delete(it.value)
+    // ignore decode errors
   }
 }
 
@@ -59,54 +72,61 @@ export default function EventSlideshow({
   const [index, setIndex] = useState(0)
   const [playing, setPlaying] = useState(true)
   const [ready, setReady] = useState(false)
-  const [slideTick, setSlideTick] = useState(0)
+  const [progress, setProgress] = useState(0)
+  const [blocked, setBlocked] = useState(false)
 
-  const lastCreatedAtRef = useRef<Date | null>(null)
+  const startTimeRef = useRef<number>(performance.now())
+  const rafRef = useRef<number | null>(null)
+  const clientIdRef = useRef<string | null>(null)
 
-  /* =======================
-     📥 Initial Load
-     ======================= */
+  /* -----------------------
+     Initial load
+  ----------------------- */
   useEffect(() => {
-    let active = true
+    let alive = true
 
-    const load = async () => {
-      const data = await getEventPhotosSlideshow(eventId)
-      if (!active) return
-
+    getEventPhotosSlideshow(eventId).then((data) => {
+      if (!alive) return
       setPhotos(data)
+      setIndex(0)
+      setProgress(0)
+      startTimeRef.current = performance.now()
+    })
 
-      if (data.length > 0) {
-        lastCreatedAtRef.current = data[data.length - 1].createdAt
-      }
-    }
-
-    load()
     return () => {
-      active = false
+      alive = false
     }
   }, [eventId])
 
-  /* =======================
-     📡 SSE – Realtime
-     ======================= */
+  /* -----------------------
+     SSE (SCREEN LIMIT!)
+  ----------------------- */
   useEffect(() => {
-    const es = new EventSource(`/api/slideshow/stream/${eventId}`)
+    clientIdRef.current = getClientId()
+
+    const es = new EventSource(
+      `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}`,
+    )
 
     es.onmessage = async (e) => {
       const msg = JSON.parse(e.data)
-
       if (msg.type === 'photos-updated') {
         const data = await getEventPhotosSlideshow(eventId)
-
         setPhotos(data)
-
-        if (data.length > 0) {
-          lastCreatedAtRef.current = data[data.length - 1].createdAt
-        }
       }
     }
 
-    es.onerror = () => {
+    es.onerror = async () => {
+      // 403 → Screen-Limit
+      try {
+        const res = await fetch(
+          `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}`,
+        )
+        if (res.status === 403) {
+          setBlocked(true)
+          setPlaying(false)
+        }
+      } catch {}
       es.close()
     }
 
@@ -117,47 +137,79 @@ export default function EventSlideshow({
 
   const current = photos[index]
 
-  /* =======================
-     🖼 Decode Current
-     ======================= */
+  /* -----------------------
+     Decode current
+  ----------------------- */
   useEffect(() => {
     if (!current) return
-
-    let active = true
     setReady(false)
+    preload(current.url).then(() => setReady(true))
+  }, [current?.url])
 
-    preloadAndDecodeLRU(current.url).then(() => {
-      if (active) setReady(true)
-    })
+  /* -----------------------
+     Preload ahead
+  ----------------------- */
+  useEffect(() => {
+    if (photos.length > 1) {
+      preload(photos[(index + 1) % photos.length].url)
+      preload(photos[(index + 2) % photos.length].url)
+    }
+  }, [index, photos.length])
+
+  /* -----------------------
+     Drift-free autoplay
+  ----------------------- */
+  useEffect(() => {
+    if (!playing || photos.length <= 1) return
+
+    const tick = () => {
+      const elapsed = performance.now() - startTimeRef.current
+      const slideIndex = Math.floor(elapsed / interval) % photos.length
+      const slideProgress = (elapsed % interval) / interval
+
+      setIndex(slideIndex)
+      setProgress(slideProgress)
+
+      rafRef.current = requestAnimationFrame(tick)
+    }
+
+    rafRef.current = requestAnimationFrame(tick)
 
     return () => {
-      active = false
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current)
+        rafRef.current = null
+      }
     }
-  }, [current])
+  }, [playing, interval, photos.length])
 
-  /* =======================
-     🔮 Preload Ahead
-     ======================= */
-  useEffect(() => {
-    if (photos.length < 2) return
+  /* -----------------------
+     Controls
+  ----------------------- */
+  const jumpRelative = (delta: number) => {
+    const next = (index + delta + photos.length) % photos.length
+    startTimeRef.current = performance.now() - next * interval
+    setIndex(next)
+    setProgress(0)
+  }
 
-    preloadAndDecodeLRU(photos[(index + 1) % photos.length].url)
-    preloadAndDecodeLRU(photos[(index + 2) % photos.length].url)
-  }, [index, photos])
-
-  /* =======================
-     ▶ Autoplay
-     ======================= */
-  useEffect(() => {
-    if (!playing || !ready || photos.length <= 1) return
-
-    const id = setTimeout(() => {
-      setIndex((i) => (i + 1) % photos.length)
-      setSlideTick((t) => t + 1)
-    }, interval)
-
-    return () => clearTimeout(id)
-  }, [playing, ready, interval, photos.length])
+  /* -----------------------
+     BLOCKED OVERLAY
+  ----------------------- */
+  if (blocked) {
+    return (
+      <div className='fixed inset-0 flex items-center justify-center bg-black text-white'>
+        <div className='text-center space-y-3'>
+          <p className='text-xl font-semibold'>
+            Maximale Anzahl Screens erreicht
+          </p>
+          <p className='text-sm opacity-70'>
+            Diese Slideshow läuft bereits auf einem anderen Bildschirm.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   if (photos.length === 0) {
     return (
@@ -169,9 +221,7 @@ export default function EventSlideshow({
 
   return (
     <div
-      className={`relative h-full w-full bg-black ${
-        fullscreen ? 'fixed inset-0 z-50' : ''
-      }`}
+      className={`relative h-full w-full bg-black ${fullscreen ? 'fixed inset-0' : ''}`}
     >
       <motion.div
         key={current.id}
@@ -182,73 +232,52 @@ export default function EventSlideshow({
       >
         <img
           src={current.url}
-          alt='Event Foto'
+          alt='slideshowimg'
           className='absolute inset-0 h-full w-full object-contain'
           draggable={false}
         />
       </motion.div>
 
-      {playing && ready && photos.length > 1 && (
-        <motion.div
-          key={slideTick}
-          className='absolute bottom-0 left-0 h-1 bg-primary'
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{
-            duration: interval / 1000,
-            ease: 'linear',
-          }}
-          style={{ transformOrigin: 'left', width: '100%' }}
-        />
+      {/* Progress */}
+      {playing && photos.length > 1 && (
+        <div className='absolute bottom-0 left-0 h-1 w-full bg-white/10'>
+          <div
+            className='h-full bg-primary'
+            style={{ width: `${progress * 100}%` }}
+          />
+        </div>
       )}
 
-      <div className='absolute top-4 right-4 rounded-full bg-black/60 px-3 py-1 text-sm font-semibold text-white'>
-        {index + 1} / {photos.length}
-      </div>
-
+      {/* Branding */}
       {!hideWatermark && !brandLogoUrl && (
-        <div className='absolute bottom-4 right-4 flex items-center gap-2 rounded-lg bg-black/60 px-3 py-1.5 text-white'>
+        <div className='absolute bottom-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg text-white'>
           <Camera className='h-5 w-5 text-primary' />
-          <span className='font-semibold'>EventShot</span>
+          EventShot
         </div>
       )}
 
       {brandLogoUrl && (
-        <div className='absolute bottom-4 right-4 rounded-lg bg-black/60 p-2'>
-          <img src={brandLogoUrl} alt='slideshowimage' className='h-8 w-auto' />
+        <div className='absolute bottom-4 right-4 bg-black/60 p-2 rounded-lg'>
+          <img src={brandLogoUrl} alt='brandlogo' className='h-8 w-auto' />
         </div>
       )}
 
       {controls && (
-        <div className='absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 rounded-full bg-black/60 p-1'>
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={() => {
-              setIndex((i) => (i - 1 + photos.length) % photos.length)
-              setSlideTick((t) => t + 1)
-            }}
-          >
-            <ChevronLeft className='text-white' />
+        <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full'>
+          <Button size='icon' variant='ghost' onClick={() => jumpRelative(-1)}>
+            <ChevronLeft />
           </Button>
 
           <Button
-            variant='ghost'
             size='icon'
+            variant='ghost'
             onClick={() => setPlaying((p) => !p)}
           >
             {playing ? <Pause /> : <Play />}
           </Button>
 
-          <Button
-            variant='ghost'
-            size='icon'
-            onClick={() => {
-              setIndex((i) => (i + 1) % photos.length)
-              setSlideTick((t) => t + 1)
-            }}
-          >
-            <ChevronRight className='text-white' />
+          <Button size='icon' variant='ghost' onClick={() => jumpRelative(1)}>
+            <ChevronRight />
           </Button>
         </div>
       )}

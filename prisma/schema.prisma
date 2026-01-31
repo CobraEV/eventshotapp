@@ -138,12 +138,14 @@ model EventSlideshowSettings {
 model SlideshowSession {
   id        String   @id @default(cuid())
   eventId   String
+  clientId  String
   plan      PLAN
-  createdAt DateTime @default(now())
   lastPing  DateTime
+  createdAt DateTime @default(now())
   event     Event    @relation(fields: [eventId], references: [id])
 
   @@index([eventId])
+  @@index([clientId])
 }
 
 model Photo {

@@ -91,11 +91,6 @@ export const faqs = [
       'Nein! EventShot funktioniert direkt im Browser des Smartphones. Einfach QR-Code scannen, Webseite öffnen und Fotos hochladen - keine App oder Konto erforderlich.',
   },
   {
-    question: 'Kann ich die Fotos moderieren?',
-    answer:
-      'Absolut. Sie können zwischen automatischer Freigabe oder einer Moderationswarteschlange wählen, bei der Sie jedes Foto vor der Anzeige genehmigen.',
-  },
-  {
     question: 'Welche Ausrüstung wird benötigt?',
     answer:
       'Nur ein Bildschirm oder Projektor, der mit einem Gerät verbunden ist, das einen Webbrowser anzeigen kann, wie ein Laptop oder Tablet. Wir empfehlen eine stabile Internetverbindung für das beste Erlebnis.',
@@ -123,10 +118,14 @@ export const pricingPlans = [
     price: 'CHF 49.-',
     duration: 'pro Event',
     description: 'Geburtstage, kleine Familienfeste, private Anlässe',
+
+    // 🔒 Technisches Limit
+    maxSlideshows: 1,
+
     features: [
       'Unbegrenzte Foto-Uploads',
       'Live-Slideshow',
-      'Grundlegende Moderation',
+      'Max. 1 Slideshow-Screen',
       'Digitale Galerie für 7 Tage',
     ],
     highlighted: false,
@@ -136,11 +135,16 @@ export const pricingPlans = [
     price: 'CHF 99.-',
     duration: 'pro Event',
     description: 'Hochzeiten, runde Geburtstage, Vereinsfeste',
+
+    // 🔒 Technisches Limit
+    maxSlideshows: 3,
+
     features: [
       'Unbegrenzte Foto-Uploads',
-      'Live-Slideshow mit einstellbarer Anzeigedauer',
+      'Live-Slideshow',
+      'Max. 3 Slideshow-Screens',
+      'Einstellbare Anzeigedauer',
       'Slideshow-Steuerung ein-/ausblendbar',
-      'Erweiterte Moderation',
       'Digitale Galerie für 30 Tage',
       'Prioritäts-Support',
     ],
@@ -151,11 +155,16 @@ export const pricingPlans = [
     price: 'CHF 149.-',
     duration: 'pro Event',
     description: 'Firmenanlässe, Konferenzen, Messen, Galas',
+
+    // 🔒 Technisches Limit
+    maxSlideshows: Infinity,
+
     features: [
       'Unbegrenzte Foto-Uploads',
-      'Live-Slideshow mit erweiterten Einstellungen',
+      'Live-Slideshow',
+      'Unbegrenzte Slideshow-Screens',
+      'Erweiterte Slideshow-Einstellungen',
       'Slideshow-Steuerung konfigurierbar',
-      'Komplette Moderationssuite',
       'Digitale Galerie für 90 Tage',
       'Wasserzeichen optional deaktivierbar',
       'Eigenes Branding in der Slideshow',

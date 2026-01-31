@@ -5,10 +5,15 @@ const HEARTBEAT_INTERVAL = 20_000
 const SESSION_TIMEOUT = 30_000
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   context: { params: Promise<{ eventId: string }> },
 ) {
   const { eventId } = await context.params
+
+  const clientId = req.nextUrl.searchParams.get('clientId')
+  if (!clientId) {
+    return new Response('Missing clientId', { status: 400 })
+  }
 
   /* ----------------------------------
      Event + Plan
@@ -23,34 +28,54 @@ export async function GET(
   }
 
   const SCREEN_LIMIT =
-    event.plan === 'BASIC' ? 1 : event.plan === 'PREMIUM' ? 3 : Infinity
+    event.plan === 'ENTERPRISE'
+      ? Number.MAX_SAFE_INTEGER
+      : event.plan === 'PREMIUM'
+        ? 3
+        : 1
 
-  /* ----------------------------------
-     Active screens
-  ---------------------------------- */
   const activeWindow = new Date(Date.now() - SESSION_TIMEOUT)
 
-  const activeScreens = await prisma.slideshowSession.count({
-    where: {
-      eventId,
-      lastPing: { gt: activeWindow },
-    },
-  })
-
-  if (activeScreens >= SCREEN_LIMIT) {
-    return new Response('Screen limit reached', { status: 403 })
-  }
-
   /* ----------------------------------
-     Create session
+     Atomic Session Handling
   ---------------------------------- */
-  const session = await prisma.slideshowSession.create({
-    data: {
-      eventId,
-      plan: event.plan,
-      lastPing: new Date(),
-    },
-  })
+  let sessionId: string
+
+  try {
+    const session = await prisma.$transaction(async (tx) => {
+      // 🔁 remove old session from same client (reload safe)
+      await tx.slideshowSession.deleteMany({
+        where: { eventId, clientId },
+      })
+
+      const activeScreens = await tx.slideshowSession.count({
+        where: {
+          eventId,
+          lastPing: { gt: activeWindow },
+        },
+      })
+
+      if (activeScreens >= SCREEN_LIMIT) {
+        throw new Error('SCREEN_LIMIT')
+      }
+
+      return tx.slideshowSession.create({
+        data: {
+          eventId,
+          clientId,
+          plan: event.plan,
+          lastPing: new Date(),
+        },
+      })
+    })
+
+    sessionId = session.id
+  } catch (err) {
+    if ((err as Error).message === 'SCREEN_LIMIT') {
+      return new Response('Screen limit reached', { status: 403 })
+    }
+    throw err
+  }
 
   /* ----------------------------------
      SSE Stream
@@ -64,12 +89,12 @@ export async function GET(
         controller.enqueue(`data: ${JSON.stringify(data)}\n\n`)
       }
 
-      /* ---------- Heartbeat (SAFE) ---------- */
+      /* ---------- Heartbeat ---------- */
       const heartbeat = setInterval(async () => {
         if (!alive) return
 
         await prisma.slideshowSession.updateMany({
-          where: { id: session.id },
+          where: { id: sessionId },
           data: { lastPing: new Date() },
         })
       }, HEARTBEAT_INTERVAL)
@@ -89,20 +114,20 @@ export async function GET(
           await new Promise((r) => setTimeout(r, 2000))
         }
       } catch (err) {
-        console.error('SSE stream error', err)
+        console.error('[SSE] stream error', err)
       } finally {
         alive = false
         clearInterval(heartbeat)
 
         await prisma.slideshowSession
-          .deleteMany({ where: { id: session.id } })
+          .deleteMany({ where: { id: sessionId } })
           .catch(() => {})
       }
     },
 
     cancel() {
       prisma.slideshowSession
-        .deleteMany({ where: { id: session.id } })
+        .deleteMany({ where: { id: sessionId } })
         .catch(() => {})
     },
   })

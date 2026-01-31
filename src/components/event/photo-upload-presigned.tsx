@@ -49,7 +49,7 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
       })
 
       // 3) Finalisieren (DB)
-      await finalizeUpload({
+      const { photoId } = await finalizeUpload({
         eventId,
         objectKey,
         mimeType: file.type,
@@ -57,7 +57,7 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
       })
 
       toast.success('Foto erfolgreich hochgeladen')
-      router.push(`/event/${eventId}/upload/success`)
+      router.push(`/event/${eventId}/upload/success?photo=${photoId}`)
     } catch (err) {
       console.error(err)
       toast.error('Fehler beim Upload')
