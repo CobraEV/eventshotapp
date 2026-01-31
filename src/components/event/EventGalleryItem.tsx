@@ -22,23 +22,19 @@ export function EventGalleryItem({
       onClick={onClick}
       className='relative aspect-square overflow-hidden rounded-lg bg-muted'
     >
-      {photo.blurHash && (
-        <BlurHashCanvas
-          hash={photo.blurHash}
-          width={32}
-          height={32}
-          visible={!loaded}
-        />
+      {/* BlurHash – LOWER z-index */}
+      {photo.blurHash && !loaded && (
+        <div className='absolute inset-0 z-0'>
+          <BlurHashCanvas hash={photo.blurHash} width={32} height={32} />
+        </div>
       )}
 
+      {/* Image – HIGHER z-index */}
       <img
         src={photo.thumbUrl}
         alt='Event Foto'
-        loading='lazy'
-        decoding='async'
-        className='relative z-10 h-full w-full object-cover transition-opacity duration-300 md:transition-transform md:hover:scale-105'
-        style={{ opacity: loaded ? 1 : 0 }}
         onLoad={() => setLoaded(true)}
+        className='absolute inset-0 z-10 h-full w-full object-cover'
       />
     </button>
   )

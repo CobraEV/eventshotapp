@@ -7,38 +7,36 @@ export function BlurHashCanvas({
   hash,
   width,
   height,
-  visible,
+  visible = true,
 }: {
   hash: string
   width: number
   height: number
-  visible: boolean
+  visible?: boolean
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     if (!visible) return
-
-    const canvas = canvasRef.current
-    if (!canvas) return
-
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    if (!canvasRef.current) return
 
     const pixels = decode(hash, width, height)
+    const ctx = canvasRef.current.getContext('2d')
+    if (!ctx) return
+
     const imageData = ctx.createImageData(width, height)
     imageData.data.set(pixels)
     ctx.putImageData(imageData, 0, 0)
   }, [hash, width, height, visible])
+
+  if (!visible) return null
 
   return (
     <canvas
       ref={canvasRef}
       width={width}
       height={height}
-      className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
-        visible ? 'opacity-100' : 'opacity-0'
-      }`}
+      className='h-full w-full scale-[1.1]'
     />
   )
 }

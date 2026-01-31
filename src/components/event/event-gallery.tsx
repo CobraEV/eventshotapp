@@ -1,14 +1,13 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { VirtuosoGrid } from 'react-virtuoso'
 import Lightbox from 'yet-another-react-lightbox'
 import Counter from 'yet-another-react-lightbox/plugins/counter'
 import Download from 'yet-another-react-lightbox/plugins/download'
-import { EventGalleryItem } from './EventGalleryItem'
 
-import 'yet-another-react-lightbox/styles.css'
 import 'yet-another-react-lightbox/plugins/counter.css'
+import 'yet-another-react-lightbox/styles.css'
+import { EventGalleryItem } from './EventGalleryItem'
 
 type Photo = {
   id: string
@@ -37,21 +36,17 @@ export default function EventGallery({ photos }: { photos: Photo[] }) {
     )
   }
 
-  const isMobile =
-    typeof window !== 'undefined' &&
-    window.matchMedia('(max-width: 768px)').matches
-
   return (
     <>
-      <VirtuosoGrid
-        data={photos}
-        useWindowScroll
-        overscan={isMobile ? 120 : 300}
-        listClassName='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'
-        itemContent={(i, photo) => (
-          <EventGalleryItem photo={photo} onClick={() => setIndex(i)} />
-        )}
-      />
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+        {photos.map((photo, i) => (
+          <EventGalleryItem
+            key={i.toString()}
+            photo={photo}
+            onClick={() => setIndex(i)}
+          />
+        ))}
+      </div>
 
       <Lightbox
         open={index >= 0}
