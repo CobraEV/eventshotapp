@@ -21,4 +21,4 @@ USER worker
 ENV HOME=/home/worker
 ENV NODE_ENV=production
 
-CMD ["node", "node_modules/tsx/dist/cli.js", "worker/photo-worker.ts"]
+CMD ["node", "dist-worker/photo-worker.js"]
