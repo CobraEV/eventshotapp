@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, UploadIcon, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -44,14 +44,18 @@ const EventNav = ({ eventId }: Props) => {
       {/* =========================
        * Mobile Menu Button
        * ========================= */}
-      <Button
-        variant='ghost'
-        size='icon'
-        className='lg:hidden'
-        onClick={() => setOpen(true)}
-      >
-        <Menu />
-      </Button>
+      <div className='flex items-center gap-2 lg:hidden'>
+        <Button size={'sm'} variant={'outline'} asChild>
+          <Link href={`/event/${eventId}/upload`}>
+            <UploadIcon className='h-4 w-4' />
+            Hochladen
+          </Link>
+        </Button>
+
+        <Button variant='ghost' size='icon-lg' onClick={() => setOpen(true)}>
+          <Menu />
+        </Button>
+      </div>
 
       {/* =========================
        * Desktop Navigation
