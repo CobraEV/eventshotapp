@@ -1,4 +1,3 @@
-import 'dotenv/config'
 import { processPhoto } from '@/actions/process-photo'
 import prisma from '@/lib/prisma'
 

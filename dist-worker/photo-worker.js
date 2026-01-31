@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-require("dotenv/config");
 var process_photo_1 = require("@/actions/process-photo");
 var prisma_1 = require("@/lib/prisma");
 var sleep = function (ms) { return new Promise(function (r) { return setTimeout(r, ms); }); };
