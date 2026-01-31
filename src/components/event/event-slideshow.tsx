@@ -262,6 +262,11 @@ export default function EventSlideshow({
         </div>
       )}
 
+      {/* Photo Counter */}
+      <div className='absolute top-4 right-4 bg-black/60 px-3 py-1.5 rounded-lg text-white text-sm font-medium'>
+        {index + 1} / {photos.length}
+      </div>
+
       {controls && (
         <div className='absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full'>
           <Button size='icon' variant='ghost' onClick={() => jumpRelative(-1)}>

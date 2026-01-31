@@ -84,9 +84,15 @@ export async function GET(
     async start(controller) {
       let lastUpdate = new Date(0)
       let alive = true
+      let closed = false
 
       const send = (data: any) => {
-        controller.enqueue(`data: ${JSON.stringify(data)}\n\n`)
+        if (closed) return
+        try {
+          controller.enqueue(`data: ${JSON.stringify(data)}\n\n`)
+        } catch {
+          closed = true
+        }
       }
 
       /* ---------- Heartbeat ---------- */
@@ -116,6 +122,7 @@ export async function GET(
       } catch (err) {
         console.error('[SSE] stream error', err)
       } finally {
+        closed = true
         alive = false
         clearInterval(heartbeat)
 

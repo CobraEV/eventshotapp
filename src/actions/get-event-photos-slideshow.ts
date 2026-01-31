@@ -7,7 +7,9 @@ export async function getEventPhotosSlideshow(eventId: string) {
     where: {
       eventId,
       approved: true,
-      status: 'ready',
+      status: {
+        in: ['processing', 'ready'],
+      },
     },
     orderBy: {
       createdAt: 'asc',
