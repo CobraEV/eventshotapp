@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     siteName: 'EventShot',
     images: [
       {
-        url: 'https://eventshot.ch/og-image.jpg', // Bild erstellen & ersetzen
+        url: 'https://eventshot.ch/og-image.png', // Bild erstellen & ersetzen
         width: 1200,
         height: 630,
         alt: 'EventShot – Dein Event, Deine Fotos',
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: 'EventShot – Dein Event, Deine Fotos',
     description:
       'Fotos deiner Gäste direkt auf dem Screen. Mit QR-Code hochladen & teilen – ganz ohne App.',
-    images: ['https://eventshot.ch/og-image.jpg'], // gleiches Bild wie oben
+    images: ['https://eventshot.ch/og-image.png'], // gleiches Bild wie oben
   },
 }
 
