@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'minio.edelbyte.ch',
       },
+      {
+        protocol: 'https',
+        hostname: 'img.eventshot.ch',
+      },
     ],
   },
 }

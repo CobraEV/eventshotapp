@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { Camera } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { createUploadUrl } from '@/actions/create-upload-url'
 import { finalizeUpload } from '@/actions/finalize-upload'
-import { useRouter } from 'next/navigation'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
   const [uploading, setUploading] = useState(false)
@@ -27,6 +28,11 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
         xhr.open('PUT', uploadUrl)
         xhr.setRequestHeader('Content-Type', file.type)
 
+        xhr.setRequestHeader(
+          'Cache-Control',
+          'public, max-age=31536000, immutable',
+        )
+
         xhr.upload.onprogress = (e) => {
           if (e.lengthComputable) {
             setProgress(Math.round((e.loaded / e.total) * 100))
@@ -43,14 +49,15 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
       })
 
       // 3) Finalisieren (DB)
-      const result = await finalizeUpload({
+      await finalizeUpload({
+        eventId,
         objectKey,
-        originalName: file.name,
+        mimeType: file.type,
         size: file.size,
       })
 
       toast.success('Foto erfolgreich hochgeladen')
-      router.push(`/event/${eventId}/upload/success?photo=${result.photoId}`)
+      router.push(`/event/${eventId}/upload/success`)
     } catch (err) {
       console.error(err)
       toast.error('Fehler beim Upload')
@@ -60,31 +67,41 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
   }
 
   return (
-    <div
-      className="group relative flex flex-col items-center justify-center
+    <button
+      type='button'
+      disabled={uploading}
+      className='group relative flex flex-col items-center justify-center
         border-2 border-dashed border-muted rounded-2xl p-10
-        transition hover:border-primary/50 hover:shadow-md cursor-pointer"
+        transition hover:border-primary/50 hover:shadow-md cursor-pointer'
       onClick={() => document.getElementById('camera-input')?.click()}
     >
-      <Camera className="h-16 w-16 text-primary mb-4" />
+      <Camera className='h-16 w-16 text-primary mb-4' />
 
-      <Button variant="ghost" disabled={uploading}>
+      <div
+        className={cn(
+          buttonVariants({
+            variant: 'ghost',
+          }),
+        )}
+      >
+        {/* <Button variant='ghost' disabled={uploading}> */}
         {uploading
           ? `Upload ${progress}%`
           : 'Hier tippen um ein Foto zu schiessen'}
-      </Button>
+        {/* </Button> */}
+      </div>
 
       <input
-        id="camera-input"
-        type="file"
-        accept="image/*"
-        capture="user"
-        className="hidden"
+        id='camera-input'
+        type='file'
+        accept='image/*'
+        capture='user'
+        className='hidden'
         onChange={(e) => {
           const file = e.target.files?.[0]
           if (file) handleFile(file)
         }}
       />
-    </div>
+    </button>
   )
 }

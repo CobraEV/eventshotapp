@@ -4,12 +4,8 @@ import { motion } from 'framer-motion'
 import { Camera, ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { getEventPhotosSlideshow } from '@/actions/get-event-photos-slideshow'
-import { getNewEventPhotos } from '@/actions/get-new-event-photos'
 import { Button } from '@/components/ui/button'
 
-/* =======================
-   Types
-   ======================= */
 type Photo = {
   id: string
   url: string
@@ -51,9 +47,6 @@ async function preloadAndDecodeLRU(src: string) {
   }
 }
 
-/* =======================
-   Component
-   ======================= */
 export default function EventSlideshow({
   eventId,
   interval = 5000,
@@ -94,25 +87,32 @@ export default function EventSlideshow({
   }, [eventId])
 
   /* =======================
-     🔄 Live Append
+     📡 SSE – Realtime
      ======================= */
   useEffect(() => {
-    const id = setInterval(async () => {
-      if (!lastCreatedAtRef.current) return
+    const es = new EventSource(`/api/slideshow/stream/${eventId}`)
 
-      const fresh = await getNewEventPhotos(
-        eventId,
-        lastCreatedAtRef.current
-      )
+    es.onmessage = async (e) => {
+      const msg = JSON.parse(e.data)
 
-      if (fresh.length === 0) return
+      if (msg.type === 'photos-updated') {
+        const data = await getEventPhotosSlideshow(eventId)
 
-      setPhotos(p => [...p, ...fresh])
-      lastCreatedAtRef.current =
-        fresh[fresh.length - 1].createdAt
-    }, 10_000)
+        setPhotos(data)
 
-    return () => clearInterval(id)
+        if (data.length > 0) {
+          lastCreatedAtRef.current = data[data.length - 1].createdAt
+        }
+      }
+    }
+
+    es.onerror = () => {
+      es.close()
+    }
+
+    return () => {
+      es.close()
+    }
   }, [eventId])
 
   const current = photos[index]
@@ -133,7 +133,7 @@ export default function EventSlideshow({
     return () => {
       active = false
     }
-  }, [current?.url])
+  }, [current])
 
   /* =======================
      🔮 Preload Ahead
@@ -146,33 +146,27 @@ export default function EventSlideshow({
   }, [index, photos])
 
   /* =======================
-     ▶ Autoplay (exakt)
+     ▶ Autoplay
      ======================= */
   useEffect(() => {
     if (!playing || !ready || photos.length <= 1) return
 
     const id = setTimeout(() => {
-      setIndex(i => (i + 1) % photos.length)
-      setSlideTick(t => t + 1)
+      setIndex((i) => (i + 1) % photos.length)
+      setSlideTick((t) => t + 1)
     }, interval)
 
     return () => clearTimeout(id)
-  }, [playing, ready, interval, index, photos.length])
+  }, [playing, ready, interval, photos.length])
 
-  /* =======================
-     Empty
-     ======================= */
   if (photos.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center text-white">
-        <p className="text-xl font-semibold">Noch keine Fotos</p>
+      <div className='flex h-full items-center justify-center text-white'>
+        <p className='text-xl font-semibold'>Noch keine Fotos</p>
       </div>
     )
   }
 
-  /* =======================
-     Render
-     ======================= */
   return (
     <div
       className={`relative h-full w-full bg-black ${
@@ -181,15 +175,15 @@ export default function EventSlideshow({
     >
       <motion.div
         key={current.id}
-        className="absolute inset-0"
+        className='absolute inset-0'
         initial={{ opacity: 0 }}
         animate={{ opacity: ready ? 1 : 0 }}
         transition={{ duration: 0.35 }}
       >
         <img
           src={current.url}
-          alt="Event Foto"
-          className="absolute inset-0 w-full h-full object-contain"
+          alt='Event Foto'
+          className='absolute inset-0 h-full w-full object-contain'
           draggable={false}
         />
       </motion.div>
@@ -197,61 +191,64 @@ export default function EventSlideshow({
       {playing && ready && photos.length > 1 && (
         <motion.div
           key={slideTick}
-          className="absolute bottom-0 left-0 h-1 bg-primary"
+          className='absolute bottom-0 left-0 h-1 bg-primary'
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
-          transition={{ duration: interval / 1000, ease: 'linear' }}
+          transition={{
+            duration: interval / 1000,
+            ease: 'linear',
+          }}
           style={{ transformOrigin: 'left', width: '100%' }}
         />
       )}
 
-      <div className="absolute top-4 right-4 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-semibold">
+      <div className='absolute top-4 right-4 rounded-full bg-black/60 px-3 py-1 text-sm font-semibold text-white'>
         {index + 1} / {photos.length}
       </div>
 
       {!hideWatermark && !brandLogoUrl && (
-        <div className="absolute bottom-4 right-4 flex items-center gap-2 bg-black/60 px-3 py-1.5 rounded-lg text-white">
-          <Camera className="h-5 w-5 text-primary" />
-          <span className="font-semibold">EventShot</span>
+        <div className='absolute bottom-4 right-4 flex items-center gap-2 rounded-lg bg-black/60 px-3 py-1.5 text-white'>
+          <Camera className='h-5 w-5 text-primary' />
+          <span className='font-semibold'>EventShot</span>
         </div>
       )}
 
       {brandLogoUrl && (
-        <div className="absolute bottom-4 right-4 bg-black/60 p-2 rounded-lg">
-          <img src={brandLogoUrl} className="h-8 w-auto" />
+        <div className='absolute bottom-4 right-4 rounded-lg bg-black/60 p-2'>
+          <img src={brandLogoUrl} alt='slideshowimage' className='h-8 w-auto' />
         </div>
       )}
 
       {controls && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 bg-black/60 p-1 rounded-full">
+        <div className='absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 rounded-full bg-black/60 p-1'>
           <Button
-            variant="ghost"
-            size="icon"
+            variant='ghost'
+            size='icon'
             onClick={() => {
-              setIndex(i => (i - 1 + photos.length) % photos.length)
-              setSlideTick(t => t + 1)
+              setIndex((i) => (i - 1 + photos.length) % photos.length)
+              setSlideTick((t) => t + 1)
             }}
           >
-            <ChevronLeft className="text-white" />
+            <ChevronLeft className='text-white' />
           </Button>
 
           <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setPlaying(p => !p)}
+            variant='ghost'
+            size='icon'
+            onClick={() => setPlaying((p) => !p)}
           >
             {playing ? <Pause /> : <Play />}
           </Button>
 
           <Button
-            variant="ghost"
-            size="icon"
+            variant='ghost'
+            size='icon'
             onClick={() => {
-              setIndex(i => (i + 1) % photos.length)
-              setSlideTick(t => t + 1)
+              setIndex((i) => (i + 1) % photos.length)
+              setSlideTick((t) => t + 1)
             }}
           >
-            <ChevronRight className="text-white" />
+            <ChevronRight className='text-white' />
           </Button>
         </div>
       )}

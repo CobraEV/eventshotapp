@@ -1,10 +1,11 @@
-import { getEventPhotos } from '@/actions/get-event-photos'
-import EventGallery from '@/components/event/event-gallery'
-import EventDownloadButton from '@/components/event/EventDownloadButton.client'
-import { Button } from '@/components/ui/button'
 import { ArrowLeft, Upload } from 'lucide-react'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { getEventPhotos } from '@/actions/get-event-photos'
+import EventDownloadButton from '@/components/event/EventDownloadButton.client'
+import EventGallery from '@/components/event/event-gallery'
+import { ScrollToTopButton } from '@/components/event/ScrollToTopButton'
+import { Button } from '@/components/ui/button'
 
 export default async function Page({
   params,
@@ -24,26 +25,27 @@ const PageContent = async ({
   params: Promise<{ eventId: string }>
 }) => {
   const { eventId } = await params
+
   const photos = await getEventPhotos(eventId)
 
   return (
-    <div className="flex-1 flex flex-col gap-6 py-8">
-      <div className="container flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className='flex-1 flex flex-col gap-6 py-8'>
+      <div className='container flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
         {/* Zurück */}
         <div>
           <Link href={`/event/${eventId}`}>
-            <Button variant="ghost" size="sm" className="gap-2 px-0 sm:px-3">
-              <ArrowLeft className="h-4 w-4" />
+            <Button variant='ghost' size='sm' className='gap-2 px-0 sm:px-3'>
+              <ArrowLeft className='h-4 w-4' />
               Zurück
             </Button>
           </Link>
         </div>
 
         {/* Aktionen */}
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-          <Link href={`/event/${eventId}/upload`} className="w-full sm:w-auto">
-            <Button size="sm" className="w-full sm:w-auto gap-2">
-              <Upload className="h-4 w-4" />
+        <div className='flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center'>
+          <Link href={`/event/${eventId}/upload`} className='w-full sm:w-auto'>
+            <Button size='sm' className='w-full sm:w-auto gap-2'>
+              <Upload className='h-4 w-4' />
               Foto hochladen
             </Button>
           </Link>
@@ -52,9 +54,10 @@ const PageContent = async ({
         </div>
       </div>
 
-      <main className="container mx-auto">
+      <main className='container mx-auto'>
         <EventGallery photos={photos} />
       </main>
+      <ScrollToTopButton />
     </div>
   )
 }

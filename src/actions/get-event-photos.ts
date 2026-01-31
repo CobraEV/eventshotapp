@@ -6,14 +6,17 @@ export async function getEventPhotos(eventId: string) {
   return prisma.photo.findMany({
     where: {
       eventId,
+      status: 'ready',
       approved: true,
     },
     orderBy: {
-      createdAt: 'desc', // neueste zuerst (für Gallery)
+      createdAt: 'desc',
     },
     select: {
       id: true,
       url: true,
+      blurHash: true,
+      thumbUrl: true,
       createdAt: true,
     },
   })

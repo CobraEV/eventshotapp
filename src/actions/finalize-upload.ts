@@ -2,37 +2,31 @@
 
 import prisma from '@/lib/prisma'
 
-export async function finalizeUpload(params: {
+export async function finalizeUpload({
+  eventId,
+  objectKey,
+  mimeType,
+  size,
+}: {
+  eventId: string
   objectKey: string
-  originalName: string
+  mimeType: string
   size: number
 }) {
-  const { objectKey, originalName, size } = params
-
-  const photo = await prisma.photo.update({
-    where: { objectKey },
-    data: { originalName, size },
-    select: {
-      id: true,
-      eventId: true,
-      objectKey: true,
-    },
-  })
-
-  await prisma.event.update({
-    where: { id: photo.eventId },
+  const photo = await prisma.photo.create({
     data: {
-      zipReady: false,
-      zipKey: null,
-      zipBuilding: false,
-      zipProgress: 0,
-      photosUpdatedAt: new Date(),
+      bucket: process.env.S3_BUCKET as string,
+      objectKey,
+      url: `${process.env.S3_PUBLIC_URL}/${objectKey}`,
+      thumbUrl: `${process.env.S3_PUBLIC_URL}/${objectKey}`, // TEMP
+      originalName: '',
+      mimeType,
+      size,
+      eventId,
+      status: 'pending',
+      approved: true,
     },
   })
 
-  return {
-    success: true,
-    photoId: photo.id,
-    objectKey: photo.objectKey,
-  }
+  return { photoId: photo.id }
 }
