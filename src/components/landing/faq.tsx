@@ -26,7 +26,7 @@ export function FAQ() {
           <Accordion type='single' collapsible className='space-y-4'>
             {faqs.map((faq, index) => (
               <AccordionItem
-                key={index}
+                key={index.toString()}
                 value={`item-${index}`}
                 className='border border-border rounded-lg shadow-sm'
               >
