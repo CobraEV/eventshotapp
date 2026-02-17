@@ -50,7 +50,13 @@ ENV NODE_ENV=production
 
 # Prisma + Next.js Build
 RUN --mount=type=secret,id=DATABASE_URL \
+  --mount=type=secret,id=SMTP_HOST \
+  --mount=type=secret,id=SMTP_PORT \
+  --mount=type=secret,id=SMTP_SECURE \
   export DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
+  && export SMTP_HOST="$(cat /run/secrets/SMTP_HOST)" \
+  && export SMTP_PORT="$(cat /run/secrets/SMTP_PORT)" \
+  && export SMTP_SECURE="$(cat /run/secrets/SMTP_SECURE)" \
   && pnpm exec prisma generate \
   && pnpm run build
 
