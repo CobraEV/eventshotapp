@@ -27,35 +27,32 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-ARG DATABASE_URL
-ENV DATABASE_URL=${DATABASE_URL}
+# # SMTP
+# ARG SMTP_HOST
+# ENV SMTP_HOST=$SMTP_HOST
 
-# SMTP
-ARG SMTP_HOST
-ENV SMTP_HOST=$SMTP_HOST
+# ARG SMTP_PORT
+# ENV SMTP_PORT=$SMTP_PORT
 
-ARG SMTP_PORT
-ENV SMTP_PORT=$SMTP_PORT
+# ARG SMTP_SECURE
+# ENV SMTP_SECURE=$SMTP_SECURE
 
-ARG SMTP_SECURE
-ENV SMTP_SECURE=$SMTP_SECURE
+# ARG SMTP_USER
+# ENV SMTP_USER=$SMTP_USER
 
-ARG SMTP_USER
-ENV SMTP_USER=$SMTP_USER
+# ARG SMTP_PASS
+# ENV SMTP_PASS=$SMTP_PASS
 
-ARG SMTP_PASS
-ENV SMTP_PASS=$SMTP_PASS
-
-ARG SMTP_FROM
-ENV SMTP_FROM=$SMTP_FROM
+# ARG SMTP_FROM
+# ENV SMTP_FROM=$SMTP_FROM
 
 ENV NODE_ENV=production
-ENV NEXT_BUILD_WORKER_COUNT=1
 
 # Prisma + Next.js Build
-RUN pnpm exec prisma generate \
-  && pnpm run build \
-  && rm -rf .next/cache
+RUN --mount=type=secret,id=DATABASE_URL \
+  export DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
+  && pnpm exec prisma generate \
+  && pnpm run build
 
 
 # ------------------------------------------------------------
