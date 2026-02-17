@@ -27,25 +27,6 @@ RUN corepack enable && corepack prepare pnpm@latest --activate
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# # SMTP
-# ARG SMTP_HOST
-# ENV SMTP_HOST=$SMTP_HOST
-
-# ARG SMTP_PORT
-# ENV SMTP_PORT=$SMTP_PORT
-
-# ARG SMTP_SECURE
-# ENV SMTP_SECURE=$SMTP_SECURE
-
-# ARG SMTP_USER
-# ENV SMTP_USER=$SMTP_USER
-
-# ARG SMTP_PASS
-# ENV SMTP_PASS=$SMTP_PASS
-
-# ARG SMTP_FROM
-# ENV SMTP_FROM=$SMTP_FROM
-
 ENV NODE_ENV=production
 
 # Prisma + Next.js Build
@@ -53,10 +34,16 @@ RUN --mount=type=secret,id=DATABASE_URL \
   --mount=type=secret,id=SMTP_HOST \
   --mount=type=secret,id=SMTP_PORT \
   --mount=type=secret,id=SMTP_SECURE \
+  --mount=type=secret,id=SMTP_USER \
+  --mount=type=secret,id=SMTP_PASS \
+  --mount=type=secret,id=SMTP_FROM \
   export DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
   && export SMTP_HOST="$(cat /run/secrets/SMTP_HOST)" \
   && export SMTP_PORT="$(cat /run/secrets/SMTP_PORT)" \
   && export SMTP_SECURE="$(cat /run/secrets/SMTP_SECURE)" \
+  && export SMTP_USER="$(cat /run/secrets/SMTP_USER)" \
+  && export SMTP_PASS="$(cat /run/secrets/SMTP_PASS)" \
+  && export SMTP_FROM="$(cat /run/secrets/SMTP_FROM)" \
   && pnpm exec prisma generate \
   && pnpm run build
 
