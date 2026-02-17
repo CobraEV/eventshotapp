@@ -35,6 +35,7 @@ const BATCH_SIZE = 24
 export type GalleryPhoto = {
   id: string
   url: string
+  thumbUrl?: string
   createdAt: Date
 }
 
@@ -91,7 +92,7 @@ export default function InteractiveGallery({
           setVisible((v) => Math.min(v + BATCH_SIZE, items.length))
         }
       },
-      { rootMargin: '400px' }
+      { rootMargin: '400px' },
     )
 
     observer.observe(sentinelRef.current)
@@ -118,67 +119,67 @@ export default function InteractiveGallery({
    * Render
    * -------------------------------- */
   return (
-    <div className="flex flex-col gap-6">
+    <div className='flex flex-col gap-6'>
       {/* --------------------------------
        * Share Link
        * -------------------------------- */}
-      <div className="rounded-lg border bg-card p-4 space-y-2">
-        <Label className="flex items-center gap-2">
-          <Share2 className="h-4 w-4 text-primary" />
+      <div className='rounded-lg border bg-card p-4 space-y-2'>
+        <Label className='flex items-center gap-2'>
+          <Share2 className='h-4 w-4 text-primary' />
           Galerie-Link für Gäste
         </Label>
 
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <Input value={shareUrl} readOnly />
           <Button
-            variant="outline"
-            size="icon"
+            variant='outline'
+            size='icon'
             onClick={copyShareLink}
-            title="Link kopieren"
+            title='Link kopieren'
           >
-            <Copy className="h-4 w-4" />
+            <Copy className='h-4 w-4' />
           </Button>
         </div>
 
-        <p className="text-xs text-muted-foreground">
+        <p className='text-xs text-muted-foreground'>
           Teilen Sie diesen Link nach dem Event mit den Gästen, damit sie die
           Galerie sehen können.
         </p>
       </div>
 
       {/* Stats */}
-      <div className="text-sm text-muted-foreground">
+      <div className='text-sm text-muted-foreground'>
         Fotos insgesamt:{' '}
-        <span className="font-semibold text-primary">{items.length}</span>
+        <span className='font-semibold text-primary'>{items.length}</span>
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
         {visiblePhotos.map((photo, i) => (
           <div
             key={photo.id}
-            className="relative group overflow-hidden rounded-lg border bg-card"
+            className='relative group overflow-hidden rounded-lg border bg-card'
           >
             <AspectRatio ratio={1} onClick={() => setIndex(i)}>
               <Image
-                src={photo.url}
-                alt="Event Foto"
+                src={photo.thumbUrl || photo.url}
+                alt='Event Foto'
                 fill
-                sizes="(max-width: 768px) 50vw, 25vw"
+                sizes='(max-width: 768px) 50vw, 25vw'
                 quality={25}
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                className='object-cover transition-transform duration-300 group-hover:scale-105'
               />
             </AspectRatio>
 
             {admin && (
               <div
-                className="absolute top-2 right-2 z-10"
+                className='absolute top-2 right-2 z-10'
                 onClick={(e) => e.stopPropagation()}
               >
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <button className="rounded-full bg-black/60 p-2 text-white hover:bg-red-600 transition">
-                      <Trash2 className="h-4 w-4" />
+                    <button className='rounded-full bg-black/60 p-2 text-white hover:bg-red-600 transition'>
+                      <Trash2 className='h-4 w-4' />
                     </button>
                   </AlertDialogTrigger>
 
@@ -192,7 +193,7 @@ export default function InteractiveGallery({
                     <AlertDialogFooter>
                       <AlertDialogCancel>Abbrechen</AlertDialogCancel>
                       <AlertDialogAction
-                        className="bg-red-600 hover:bg-red-700"
+                        className='bg-red-600 hover:bg-red-700'
                         onClick={() => handleDelete(photo.id)}
                       >
                         Löschen
@@ -207,7 +208,7 @@ export default function InteractiveGallery({
       </div>
 
       {/* Sentinel */}
-      {visible < items.length && <div ref={sentinelRef} className="h-10" />}
+      {visible < items.length && <div ref={sentinelRef} className='h-10' />}
 
       {/* Lightbox */}
       <Lightbox
