@@ -9,11 +9,11 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'minio.edelbyte.ch',
+        hostname: 'cdn.edelbyte.ch',
       },
       {
         protocol: 'https',
-        hostname: 'img.eventshot.ch',
+        hostname: 'minio.edelbyte.ch',
       },
     ],
   },

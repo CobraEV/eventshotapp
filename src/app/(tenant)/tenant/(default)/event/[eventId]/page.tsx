@@ -40,49 +40,44 @@ const PageContent = async ({
       id: true,
       name: true,
       isActive: true,
-      photos: {
-        orderBy: { createdAt: 'desc' },
-        select: {
-          id: true,
-          url: true,
-          createdAt: true,
-        },
-      },
     },
   })
 
   if (!event) redirect('/')
 
+  // Fetch photos with presigned URLs
+  const photos = await getEventPhotos(eventId)
+
   return (
-    <main className="container mx-auto py-8 px-4 md:px-6">
-      <h1 className="text-2xl font-bold mb-6">
-        Event: <span className="text-primary">{event.name}</span>
+    <main className='container mx-auto py-8 px-4 md:px-6'>
+      <h1 className='text-2xl font-bold mb-6'>
+        Event: <span className='text-primary'>{event.name}</span>
       </h1>
 
-      <Tabs defaultValue="photos" className="w-full">
-        <TabsList className="grid grid-cols-3 w-full">
-          <TabsTrigger value="photos">Fotos</TabsTrigger>
-          <TabsTrigger value="qrcode">QR-Code</TabsTrigger>
-          <TabsTrigger value="settings">Einstellungen</TabsTrigger>
+      <Tabs defaultValue='photos' className='w-full'>
+        <TabsList className='grid grid-cols-3 w-full'>
+          <TabsTrigger value='photos'>Fotos</TabsTrigger>
+          <TabsTrigger value='qrcode'>QR-Code</TabsTrigger>
+          <TabsTrigger value='settings'>Einstellungen</TabsTrigger>
         </TabsList>
 
-        <div className="mt-6">
+        <div className='mt-6'>
           {/* ---------------- Fotos ---------------- */}
-          <TabsContent value="photos">
+          <TabsContent value='photos'>
             <InteractiveGallery
               admin={true}
-              photos={event.photos}
+              photos={photos}
               eventId={eventId}
             />
           </TabsContent>
 
           {/* ---------------- QR ---------------- */}
-          <TabsContent value="qrcode" className="max-w-md mx-auto">
+          <TabsContent value='qrcode' className='max-w-md mx-auto'>
             <QRCodeGenerator eventId={eventId} />
           </TabsContent>
 
           {/* ---------------- Settings ---------------- */}
-          <TabsContent value="settings" className="max-w-md mx-auto">
+          <TabsContent value='settings' className='max-w-md mx-auto'>
             <SlideshowSettings eventId={eventId} />
           </TabsContent>
         </div>

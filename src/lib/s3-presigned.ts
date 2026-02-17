@@ -14,3 +14,16 @@ export async function getSignedDownloadUrl(objectKey: string) {
 
   return url
 }
+
+export async function getSignedViewUrl(objectKey: string, expiresIn = 60 * 60) {
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET!,
+    Key: objectKey,
+  })
+
+  const url = await getSignedUrl(s3, command, {
+    expiresIn, // default 1 hour
+  })
+
+  return url
+}
