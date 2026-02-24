@@ -15,7 +15,7 @@ export async function createEventCheckout(data: {
 
   const session = await stripe.checkout.sessions.create({
     mode: 'payment',
-    payment_method_types: ['card', 'twint', 'klarna'],
+    // payment_method_types: ['card', 'twint', 'klarna'],
     allow_promotion_codes: true,
     line_items: [
       {
