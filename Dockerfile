@@ -79,11 +79,14 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
-# Scripts + dependencies for maintenance tasks (e.g. refresh-presigned-urls)
-COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
+# Scripts for maintenance tasks (e.g. refresh-presigned-urls)
 COPY --from=builder --chown=nextjs:nodejs /app/scripts ./scripts
 COPY --from=builder --chown=nextjs:nodejs /app/src/lib ./src/lib
 COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
+# Install only tsx globally so maintenance scripts can run (runtime deps are in standalone/node_modules)
+RUN npm install -g tsx
 
 USER nextjs
 
