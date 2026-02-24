@@ -63,6 +63,7 @@ ENV HOME=/home/nextjs
 RUN apt-get update && apt-get install -y --no-install-recommends \
   ca-certificates \
   openssl \
+  curl \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
