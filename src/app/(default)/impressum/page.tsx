@@ -11,7 +11,7 @@ export default function ImpressumPage() {
       <section className='space-y-4'>
         <h2 className='text-2xl font-semibold text-primary'>Anbieter</h2>
         <p>
-          <strong>EdelByte – IT mit Leidenschaft</strong>
+          <strong>EdelByte Veliji</strong>
           <br />
           Zihlackerring 6
           <br />
@@ -71,8 +71,8 @@ export default function ImpressumPage() {
       <section className='space-y-4'>
         <h2 className='text-2xl font-semibold text-primary'>Hinweis</h2>
         <p>
-          EventShot ist ein Produkt der EdelByte – IT mit Leidenschaft. Für
-          Inhalte externer Links wird keine Haftung übernommen.
+          EventShot ist ein Produkt der EdelByte Veliji. Für Inhalte externer
+          Links wird keine Haftung übernommen.
         </p>
       </section>
 
