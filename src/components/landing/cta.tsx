@@ -30,7 +30,7 @@ export function CTA() {
                 <Link href={`/register`}>Kostenlos starten</Link>
               </Button>
               <Button size='lg' variant='outline' className='text-base' asChild>
-                <Link href={`mailto:info@eventshot.ch`}>Demo vereinbaren</Link>
+                <Link href={`mailto:info@edelbyte.ch`}>Demo vereinbaren</Link>
               </Button>
             </FadeInUp>
 

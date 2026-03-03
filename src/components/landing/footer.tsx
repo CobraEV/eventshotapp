@@ -65,7 +65,7 @@ export function Footer() {
             <h3 className='font-semibold mb-4'>Kontakt</h3>
             <div className='space-y-2 mb-4'>
               <p className='text-muted-foreground flex items-center gap-2'>
-                <Mail className='h-4 w-4' /> info@eventshot.ch
+                <Mail className='h-4 w-4' /> info@edelbyte.ch
               </p>
               <p className='text-muted-foreground'>
                 Tel:{' '}
@@ -78,7 +78,7 @@ export function Footer() {
               </p>
             </div>
             <Link
-              href='mailto:info@eventshot.ch'
+              href='mailto:info@edelbyte.ch'
               className='text-primary font-medium hover:underline'
             >
               Kontaktiere uns

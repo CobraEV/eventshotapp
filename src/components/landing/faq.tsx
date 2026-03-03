@@ -48,10 +48,10 @@ export function FAQ() {
             </p>
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
               <a
-                href='mailto:info@eventshot.ch'
+                href='mailto:info@edelbyte.ch'
                 className='text-primary font-medium hover:underline'
               >
-                info@eventshot.ch
+                info@edelbyte.ch
               </a>
               <span className='hidden sm:inline text-muted-foreground'>|</span>
               <a

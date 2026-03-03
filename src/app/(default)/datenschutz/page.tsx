@@ -29,10 +29,10 @@ export default function DatenschutzPage() {
           <br />
           E-Mail:{' '}
           <Link
-            href="mailto:info@eventshot.ch"
+            href="mailto:info@edelbyte.ch"
             className="text-primary underline hover:opacity-80"
           >
-            info@eventshot.ch
+            info@edelbyte.ch
           </Link>
           <br />
           Website:{' '}
@@ -114,7 +114,7 @@ export default function DatenschutzPage() {
       <div className="border-t pt-8 text-sm text-muted-foreground text-center">
         Fragen zum Datenschutz?{' '}
         <Link
-          href="mailto:info@eventshot.ch"
+          href="mailto:info@edelbyte.ch"
           className="text-primary underline hover:opacity-80"
         >
           Kontaktiere uns

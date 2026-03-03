@@ -148,7 +148,7 @@ export default function AGBPage() {
       <div className="border-t pt-8 text-sm text-muted-foreground text-center">
         Fragen zu den AGB?{' '}
         <Link
-          href="mailto:info@eventshot.ch"
+          href="mailto:info@edelbyte.ch"
           className="text-primary underline hover:opacity-80"
         >
           Kontaktiere uns

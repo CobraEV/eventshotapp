@@ -69,7 +69,7 @@ export function Pricing() {
           <p>
             Du brauchst eine individuelle Lösung?{' '}
             <a
-              href="mailto:info@eventshot.ch"
+              href="mailto:info@edelbyte.ch"
               className="text-primary underline underline-offset-4"
             >
               Kontaktiere uns

@@ -37,7 +37,7 @@ export const auth = betterAuth({
     // ---------------- RESET PASSWORD ----------------
     sendResetPassword: async ({ user, url }) => {
       await sendMail({
-        from: 'EventShot <info@eventshot.ch>',
+        from: 'EventShot <info@edelbyte.ch>',
         to: user.email,
         subject: 'Passwort zurücksetzen – EventShot',
         text: `Hallo ${user.name || ''}
@@ -83,7 +83,7 @@ Wenn du das nicht angefordert hast, ignoriere diese E-Mail.`,
 
     sendVerificationEmail: async ({ user, url }) => {
       await sendMail({
-        from: 'EventShot <info@eventshot.ch>',
+        from: 'EventShot <info@edelbyte.ch>',
         to: user.email,
         subject: 'Bitte bestätige deine E-Mail-Adresse – EventShot',
         html: `
@@ -116,7 +116,7 @@ Wenn du das nicht angefordert hast, ignoriere diese E-Mail.`,
         `${process.env.BETTER_AUTH_URL}/login` || 'http://localhost:3000/login'
 
       await sendMail({
-        from: 'EventShot <info@eventshot.ch>',
+        from: 'EventShot <info@edelbyte.ch>',
         to: user.email,
         subject: 'Willkommen bei EventShot 🎉',
         html: `
