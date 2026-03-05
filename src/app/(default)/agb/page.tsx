@@ -2,19 +2,19 @@ import Link from 'next/link'
 
 export default function AGBPage() {
   return (
-    <div className="container max-w-3xl py-16 space-y-10">
-      <div className="space-y-2 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">
+    <div className='container max-w-3xl py-16 space-y-10'>
+      <div className='space-y-2 text-center'>
+        <h1 className='text-4xl font-bold tracking-tight'>
           Allgemeine Geschäftsbedingungen
         </h1>
-        <p className="text-muted-foreground">
+        <p className='text-muted-foreground'>
           Stand: Juni 2025 – gültig für alle kostenpflichtigen Leistungen auf{' '}
-          <span className="text-primary">eventshot.ch</span>
+          <span className='text-primary'>eventshot.ch</span>
         </p>
       </div>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">Anbieter</h2>
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>Anbieter</h2>
         <p>
           Anbieter der Plattform EventShot ist:
           <br />
@@ -23,18 +23,18 @@ export default function AGBPage() {
           8488 Turbenthal, Schweiz
           <br />
           <a
-            href="https://edelbyte.ch"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary underline"
+            href='https://edelbyte.ch'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-primary underline'
           >
             https://edelbyte.ch
           </a>
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           1. Geltungsbereich
         </h2>
         <p>
@@ -50,8 +50,8 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           2. Leistungsumfang
         </h2>
         <p>
@@ -63,24 +63,24 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           3. Vertragsschluss & Zahlung
         </h2>
         <p>
           Mit Auswahl eines Plans und Abschluss des Buchungsprozesses auf der
           Plattform kommt ein rechtsgültiger Vertrag zustande. Die Zahlung
           erfolgt per Kreditkarte oder Twint über den eingebundenen
-          Zahlungsanbieter. Ein Anspruch auf Rückerstattung besteht nicht, außer
-          bei gesetzlich zwingenden Gründen (z. B. Widerruf).
+          Zahlungsanbieter. Ein Anspruch auf Rückerstattung besteht nicht,
+          ausser bei gesetzlich zwingenden Gründen (z. B. Widerruf).
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           4. Nutzung & Pflichten
         </h2>
-        <ul className="list-disc ps-6 space-y-1">
+        <ul className='list-disc ps-6 space-y-1'>
           <li>
             Die Subdomain darf keine Markenrechte oder Persönlichkeitsrechte
             verletzen.
@@ -96,15 +96,15 @@ export default function AGBPage() {
         </ul>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">5. Datenschutz</h2>
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>5. Datenschutz</h2>
         <p>
           Personenbezogene Daten und hochgeladene Fotos werden ausschliesslich
           zur Durchführung des Events gespeichert und automatisch 7 Tage nach
           Ende des gebuchten Zeitraums gelöscht. Weitere Details siehe{' '}
           <Link
-            href="/datenschutz"
-            className="underline text-primary hover:opacity-80"
+            href='/datenschutz'
+            className='underline text-primary hover:opacity-80'
           >
             Datenschutzerklärung
           </Link>
@@ -112,20 +112,20 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           6. Haftung & Verfügbarkeit
         </h2>
         <p>
           EventShot haftet nicht für Ausfälle durch höhere Gewalt, technische
           Störungen oder unzulässige Nutzung durch Dritte. Die Verfügbarkeit der
-          Plattform wird mit größtmöglicher Sorgfalt gewährleistet, ein 100%iger
-          Anspruch auf permanente Erreichbarkeit besteht nicht.
+          Plattform wird mit grösstmöglicher Sorgfalt gewährleistet, ein
+          100%iger Anspruch auf permanente Erreichbarkeit besteht nicht.
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           7. Laufzeit & Kündigung
         </h2>
         <p>
@@ -135,8 +135,8 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl font-semibold text-primary">
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>
           8. Gerichtsstand & Recht
         </h2>
         <p>
@@ -145,11 +145,11 @@ export default function AGBPage() {
         </p>
       </section>
 
-      <div className="border-t pt-8 text-sm text-muted-foreground text-center">
+      <div className='border-t pt-8 text-sm text-muted-foreground text-center'>
         Fragen zu den AGB?{' '}
         <Link
-          href="mailto:info@edelbyte.ch"
-          className="text-primary underline hover:opacity-80"
+          href='mailto:info@edelbyte.ch'
+          className='text-primary underline hover:opacity-80'
         >
           Kontaktiere uns
         </Link>

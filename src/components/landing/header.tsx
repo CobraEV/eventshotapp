@@ -22,7 +22,7 @@ export function Header() {
     setIsScrolled(latest > 10)
   })
 
-  // Schließe das mobile Menü beim Klick außerhalb
+  // Schliesse das mobile Menü beim Klick ausserhalb
   useEffect(() => {
     const handleClickOutside = () => setIsOpen(false)
     if (isOpen) {
