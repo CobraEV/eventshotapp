@@ -1,7 +1,7 @@
 # ------------------------------------------------------------
 # Stage 1: Dependencies
 # ------------------------------------------------------------
-FROM node:20-bookworm-slim AS deps
+FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -13,7 +13,7 @@ RUN pnpm install --frozen-lockfile
 # ------------------------------------------------------------
 # Stage 2: Build
 # ------------------------------------------------------------
-FROM node:20-bookworm-slim AS builder
+FROM node:22-bookworm-slim AS builder
 WORKDIR /app
 
 # Basic system deps only
@@ -51,7 +51,7 @@ RUN --mount=type=secret,id=DATABASE_URL \
 # ------------------------------------------------------------
 # Stage 3: Runtime
 # ------------------------------------------------------------
-FROM node:20-bookworm-slim AS runner
+FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
