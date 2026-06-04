@@ -1,3 +1,12 @@
+# Build-script allowlist. allowBuilds is the pnpm 11 key; onlyBuiltDependencies
+# is kept for pnpm 10 (this repo pins packageManager: pnpm@10.30.0), so the
+# allowlist is honored regardless of which pnpm version corepack resolves.
+allowBuilds:
+  '@prisma/engines': true
+  esbuild: true
+  msgpackr-extract: true
+  prisma: true
+  sharp: true
 onlyBuiltDependencies:
   - '@prisma/engines'
   - prisma
