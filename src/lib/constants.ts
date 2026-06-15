@@ -24,7 +24,7 @@ export const features = [
   {
     title: 'Live Slideshow',
     description:
-      'Schöne Übergänge zwischen den Fotos halten Ihre Event-Wand dynamisch und ansprechend.',
+      'Schöne Übergänge zwischen den Fotos halten deine Event-Wand dynamisch und ansprechend.',
     icon: 'Projector',
   },
   {
@@ -39,13 +39,13 @@ export const howItWorks = [
   {
     title: 'Event einrichten',
     description:
-      'Erstellen Sie Ihr Event in Minuten mit individuellem Branding und Display-Einstellungen.',
+      'Erstelle dein Event in Minuten mit individuellem Branding und Display-Einstellungen.',
     step: 1,
   },
   {
     title: 'QR-Code teilen',
     description:
-      'Zeigen Sie den einzigartigen QR-Code an Ihrem Veranstaltungsort zum Scannen an.',
+      'Zeige den einzigartigen QR-Code an deinem Veranstaltungsort zum Scannen an.',
     step: 2,
   },
   {
@@ -82,17 +82,17 @@ export const faqs = [
   {
     question: 'Wie viele Fotos können hochgeladen werden?',
     answer:
-      'Unser Standardpaket beinhaltet unbegrenzte Foto-Uploads während Ihrer Veranstaltung und 30 Tage Galerie-Zugriff danach.',
+      'Unser Standardpaket beinhaltet unbegrenzte Foto-Uploads während deiner Veranstaltung und 30 Tage Galerie-Zugriff danach.',
   },
   {
     question: 'Können Gäste die Fotos herunterladen?',
     answer:
-      'Ja! Alle Fotos werden in einer digitalen Galerie gespeichert, auf die Gäste nach der Veranstaltung über denselben QR-Code oder einen von Ihnen bereitgestellten Link zugreifen können.',
+      'Ja! Alle Fotos werden in einer digitalen Galerie gespeichert, auf die Gäste nach der Veranstaltung über denselben QR-Code oder einen von dir bereitgestellten Link zugreifen können.',
   },
   {
     question: 'Gibt es eine Begrenzung der Veranstaltungsdauer?',
     answer:
-      'Unsere Pakete sind für Veranstaltungen von wenigen Stunden bis hin zu mehrtägigen Konferenzen verfügbar. Kontaktieren Sie uns für individuelle Pakete für längere Veranstaltungen.',
+      'Unsere Pakete sind für Veranstaltungen von wenigen Stunden bis hin zu mehrtägigen Konferenzen verfügbar. Kontaktiere uns für individuelle Pakete für längere Veranstaltungen.',
   },
 ]
 

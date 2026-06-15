@@ -142,7 +142,7 @@ export default function InteractiveGallery({
         </div>
 
         <p className='text-xs text-muted-foreground'>
-          Teilen Sie diesen Link nach dem Event mit den Gästen, damit sie die
+          Teile diesen Link nach dem Event mit den Gästen, damit sie die
           Galerie sehen können.
         </p>
       </div>

@@ -82,10 +82,10 @@ export async function POST(req: NextRequest) {
   // ✉️ Kunden-Mail mit PDF
   await sendMail({
     to: session.customer_details!.email!,
-    subject: 'Ihre Rechnung – EventShot',
+    subject: 'Deine Rechnung – EventShot',
     html: `
-      <p>Vielen Dank für Ihre Bestellung.</p>
-      <p>Ihre Rechnung ist beigefügt.</p>
+      <p>Vielen Dank für deine Bestellung.</p>
+      <p>Deine Rechnung ist beigefügt.</p>
       <p><strong>Rechnungsnummer:</strong> ${invoiceNumber}</p>
     `,
     attachments: [
