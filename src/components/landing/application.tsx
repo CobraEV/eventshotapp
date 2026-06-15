@@ -34,7 +34,8 @@ export function Application() {
               </h3>
               <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
                 Erstelle dein Konto und richte dein erstes Event in wenigen
-                Minuten ein. Keine Kreditkarte erforderlich für den Start.
+                Minuten ein. Registrierung kostenlos – du zahlst erst, wenn du
+                ein Event buchst.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
@@ -59,8 +60,7 @@ export function Application() {
               </div>
 
               <p className="text-sm text-muted-foreground mb-4">
-                Kostenloser Start • Keine versteckten Gebühren • Jederzeit
-                kündbar
+                Registrierung kostenlos • Einmalpreis pro Event • Kein Abo
               </p>
             </div>
           </ScrollReveal>

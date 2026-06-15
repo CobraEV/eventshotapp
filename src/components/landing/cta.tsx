@@ -35,8 +35,8 @@ export function CTA() {
             </FadeInUp>
 
             <p className='text-center text-sm text-muted-foreground mt-6'>
-              Keine Kreditkarte für die Testversion erforderlich. Jederzeit
-              kündbar. Fragen? Ruf uns an:{' '}
+              Einmalig pro Event – kein Abo. Registrierung kostenlos, du zahlst
+              erst beim Buchen eines Events. Fragen? Ruf uns an:{' '}
               <a
                 href='tel:+41445002504'
                 className='text-primary hover:underline'
