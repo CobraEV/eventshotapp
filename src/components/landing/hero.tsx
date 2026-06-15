@@ -37,9 +37,9 @@ export function Hero() {
             </StaggerItem>
             <StaggerItem>
               <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0">
-                Verwandle deine Veranstaltung in ein interaktives Erlebnis mit
-                einer Live-Fotowand, auf der Gäste Fotos in Echtzeit hochladen
-                und teilen können.
+                Die Live-Fotowand für dein Event: Gäste laden Fotos per QR-Code
+                hoch – ganz ohne App – und sehen sie in Echtzeit auf dem Screen.
+                Inklusive digitaler Galerie nach dem Event.
               </p>
             </StaggerItem>
             <StaggerItem>

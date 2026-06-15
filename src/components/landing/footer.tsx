@@ -18,7 +18,7 @@ export function Footer() {
   return (
     <footer className='bg-muted/80 pt-16 pb-8'>
       <div className='container'>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-12'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12'>
           <div>
             <Link href='/' className='flex items-center gap-2 mb-4'>
               <Camera className='w-6 h-6 text-primary' />
@@ -59,6 +59,27 @@ export function Footer() {
           <div>
             <h3 className='font-semibold mb-4'>Navigation</h3>
             <FooterNav />
+          </div>
+
+          <div>
+            <h3 className='font-semibold mb-4'>Anlässe</h3>
+            <ul className='space-y-2 text-muted-foreground'>
+              <li>
+                <Link href='/hochzeit' className='hover:text-primary transition-colors'>
+                  Hochzeit
+                </Link>
+              </li>
+              <li>
+                <Link href='/geburtstag' className='hover:text-primary transition-colors'>
+                  Geburtstag
+                </Link>
+              </li>
+              <li>
+                <Link href='/firmenanlass' className='hover:text-primary transition-colors'>
+                  Firmenanlass
+                </Link>
+              </li>
+            </ul>
           </div>
 
           <div>

@@ -12,21 +12,9 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'EventShot – Fotos live am Event anzeigen',
+  title: 'EventShot – Live-Fotowand & Slideshow für Hochzeiten und Events',
   description:
     'Mit EventShot werden Eventfotos in Echtzeit geteilt. Gäste scannen den QR-Code, laden ein Foto hoch und es erscheint sofort auf dem Bildschirm – perfekt für Hochzeiten, Firmenfeiern und Messen.',
-  keywords: [
-    'EventShot',
-    'Event Fotos',
-    'Live Slideshow',
-    'QR Code Foto Upload',
-    'Event Display',
-    'Hochzeit Fotos live',
-    'Event Fotowand',
-    'Eventtool Schweiz',
-    'EdelByte',
-    'Endrit Veliji',
-  ],
   authors: [
     { name: 'EdelByte', url: 'https://edelbyte.ch' },
     { name: 'Endrit Veliji' },
@@ -62,10 +50,6 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://eventshot.ch'),
   alternates: {
     canonical: 'https://eventshot.ch',
-    languages: {
-      'de-CH': 'https://eventshot.ch',
-      en: 'https://eventshot.ch/en',
-    },
   },
   robots: {
     index: true,

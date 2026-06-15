@@ -14,6 +14,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
 
+    // 🎯 Use-Case-Landingpages
+    {
+      url: `${BASE_URL}/hochzeit`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/geburtstag`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+    {
+      url: `${BASE_URL}/firmenanlass`,
+      lastModified: now,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    },
+
     // 📄 Öffentliche Informationsseiten
     {
       url: `${BASE_URL}/agb`,
