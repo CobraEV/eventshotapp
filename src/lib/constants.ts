@@ -82,12 +82,22 @@ export const faqs = [
   {
     question: 'Wie viele Fotos können hochgeladen werden?',
     answer:
-      'Unser Standardpaket beinhaltet unbegrenzte Foto-Uploads während deiner Veranstaltung und 30 Tage Galerie-Zugriff danach.',
+      'Alle Pakete beinhalten unbegrenzte Foto-Uploads während deiner Veranstaltung. Der Galerie-Zugriff danach richtet sich nach dem Plan: 7 Tage (Basic), 30 Tage (Premium) oder 90 Tage (Enterprise).',
   },
   {
     question: 'Können Gäste die Fotos herunterladen?',
     answer:
       'Ja! Alle Fotos werden in einer digitalen Galerie gespeichert, auf die Gäste nach der Veranstaltung über denselben QR-Code oder einen von dir bereitgestellten Link zugreifen können.',
+  },
+  {
+    question: 'Wo werden die Fotos gespeichert?',
+    answer:
+      'Alle Fotos liegen DSG-konform auf unserer eigenen Infrastruktur in der Schweiz – kein Drittanbieter, keine Weitergabe.',
+  },
+  {
+    question: 'Was passiert mit den Fotos nach Ablauf der Galerie?',
+    answer:
+      'Nach Ablauf der Galerie-Frist – je nach Plan 7 Tage (Basic), 30 Tage (Premium) oder 90 Tage (Enterprise) nach dem Event – werden alle Fotos automatisch und vollständig von unseren Schweizer Servern gelöscht. Lade dir die Galerie also rechtzeitig herunter.',
   },
   {
     question: 'Gibt es eine Begrenzung der Veranstaltungsdauer?',

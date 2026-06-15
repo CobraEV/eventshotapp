@@ -1,9 +1,3 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from '@/components/ui/accordion'
 import { ScrollReveal } from '@/components/ui/motion'
 import { faqs } from '@/lib/constants'
 
@@ -22,24 +16,40 @@ export function FAQ() {
           </div>
         </ScrollReveal>
 
-        <div className='max-w-3xl mx-auto'>
-          <Accordion type='single' collapsible className='space-y-4'>
-            {faqs.map((faq, index) => (
-              <AccordionItem
-                key={index.toString()}
-                value={`item-${index}`}
-                className='border border-border rounded-lg shadow-sm'
-              >
-                <AccordionTrigger className='px-6 text-left font-medium'>
-                  {faq.question}
-                </AccordionTrigger>
-                <AccordionContent className='px-6 pb-4 text-muted-foreground'>
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+        {/* Native <details>: Antworten immer im DOM (SEO), Accordion darf zu sein */}
+        <div className='max-w-3xl mx-auto space-y-4'>
+          {faqs.map((faq) => (
+            <details
+              key={faq.question}
+              className='group rounded-lg border border-border shadow-sm'
+            >
+              <summary className='flex cursor-pointer items-center justify-between gap-4 px-6 py-4 text-left font-medium [&::-webkit-details-marker]:hidden'>
+                {faq.question}
+                <span className='shrink-0 text-xl leading-none text-muted-foreground transition-transform group-open:rotate-45'>
+                  +
+                </span>
+              </summary>
+              <p className='px-6 pb-4 text-muted-foreground'>{faq.answer}</p>
+            </details>
+          ))}
         </div>
+
+        {/* FAQPage JSON-LD aus denselben Daten */}
+        <script
+          type='application/ld+json'
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'FAQPage',
+              mainEntity: faqs.map((faq) => ({
+                '@type': 'Question',
+                name: faq.question,
+                acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+              })),
+            }),
+          }}
+        />
 
         <ScrollReveal>
           <div className='text-center mt-12'>
