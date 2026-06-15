@@ -13,9 +13,7 @@ export default async function AdminLayout({
         <Header />
       </Suspense>
       <main className="flex-1 flex flex-col">{children}</main>
-      <Suspense>
-        <Footer />
-      </Suspense>
+      <Footer />
     </div>
   )
 }

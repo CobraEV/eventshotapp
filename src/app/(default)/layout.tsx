@@ -1,26 +1,13 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
-import { Suspense } from 'react'
 import { Footer } from '@/components/landing/footer'
 import { Header } from '@/components/landing/header'
 import SmoothScroll from '@/components/SmoothScroll'
 
 export const metadata: Metadata = {
-  title: 'EventShot – Dein Event, Deine Fotos',
+  title: 'EventShot – Live-Fotowand & Slideshow für Hochzeiten und Events',
   description:
     'EventShot macht dein Event unvergesslich. Gäste scannen einen QR-Code, laden Fotos hoch und sehen sie live auf dem Bildschirm. Einfach. Sofort. Interaktiv.',
-  keywords: [
-    'EventShot',
-    'Event Fotos',
-    'Foto Upload',
-    'Live Slideshow',
-    'QR Code Event',
-    'Fotoanzeige Hochzeit',
-    'Fotos teilen',
-    'Gäste Fotos',
-    'Event App',
-    'Hochzeit Fotowand',
-  ],
   authors: [{ name: 'Endrit Veliji', url: 'https://www.eventshot.ch' }],
   creator: 'Endrit Veliji',
   openGraph: {
@@ -56,9 +43,7 @@ const DefaultLayout = ({ children }: { children: ReactNode }) => {
         <Header />
       </div>
       <div className='flex-1 flex flex-col'>{children}</div>
-      <Suspense>
-        <Footer />
-      </Suspense>
+      <Footer />
     </div>
   )
 }

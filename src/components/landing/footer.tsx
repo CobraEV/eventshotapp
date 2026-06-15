@@ -13,7 +13,9 @@ import { FadeIn } from '@/components/ui/motion'
 import FooterNav from './footer-nav'
 
 export function Footer() {
-  const currentYear = new Date().getFullYear()
+  // Statisch halten: new Date() würde den Footer unter cacheComponents
+  // dynamisch machen und aus dem server-gerenderten HTML drängen (SEO).
+  const currentYear = 2026
 
   return (
     <footer className='bg-muted/80 pt-16 pb-8'>
