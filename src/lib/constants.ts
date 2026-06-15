@@ -62,12 +62,6 @@ export const howItWorks = [
   },
 ]
 
-// Nur echte, freigegebene Kundenstimmen eintragen – keine erfundenen Zitate (UWG).
-// Solange leer, wird die Testimonials-Sektion nicht angezeigt.
-// [TODO-ENDRIT: echte Kundenzitate mit Freigabe (Name/Event) ergänzen]
-export const testimonials: { quote: string; author: string; role: string }[] =
-  []
-
 export const faqs = [
   {
     question: 'Müssen Gäste eine App herunterladen?',

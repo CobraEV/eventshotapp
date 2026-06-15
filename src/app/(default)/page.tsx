@@ -5,7 +5,6 @@ import { Features } from '@/components/landing/features'
 import { Hero } from '@/components/landing/hero'
 import { HowItWorks } from '@/components/landing/how-it-works'
 import { Pricing } from '@/components/landing/pricing'
-import { Testimonials } from '@/components/landing/testimonials'
 import { Video } from '@/components/landing/video'
 
 export default async function HomePage() {
@@ -15,7 +14,6 @@ export default async function HomePage() {
       <Features />
       <HowItWorks />
       <Video />
-      <Testimonials />
       <Pricing />
       <Application />
       <FAQ />
