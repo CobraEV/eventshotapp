@@ -5,7 +5,6 @@ export const siteConfig = {
     { label: 'Start', href: '/' },
     { label: 'Funktionen', href: '/#features' },
     { label: "So funktioniert's", href: '/#how-it-works' },
-    { label: 'Kundenstimmen', href: '/#testimonials' },
     { label: 'Preise', href: '/#pricing' },
     { label: 'FAQ', href: '/#faq' },
   ],
@@ -63,26 +62,11 @@ export const howItWorks = [
   },
 ]
 
-export const testimonials = [
-  {
-    quote:
-      'EventShot hat unsere Hochzeitsfeier verwandelt. Die Gäste liebten es, ihre Fotos auf dem Bildschirm zu sehen, und wir bekamen viel mehr spontane Momente als unser Fotograf allein hätte einfangen können.',
-    author: 'Lina & Marc',
-    role: 'Frisch verheiratet',
-  },
-  {
-    quote:
-      'Als Eventplaner habe ich EventShot zu einem Standardangebot für Firmenveranstaltungen gemacht. Es fördert das Engagement und schafft ein unterhaltsames, interaktives Element, das die Kunden lieben.',
-    author: 'Sandro Meier',
-    role: 'Eventmanager',
-  },
-  {
-    quote:
-      'Wir nutzen EventShot auf unseren Konferenzen, um Gemeinschaft aufzubauen. Die Live-Fotowand wird zum Gesprächsthema und hilft den Teilnehmern, sich verbunden zu fühlen.',
-    author: 'Andrea Kunz',
-    role: 'Konferenzleiterin',
-  },
-]
+// Nur echte, freigegebene Kundenstimmen eintragen – keine erfundenen Zitate (UWG).
+// Solange leer, wird die Testimonials-Sektion nicht angezeigt.
+// [TODO-ENDRIT: echte Kundenzitate mit Freigabe (Name/Event) ergänzen]
+export const testimonials: { quote: string; author: string; role: string }[] =
+  []
 
 export const faqs = [
   {

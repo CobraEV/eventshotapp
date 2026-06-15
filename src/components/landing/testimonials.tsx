@@ -8,6 +8,10 @@ import { QuoteIcon } from "lucide-react";
 import TestimonialsBg from "./testimonials-bg";
 
 export function Testimonials() {
+  // Nur echte, freigegebene Kundenstimmen anzeigen. Solange keine vorhanden
+  // sind, bleibt die Sektion aus (keine erfundenen Zitate – UWG).
+  if (testimonials.length === 0) return null
+
   return (
     <section id="testimonials" className="py-16 relative overflow-hidden">
       <TestimonialsBg />

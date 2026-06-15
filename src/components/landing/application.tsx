@@ -72,8 +72,8 @@ export function Application() {
             <div className="text-center mb-12">
               <h3 className="text-2xl font-bold mb-4">Warum EventShot?</h3>
               <p className="text-muted-foreground text-lg">
-                Über 500+ zufriedene Kunden vertrauen bereits auf unsere
-                Plattform
+                Sofort einsatzbereit, ohne App – das Live-Foto-Erlebnis für dein
+                Event.
               </p>
             </div>
           </ScrollReveal>
