@@ -1,3 +1,4 @@
+import { Footer } from '@/components/landing/footer'
 import Header from '@/components/tenant/header'
 import { Suspense, type ReactNode } from 'react'
 
@@ -12,6 +13,9 @@ export default async function AdminLayout({
         <Header />
       </Suspense>
       <main className="flex-1 flex flex-col">{children}</main>
+      <Suspense>
+        <Footer />
+      </Suspense>
     </div>
   )
 }

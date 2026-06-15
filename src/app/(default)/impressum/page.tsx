@@ -76,6 +76,15 @@ export default function ImpressumPage() {
         </p>
       </section>
 
+      <section className='space-y-4'>
+        <h2 className='text-2xl font-semibold text-primary'>Urheberrecht</h2>
+        <p>
+          Die Inhalte dieser Website sind urheberrechtlich geschützt. Das
+          Vervielfältigen oder Verbreiten ohne ausdrückliche Genehmigung ist
+          nicht gestattet.
+        </p>
+      </section>
+
       <div className='border-t pt-8 text-sm text-muted-foreground text-center'>
         Bei rechtlichen Fragen erreichst du uns unter{' '}
         <Link

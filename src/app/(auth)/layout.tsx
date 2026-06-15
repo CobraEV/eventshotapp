@@ -9,6 +9,9 @@ const AuthLayout = ({ children }: { children: ReactNode }) => {
         <Header />
       </Suspense>
       <div className="flex-1 flex flex-col">{children}</div>
+      <Suspense>
+        <Footer />
+      </Suspense>
     </div>
   )
 }
