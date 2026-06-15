@@ -19,11 +19,12 @@ export function Video() {
         <div className="relative max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-xl">
           <video
             src="/eventshot-demo.mp4"
-            autoPlay
-            loop
-            muted
+            poster="/og-image.png"
+            controls
+            preload="none"
             playsInline
-            className="w-full h-auto rounded-2xl"
+            aria-label="EventShot Demo-Video"
+            className="w-full h-auto rounded-2xl bg-black"
           />
         </div>
       </div>
