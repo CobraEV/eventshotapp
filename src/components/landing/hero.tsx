@@ -1,7 +1,15 @@
+import { ServerIcon, ShieldCheckIcon, Trash2Icon } from 'lucide-react'
 import Image from 'next/image'
 import { FadeIn, StaggerContainer, StaggerItem } from '../ui/motion'
 import HeroButtons from './hero-buttons'
 import HeroContainer from './hero-container'
+
+const TRUST = [
+  { icon: ServerIcon, label: 'Schweizer Hosting' },
+  { icon: ShieldCheckIcon, label: 'DSG-konform' },
+  { icon: Trash2Icon, label: 'Automatische Löschung' },
+  { icon: ServerIcon, label: 'Kein Drittanbieter' },
+]
 
 export function Hero() {
   return (
@@ -36,6 +44,16 @@ export function Hero() {
             </StaggerItem>
             <StaggerItem>
               <HeroButtons />
+            </StaggerItem>
+            <StaggerItem>
+              <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-white/70">
+                {TRUST.map((item) => (
+                  <li key={item.label} className="flex items-center gap-1.5">
+                    <item.icon className="size-4 shrink-0" strokeWidth={1.75} />
+                    {item.label}
+                  </li>
+                ))}
+              </ul>
             </StaggerItem>
           </div>
 
