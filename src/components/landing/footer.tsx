@@ -25,8 +25,20 @@ export function Footer() {
               <span className='font-bold text-xl'>EventShot</span>
             </Link>
             <p className='text-muted-foreground mb-4'>
-              Wir revolutionieren die Eventfotografie mit interaktiven
-              Live-Displays.
+              Live-Fotowand & Slideshow für Hochzeiten, Geburtstage und private
+              Feste.
+            </p>
+            <p className='text-sm text-muted-foreground mb-4'>
+              Für Firmenevents mit Live-Wall & Moderation:{' '}
+              <a
+                href='https://social-wall.ch'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='text-primary hover:underline'
+              >
+                Social Wall
+              </a>{' '}
+              – ebenfalls von EdelByte.
             </p>
             <div className='flex gap-4'>
               <a

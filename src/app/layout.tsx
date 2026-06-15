@@ -79,27 +79,61 @@ export default function RootLayout({
           src="https://umami.edelbyte.ch/script.js"
           data-website-id="81d33849-a760-41dd-9426-f32636c2d3ed"
         />
-        <Script
-          id="jsonld"
+        {/* Natives <script>: JSON-LD landet so im SSR-HTML (next/script wuerde
+            es erst clientseitig injizieren). FAQPage liegt bei der FAQ-Sektion. */}
+        <script
           type="application/ld+json"
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'SoftwareApplication',
-              name: 'EventShot',
-              applicationCategory: 'EventManagementApplication',
-              operatingSystem: 'Web',
-              offers: {
-                '@type': 'Offer',
-                price: '0',
-                priceCurrency: 'CHF',
-              },
-              publisher: {
+            __html: JSON.stringify([
+              {
+                '@context': 'https://schema.org',
                 '@type': 'Organization',
+                '@id': 'https://edelbyte.ch/#organization',
                 name: 'EdelByte',
                 url: 'https://edelbyte.ch',
+                sameAs: [
+                  'https://www.instagram.com/edelbyte.ch/',
+                  'https://www.linkedin.com/company/edelbyte',
+                ],
               },
-            }),
+              {
+                '@context': 'https://schema.org',
+                '@type': 'Product',
+                name: 'EventShot',
+                description:
+                  'Live-Fotowand & Slideshow für Events: Gäste laden Fotos per QR-Code hoch und sehen sie live auf dem Screen. Mit digitaler Galerie, DSG-konform und Schweizer Hosting.',
+                url: 'https://eventshot.ch',
+                category: 'EventManagementApplication',
+                brand: { '@id': 'https://edelbyte.ch/#organization' },
+                offers: [
+                  {
+                    '@type': 'Offer',
+                    name: 'Basic',
+                    price: '49',
+                    priceCurrency: 'CHF',
+                    url: 'https://eventshot.ch/#pricing',
+                    availability: 'https://schema.org/InStock',
+                  },
+                  {
+                    '@type': 'Offer',
+                    name: 'Premium',
+                    price: '99',
+                    priceCurrency: 'CHF',
+                    url: 'https://eventshot.ch/#pricing',
+                    availability: 'https://schema.org/InStock',
+                  },
+                  {
+                    '@type': 'Offer',
+                    name: 'Enterprise',
+                    price: '149',
+                    priceCurrency: 'CHF',
+                    url: 'https://eventshot.ch/#pricing',
+                    availability: 'https://schema.org/InStock',
+                  },
+                ],
+              },
+            ]),
           }}
         />
       </body>
