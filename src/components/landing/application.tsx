@@ -53,7 +53,7 @@ export function Application() {
                 >
                   <Link href="/login">
                     <LogInIcon />
-                    Anmleden
+                    Anmelden
                   </Link>
                 </Button>
               </div>
