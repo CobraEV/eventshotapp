@@ -19,6 +19,7 @@ export type UseCaseContent = {
   faq: UseCaseFaq[]
   ctaTitle: string
   ctaText: string
+  breadcrumb?: { name: string; path: string }
 }
 
 export function UseCasePage({ content }: { content: UseCaseContent }) {
@@ -170,6 +171,40 @@ export function UseCasePage({ content }: { content: UseCaseContent }) {
           }),
         }}
       />
+
+      {/* BreadcrumbList JSON-LD */}
+      {content.breadcrumb && (
+        <script
+          type='application/ld+json'
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'BreadcrumbList',
+              itemListElement: [
+                {
+                  '@type': 'ListItem',
+                  position: 1,
+                  name: 'Home',
+                  item: 'https://eventshot.ch',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 2,
+                  name: 'Anlässe',
+                  item: 'https://eventshot.ch/#anlaesse',
+                },
+                {
+                  '@type': 'ListItem',
+                  position: 3,
+                  name: content.breadcrumb.name,
+                  item: content.breadcrumb.path,
+                },
+              ],
+            }),
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -1,0 +1,21 @@
+# EventShot
+
+> Die Live-Fotowand & Slideshow für private Feiern: Gäste laden Fotos per QR-Code hoch und sehen sie live als elegante Slideshow.
+
+EventShot ist die Live-Fotowand und Foto-Slideshow für persönliche, private Anlässe – allen voran Hochzeiten, Geburtstage und private Feiern. Gäste scannen einen QR-Code, laden ihre Fotos ganz ohne App hoch und sehen sie sofort als elegante Live-Slideshow auf Beamer oder TV. Nach der Feier bleibt eine digitale Galerie als Erinnerung, aus der alle ihre Bilder herunterladen können. EventShot ist DSG-konform, wird in der Schweiz gehostet und löscht Fotos automatisch nach Ablauf der Galerie. EventShot ist ein Produkt von EdelByte.
+
+## Key pages
+
+- [Startseite](https://eventshot.ch) – Live-Fotowand & Slideshow für private Feiern, Funktionen und Preise im Überblick.
+- [Hochzeit](https://eventshot.ch/hochzeit) – Hochzeits-Fotowand & elegante Slideshow mit digitaler Galerie als Erinnerung.
+- [Geburtstag](https://eventshot.ch/geburtstag) – Live-Fotowand & Slideshow für die private Geburtstagsfeier und Party im Freundeskreis.
+- [Firmenanlass](https://eventshot.ch/firmenanlass) – Live-Fotowand für kleine Firmenanlässe wie Team-Event, Apéro und kleine Firmenfeiern.
+
+## Sibling product
+
+Für grosse und geschäftliche Anlässe – Grossanlässe, Konferenzen und Firmenevents mit vielen Gästen – gibt es das Schwesterprodukt [social-wall.ch](https://social-wall.ch) (ebenfalls von EdelByte): Live-Masonry-Fotowand mit Moderation, eigenem Branding und mehreren Screens.
+
+## Contact
+
+- E-Mail: info@edelbyte.ch
+- Telefon: +41 44 500 25 04

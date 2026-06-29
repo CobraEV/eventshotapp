@@ -31,14 +31,14 @@ export function Footer() {
               Feste.
             </p>
             <p className='text-sm text-muted-foreground mb-4'>
-              Für Firmenevents mit Live-Wall & Moderation:{' '}
+              Grossanlass, Konferenz oder Firmenevent mit vielen Gästen?{' '}
               <a
                 href='https://social-wall.ch'
                 target='_blank'
                 rel='noopener noreferrer'
                 className='text-primary hover:underline'
               >
-                Social Wall
+                Grossanlass / Firmenevent-Fotowand → social-wall.ch
               </a>{' '}
               – ebenfalls von EdelByte.
             </p>

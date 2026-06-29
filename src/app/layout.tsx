@@ -12,9 +12,10 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title: 'EventShot – Live-Fotowand & Slideshow für Hochzeiten und Events',
+  title:
+    'EventShot – Live-Fotowand & Foto-Slideshow für Hochzeit, Geburtstag & private Feiern',
   description:
-    'Mit EventShot werden Eventfotos in Echtzeit geteilt. Gäste scannen den QR-Code, laden ein Foto hoch und es erscheint sofort auf dem Bildschirm – perfekt für Hochzeiten, Firmenfeiern und Messen.',
+    'Die Live-Fotowand & Slideshow für Hochzeit, Geburtstag und private Feiern: Gäste laden Fotos per QR-Code hoch – ganz ohne App – und sehen sie live als elegante Slideshow. Inklusive digitaler Galerie als Erinnerung. DSG-konform, Schweizer Hosting.',
   authors: [
     { name: 'EdelByte', url: 'https://edelbyte.ch' },
     { name: 'Endrit Veliji' },
@@ -22,9 +23,10 @@ export const metadata: Metadata = {
   creator: 'Endrit Veliji',
   publisher: 'EdelByte',
   openGraph: {
-    title: 'EventShot – Fotos live am Event',
+    title:
+      'EventShot – Live-Fotowand & Slideshow für Hochzeit, Geburtstag & private Feiern',
     description:
-      'Lade Fotos per QR-Code hoch und zeige sie live auf dem Event-Screen. Für Hochzeiten, Firmenanlässe & Messen – entwickelt von EdelByte 🇨🇭',
+      'Gäste laden Fotos per QR-Code hoch – ganz ohne App – und sehen sie live als elegante Slideshow. Inklusive digitaler Galerie als Erinnerung. Für Hochzeit, Geburtstag & private Feiern. DSG-konform, Schweizer Hosting.',
     url: 'https://eventshot.ch',
     siteName: 'EventShot',
     locale: 'de_CH',
@@ -85,55 +87,78 @@ export default function RootLayout({
           type="application/ld+json"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify([
-              {
-                '@context': 'https://schema.org',
-                '@type': 'Organization',
-                '@id': 'https://edelbyte.ch/#organization',
-                name: 'EdelByte',
-                url: 'https://edelbyte.ch',
-                sameAs: [
-                  'https://www.instagram.com/edelbyte.ch/',
-                  'https://www.linkedin.com/company/edelbyte',
-                ],
-              },
-              {
-                '@context': 'https://schema.org',
-                '@type': 'Product',
-                name: 'EventShot',
-                description:
-                  'Live-Fotowand & Slideshow für Events: Gäste laden Fotos per QR-Code hoch und sehen sie live auf dem Screen. Mit digitaler Galerie, DSG-konform und Schweizer Hosting.',
-                url: 'https://eventshot.ch',
-                category: 'EventManagementApplication',
-                brand: { '@id': 'https://edelbyte.ch/#organization' },
-                offers: [
-                  {
-                    '@type': 'Offer',
-                    name: 'Basic',
-                    price: '49',
-                    priceCurrency: 'CHF',
-                    url: 'https://eventshot.ch/#pricing',
-                    availability: 'https://schema.org/InStock',
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@graph': [
+                {
+                  '@type': 'Organization',
+                  '@id': 'https://edelbyte.ch/#organization',
+                  name: 'EdelByte',
+                  url: 'https://edelbyte.ch',
+                  logo: 'https://eventshot.ch/EdelByte_Logo_Light_Rect.png',
+                  sameAs: [
+                    'https://www.instagram.com/edelbyte.ch/',
+                    'https://www.linkedin.com/company/edelbyte',
+                  ],
+                  contactPoint: {
+                    '@type': 'ContactPoint',
+                    telephone: '+41445002504',
+                    email: 'info@edelbyte.ch',
+                    contactType: 'sales',
+                    areaServed: 'CH',
+                    availableLanguage: ['de', 'en'],
                   },
-                  {
-                    '@type': 'Offer',
-                    name: 'Premium',
-                    price: '99',
-                    priceCurrency: 'CHF',
-                    url: 'https://eventshot.ch/#pricing',
-                    availability: 'https://schema.org/InStock',
-                  },
-                  {
-                    '@type': 'Offer',
-                    name: 'Enterprise',
-                    price: '149',
-                    priceCurrency: 'CHF',
-                    url: 'https://eventshot.ch/#pricing',
-                    availability: 'https://schema.org/InStock',
-                  },
-                ],
-              },
-            ]),
+                },
+                {
+                  '@type': 'SoftwareApplication',
+                  '@id': 'https://eventshot.ch/#software',
+                  name: 'EventShot',
+                  description:
+                    'Live-Fotowand & Slideshow für private Feiern wie Hochzeit und Geburtstag: Gäste laden Fotos per QR-Code hoch und sehen sie live als elegante Slideshow. Mit digitaler Galerie als Erinnerung, DSG-konform und Schweizer Hosting.',
+                  url: 'https://eventshot.ch',
+                  applicationCategory: 'MultimediaApplication',
+                  operatingSystem: 'Web',
+                  image: 'https://eventshot.ch/og-image.png',
+                  screenshot: 'https://eventshot.ch/og-image.png',
+                  publisher: { '@id': 'https://edelbyte.ch/#organization' },
+                  inLanguage: 'de-CH',
+                  offers: [
+                    {
+                      '@type': 'Offer',
+                      name: 'Basic',
+                      price: '49',
+                      priceCurrency: 'CHF',
+                      url: 'https://eventshot.ch/#pricing',
+                      availability: 'https://schema.org/InStock',
+                    },
+                    {
+                      '@type': 'Offer',
+                      name: 'Premium',
+                      price: '99',
+                      priceCurrency: 'CHF',
+                      url: 'https://eventshot.ch/#pricing',
+                      availability: 'https://schema.org/InStock',
+                    },
+                    {
+                      '@type': 'Offer',
+                      name: 'Enterprise',
+                      price: '149',
+                      priceCurrency: 'CHF',
+                      url: 'https://eventshot.ch/#pricing',
+                      availability: 'https://schema.org/InStock',
+                    },
+                  ],
+                  featureList: [
+                    'Live-Fotowand & elegante Slideshow',
+                    'QR-Code-Upload ohne App',
+                    'Digitale Galerie als Erinnerung',
+                    'Eigenes Branding',
+                    'Automatische Löschung',
+                    'DSG-konform, Schweizer Hosting',
+                  ],
+                },
+              ],
+            }),
           }}
         />
       </body>

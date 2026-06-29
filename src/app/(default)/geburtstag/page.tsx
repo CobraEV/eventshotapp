@@ -5,14 +5,15 @@ import {
 } from '@/components/landing/use-case-page'
 
 export const metadata: Metadata = {
-  title: 'EventShot für deinen Geburtstag – Live-Fotowand & Galerie',
+  title:
+    'Geburtstags-Fotowand & Slideshow – Live-Fotowand für deine Party | EventShot',
   description:
-    'Live-Fotowand für deine Geburtstagsparty: Gäste laden Fotos per QR-Code hoch und sehen sie sofort auf dem Screen. Ohne App, DSG-konform, Schweizer Hosting.',
+    'Die Live-Fotowand & Slideshow für deine private Geburtstagsfeier: Gäste laden Fotos per QR-Code hoch und sehen sie live auf dem Screen. Danach bleibt die digitale Galerie als Erinnerung. Ohne App, DSG-konform, Schweizer Hosting.',
   alternates: { canonical: 'https://eventshot.ch/geburtstag' },
   openGraph: {
-    title: 'EventShot für deinen Geburtstag',
+    title: 'Geburtstags-Fotowand & Slideshow für deine Party',
     description:
-      'Live-Fotowand & digitale Galerie für deine Geburtstagsparty – ohne App.',
+      'Live-Fotowand, Slideshow & digitale Galerie als Erinnerung für deine private Geburtstagsfeier – ohne App.',
     url: 'https://eventshot.ch/geburtstag',
   },
 }
@@ -21,7 +22,7 @@ const content: UseCaseContent = {
   eyebrow: 'EventShot für Geburtstage',
   title: 'Deine Party, live auf dem Screen.',
   intro:
-    'Ob runder Geburtstag oder spontane Feier: Mit EventShot teilen alle Gäste ihre Schnappschüsse in Echtzeit. Foto hochladen, sofort auf der Leinwand sehen – und nach der Party alles in einer digitalen Galerie.',
+    'Ob runder Geburtstag, Party im Freundeskreis oder spontane Feier: Mit EventShot teilen alle Gäste ihre Schnappschüsse in Echtzeit. Foto hochladen, sofort als Slideshow auf der Leinwand sehen – und nach der Party bleibt euch alles in einer digitalen Galerie als Erinnerung.',
   ablaufTitle: 'So läuft deine Party',
   ablauf: [
     {
@@ -70,6 +71,7 @@ const content: UseCaseContent = {
   ctaTitle: 'Bereit für deine Foto-Wand?',
   ctaText:
     'Richte dein Geburtstags-Event in wenigen Minuten ein – Registrierung kostenlos, du zahlst erst beim Buchen.',
+  breadcrumb: { name: 'Geburtstag', path: 'https://eventshot.ch/geburtstag' },
 }
 
 export default function GeburtstagPage() {

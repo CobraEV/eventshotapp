@@ -1,4 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'Datenschutzerklärung | EventShot',
+  description:
+    'Wie EventShot personenbezogene Daten DSG-konform verarbeitet und auf Schweizer Servern speichert – transparent erklärt.',
+  alternates: { canonical: 'https://eventshot.ch/datenschutz' },
+  robots: { index: true, follow: true },
+}
 
 export default function DatenschutzPage() {
   return (

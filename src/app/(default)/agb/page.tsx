@@ -1,4 +1,13 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+
+export const metadata: Metadata = {
+  title: 'AGB – Allgemeine Geschäftsbedingungen | EventShot',
+  description:
+    'Die Allgemeinen Geschäftsbedingungen für die Nutzung der EventShot-Plattform – der Live-Fotowand & Slideshow für private Feiern.',
+  alternates: { canonical: 'https://eventshot.ch/agb' },
+  robots: { index: true, follow: true },
+}
 
 export default function AGBPage() {
   return (

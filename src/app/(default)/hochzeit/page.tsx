@@ -5,14 +5,15 @@ import {
 } from '@/components/landing/use-case-page'
 
 export const metadata: Metadata = {
-  title: 'EventShot für deine Hochzeit – Live-Fotowand & Slideshow',
+  title:
+    'Hochzeits-Fotowand & Slideshow – Live-Fotowand für eure Hochzeit | EventShot',
   description:
-    'Eure Gäste teilen ihre schönsten Hochzeitsfotos per QR-Code – live auf der Slideshow und danach in einer digitalen Galerie. Ohne App, DSG-konform, Schweizer Hosting.',
+    'Die Live-Fotowand & elegante Slideshow für eure Hochzeit: Gäste teilen ihre schönsten Momente per QR-Code – live im Festsaal und danach als digitale Galerie zur Erinnerung. Ohne App, DSG-konform, Schweizer Hosting.',
   alternates: { canonical: 'https://eventshot.ch/hochzeit' },
   openGraph: {
-    title: 'EventShot für deine Hochzeit',
+    title: 'Hochzeits-Fotowand & Slideshow für eure Hochzeit',
     description:
-      'Live-Fotowand & digitale Galerie für eure Hochzeit – ohne App, DSG-konform, Schweizer Hosting.',
+      'Live-Fotowand, elegante Slideshow & digitale Galerie als Erinnerung für eure Hochzeit – ohne App, DSG-konform, Schweizer Hosting.',
     url: 'https://eventshot.ch/hochzeit',
   },
 }
@@ -21,7 +22,7 @@ const content: UseCaseContent = {
   eyebrow: 'EventShot für Hochzeiten',
   title: 'Eure Hochzeit, geteilt in Echtzeit.',
   intro:
-    'Jeder Gast hält andere Momente fest. Mit EventShot landen sie alle an einem Ort: Gäste laden ihre Fotos per QR-Code hoch, sehen sie live auf der Slideshow – und ihr habt nach dem Fest eine digitale Galerie mit allen Bildern.',
+    'Jeder Gast hält andere Momente fest – vom ersten Tanz bis zum Lachen in intimer Runde. Mit EventShot landen sie alle an einem Ort: Gäste laden ihre Fotos per QR-Code hoch und sehen sie live als elegante Slideshow. Nach dem Fest bleibt euch die digitale Galerie mit allen Bildern als persönliche Erinnerung.',
   ablaufTitle: 'So läuft euer Hochzeitstag',
   ablauf: [
     {
@@ -70,6 +71,7 @@ const content: UseCaseContent = {
   ctaTitle: 'Bereit für eure Foto-Wand?',
   ctaText:
     'Richtet euer Hochzeits-Event in wenigen Minuten ein – Registrierung kostenlos, ihr zahlt erst beim Buchen.',
+  breadcrumb: { name: 'Hochzeit', path: 'https://eventshot.ch/hochzeit' },
 }
 
 export default function HochzeitPage() {
