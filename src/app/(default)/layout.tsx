@@ -5,33 +5,34 @@ import { Header } from '@/components/landing/header'
 import SmoothScroll from '@/components/SmoothScroll'
 
 export const metadata: Metadata = {
-  title: 'EventShot – Live-Fotowand & Slideshow für Hochzeiten und Events',
+  title:
+    'EventShot – Live-Fotowand & Foto-Slideshow für Hochzeit, Geburtstag & private Feiern',
   description:
-    'EventShot macht dein Event unvergesslich. Gäste scannen einen QR-Code, laden Fotos hoch und sehen sie live auf dem Bildschirm. Einfach. Sofort. Interaktiv.',
+    'Die Live-Fotowand & Slideshow für Hochzeit, Geburtstag und private Feiern: Gäste laden Fotos per QR-Code hoch – ganz ohne App – und sehen sie live als elegante Slideshow. Inklusive digitaler Galerie als Erinnerung. DSG-konform, Schweizer Hosting.',
   authors: [{ name: 'Endrit Veliji', url: 'https://www.eventshot.ch' }],
   creator: 'Endrit Veliji',
   openGraph: {
-    title: 'EventShot – Dein Event, Deine Fotos',
+    title: 'EventShot – Live-Fotowand & Slideshow für private Feiern',
     description:
-      'Fotos deiner Gäste – live und automatisch auf dem Screen. Perfekt für Hochzeiten, Firmenfeiern & Events.',
+      'Fotos deiner Gäste – live als elegante Slideshow auf dem Screen. Perfekt für Hochzeit, Geburtstag & private Feiern. Mit digitaler Galerie als Erinnerung.',
     url: 'https://eventshot.ch',
     siteName: 'EventShot',
     images: [
       {
-        url: 'https://eventshot.ch/og-image.png', // Bild erstellen & ersetzen
+        url: 'https://eventshot.ch/og-image.png',
         width: 1200,
         height: 630,
-        alt: 'EventShot – Dein Event, Deine Fotos',
+        alt: 'EventShot – Live-Fotowand & Slideshow für private Feiern',
       },
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'EventShot – Dein Event, Deine Fotos',
+    title: 'EventShot – Live-Fotowand & Slideshow für private Feiern',
     description:
-      'Fotos deiner Gäste direkt auf dem Screen. Mit QR-Code hochladen & teilen – ganz ohne App.',
-    images: ['https://eventshot.ch/og-image.png'], // gleiches Bild wie oben
+      'Fotos deiner Gäste live als Slideshow auf dem Screen – für Hochzeit, Geburtstag & private Feiern. Mit QR-Code hochladen, ganz ohne App.',
+    images: ['https://eventshot.ch/og-image.png'],
   },
 }
 
