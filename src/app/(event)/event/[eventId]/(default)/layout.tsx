@@ -1,3 +1,10 @@
+import type { Metadata } from 'next'
+
+// Nicht-oeffentlicher bzw. ephemerer Bereich: gehoert nicht in den Suchindex.
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
+
 import EventHeader from '@/components/event/event-header'
 
 export default async function EventLayout({

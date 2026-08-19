@@ -13,11 +13,14 @@ export default function robots(): MetadataRoute.Robots {
           '/forgot-password',
           '/reset-password',
           '/api/',
-          '/dashboard',
-          '/dashboard/',
+          // Die App nutzt /tenant – '/dashboard' existiert hier gar nicht.
+          '/tenant',
+          '/tenant/',
           '/event/*/upload',
-          '/event/*/settings',
         ],
+        // Bewusst NICHT gesperrt: /event/<id> und /event/<id>/gallery.
+        // Sie tragen ein noindex im HTML – das sieht ein Crawler nur, wenn
+        // er die Seite auch abrufen darf.
       },
     ],
     sitemap: 'https://eventshot.ch/sitemap.xml',

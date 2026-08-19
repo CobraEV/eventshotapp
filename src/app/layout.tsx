@@ -1,6 +1,7 @@
+import { graph, organizationNode, websiteNode } from '@/lib/seo/schema'
 import '@/styles/globals.css'
 import 'moment/locale/de'
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Poppins } from 'next/font/google'
 import Script from 'next/script'
 import { Toaster } from 'sonner'
@@ -12,8 +13,14 @@ const poppins = Poppins({
 })
 
 export const metadata: Metadata = {
-  title:
-    'EventShot – Live-Fotowand & Foto-Slideshow für Hochzeit, Geburtstag & private Feiern',
+  title: {
+    default:
+      'EventShot – Live-Fotowand & Slideshow für Hochzeit & Geburtstag',
+    // Unterseiten setzen nur ihren eigenen Titel; die Marke haengt das
+    // Template an. Ohne das erben Seiten ohne eigenen Export 1:1 den
+    // Startseiten-Titel (Duplicate Titles).
+    template: '%s | EventShot',
+  },
   description:
     'Die Live-Fotowand & Slideshow für Hochzeit, Geburtstag und private Feiern: Gäste laden Fotos per QR-Code hoch – ganz ohne App – und sehen sie live als elegante Slideshow. Inklusive digitaler Galerie als Erinnerung. DSG-konform, Schweizer Hosting.',
   authors: [
@@ -33,7 +40,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://eventshot.ch/og-image.png',
+        url: 'https://eventshot.ch/og-image-1200x630.png',
         width: 1200,
         height: 630,
         alt: 'EventShot – Fotos live am Event',
@@ -47,21 +54,34 @@ export const metadata: Metadata = {
     description:
       'QR-Code scannen, Foto hochladen, direkt auf der Leinwand sehen – EventShot macht Events interaktiver! Entwickelt von EdelByte.',
     creator: '@edelbyte',
-    images: ['https://eventshot.ch/twitter-image.png'],
+    images: ['https://eventshot.ch/og-image-1200x630.png'],
   },
   metadataBase: new URL('https://eventshot.ch'),
-  alternates: {
-    canonical: 'https://eventshot.ch',
-  },
+  // KEIN canonical im Root-Layout: Next vererbt Metadata-Felder an jede
+  // Route, die sie nicht selbst setzt – jede Unterseite haette sonst die
+  // Startseite als Canonical deklariert. Jede Seite setzt ihn selbst.
   robots: {
     index: true,
     follow: true,
   },
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
     shortcut: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180' }],
   },
+}
+
+
+// Ohne diesen Export fehlt <meta name="theme-color">, obwohl das
+// Manifest eine theme_color deklariert.
+export const viewport: Viewport = {
+  themeColor: '#0b0b0b',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({
@@ -84,81 +104,10 @@ export default function RootLayout({
         {/* Natives <script>: JSON-LD landet so im SSR-HTML (next/script wuerde
             es erst clientseitig injizieren). FAQPage liegt bei der FAQ-Sektion. */}
         <script
-          type="application/ld+json"
+          type='application/ld+json'
           // biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@graph': [
-                {
-                  '@type': 'Organization',
-                  '@id': 'https://edelbyte.ch/#organization',
-                  name: 'EdelByte',
-                  url: 'https://edelbyte.ch',
-                  logo: 'https://eventshot.ch/EdelByte_Logo_Light_Rect.png',
-                  sameAs: [
-                    'https://www.instagram.com/edelbyte.ch/',
-                    'https://www.linkedin.com/company/edelbyte',
-                  ],
-                  contactPoint: {
-                    '@type': 'ContactPoint',
-                    telephone: '+41445002504',
-                    email: 'info@edelbyte.ch',
-                    contactType: 'sales',
-                    areaServed: 'CH',
-                    availableLanguage: ['de', 'en'],
-                  },
-                },
-                {
-                  '@type': 'SoftwareApplication',
-                  '@id': 'https://eventshot.ch/#software',
-                  name: 'EventShot',
-                  description:
-                    'Live-Fotowand & Slideshow für private Feiern wie Hochzeit und Geburtstag: Gäste laden Fotos per QR-Code hoch und sehen sie live als elegante Slideshow. Mit digitaler Galerie als Erinnerung, DSG-konform und Schweizer Hosting.',
-                  url: 'https://eventshot.ch',
-                  applicationCategory: 'MultimediaApplication',
-                  operatingSystem: 'Web',
-                  image: 'https://eventshot.ch/og-image.png',
-                  screenshot: 'https://eventshot.ch/og-image.png',
-                  publisher: { '@id': 'https://edelbyte.ch/#organization' },
-                  inLanguage: 'de-CH',
-                  offers: [
-                    {
-                      '@type': 'Offer',
-                      name: 'Basic',
-                      price: '49',
-                      priceCurrency: 'CHF',
-                      url: 'https://eventshot.ch/#pricing',
-                      availability: 'https://schema.org/InStock',
-                    },
-                    {
-                      '@type': 'Offer',
-                      name: 'Premium',
-                      price: '99',
-                      priceCurrency: 'CHF',
-                      url: 'https://eventshot.ch/#pricing',
-                      availability: 'https://schema.org/InStock',
-                    },
-                    {
-                      '@type': 'Offer',
-                      name: 'Enterprise',
-                      price: '149',
-                      priceCurrency: 'CHF',
-                      url: 'https://eventshot.ch/#pricing',
-                      availability: 'https://schema.org/InStock',
-                    },
-                  ],
-                  featureList: [
-                    'Live-Fotowand & elegante Slideshow',
-                    'QR-Code-Upload ohne App',
-                    'Digitale Galerie als Erinnerung',
-                    'Eigenes Branding',
-                    'Automatische Löschung',
-                    'DSG-konform, Schweizer Hosting',
-                  ],
-                },
-              ],
-            }),
+            __html: JSON.stringify(graph(organizationNode(), websiteNode())),
           }}
         />
       </body>

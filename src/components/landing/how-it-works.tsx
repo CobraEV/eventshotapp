@@ -63,8 +63,9 @@ export function HowItWorks() {
             <ScrollReveal className="relative h-[500px] w-full rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src="/eventshot-hero.png"
-                alt="Personen mit Smartphones bei einem Event"
+                alt="Live-Fotowand an einer privaten Feier: Gästefoto und QR-Code auf der Leinwand im Festsaal"
                 fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover"
               />
             </ScrollReveal>

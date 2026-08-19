@@ -1,22 +1,16 @@
+import { buildMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
 import {
   type UseCaseContent,
   UseCasePage,
 } from '@/components/landing/use-case-page'
 
-export const metadata: Metadata = {
-  title:
-    'Geburtstags-Fotowand & Slideshow – Live-Fotowand für deine Party | EventShot',
+export const metadata: Metadata = buildMetadata({
+  path: '/geburtstag',
+  title: 'Geburtstags-Fotowand & Slideshow für deine Party',
   description:
-    'Die Live-Fotowand & Slideshow für deine private Geburtstagsfeier: Gäste laden Fotos per QR-Code hoch und sehen sie live auf dem Screen. Danach bleibt die digitale Galerie als Erinnerung. Ohne App, DSG-konform, Schweizer Hosting.',
-  alternates: { canonical: 'https://eventshot.ch/geburtstag' },
-  openGraph: {
-    title: 'Geburtstags-Fotowand & Slideshow für deine Party',
-    description:
-      'Live-Fotowand, Slideshow & digitale Galerie als Erinnerung für deine private Geburtstagsfeier – ohne App.',
-    url: 'https://eventshot.ch/geburtstag',
-  },
-}
+    'Deine Gäste laden Fotos per QR-Code hoch, alles läuft live auf TV oder Beamer. Danach bleibt die digitale Galerie. Ohne App, DSG-konform.',
+})
 
 const content: UseCaseContent = {
   eyebrow: 'EventShot für Geburtstage',
@@ -71,7 +65,7 @@ const content: UseCaseContent = {
   ctaTitle: 'Bereit für deine Foto-Wand?',
   ctaText:
     'Richte dein Geburtstags-Event in wenigen Minuten ein – Registrierung kostenlos, du zahlst erst beim Buchen.',
-  breadcrumb: { name: 'Geburtstag', path: 'https://eventshot.ch/geburtstag' },
+  breadcrumb: { name: 'Geburtstag', path: '/geburtstag' },
 }
 
 export default function GeburtstagPage() {

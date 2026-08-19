@@ -1,13 +1,13 @@
+import { buildMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-export const metadata: Metadata = {
-  title: 'Impressum | EventShot',
+export const metadata: Metadata = buildMetadata({
+  path: '/impressum',
+  title: 'Impressum',
   description:
     'Impressum und Anbieterangaben zu EventShot, der Live-Fotowand & Slideshow von EdelByte – gemäss Schweizer Recht.',
-  alternates: { canonical: 'https://eventshot.ch/impressum' },
-  robots: { index: true, follow: true },
-}
+})
 
 export default function ImpressumPage() {
   return (

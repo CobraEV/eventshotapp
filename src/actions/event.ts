@@ -1,5 +1,6 @@
 'use server'
 
+import { notifyAdminEventCreated } from '@/lib/admin-notify'
 import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -29,7 +30,7 @@ export async function createEvent(formData: FormData) {
   const token = crypto.randomBytes(32).toString('hex')
 
   try {
-    await prisma.event.create({
+    const created = await prisma.event.create({
       data: {
         name,
         plan,
@@ -40,7 +41,17 @@ export async function createEvent(formData: FormData) {
         tenant: { connect: { id: tenantId } },
       },
     })
-    redirect(`?created=1`)
+
+    await notifyAdminEventCreated({
+      eventId: created.id,
+      name: created.name,
+      plan: created.plan,
+      date: created.date,
+      location: created.location,
+      description: created.description,
+      tenantId: created.tenantId,
+      source: 'Admin-Bereich',
+    })
   } catch (err) {
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
@@ -48,10 +59,17 @@ export async function createEvent(formData: FormData) {
     ) {
       redirect(`?error=duplicate_name`)
     }
+    // Unbekannte Fehler nicht verschlucken – sonst wirkt das Anlegen
+    // erfolgreich, obwohl kein Event entstanden ist.
+    throw err
   }
 
   revalidatePath(`/`)
   revalidatePath(`/events`)
+
+  // redirect() wirft NEXT_REDIRECT und muss deshalb ausserhalb des try
+  // stehen – im try wuerde der catch-Block die Weiterleitung schlucken.
+  redirect(`?created=1`)
 }
 
 // --- Server Action: Event bearbeiten ---

@@ -3,10 +3,11 @@ export const siteConfig = {
   description: 'Live Foto-Sharing Plattform für Veranstaltungen',
   navItems: [
     { label: 'Start', href: '/' },
-    { label: 'Funktionen', href: '/#features' },
-    { label: "So funktioniert's", href: '/#how-it-works' },
-    { label: 'Preise', href: '/#pricing' },
-    { label: 'FAQ', href: '/#faq' },
+    { label: 'Anlässe', href: '/anlaesse' },
+    { label: 'Funktionen', href: '/funktionen' },
+    { label: 'Preise', href: '/preise' },
+    { label: 'Ratgeber', href: '/ratgeber' },
+    { label: 'FAQ', href: '/faq' },
   ],
   adminNavItems: [
     { label: 'Start', href: '/' },

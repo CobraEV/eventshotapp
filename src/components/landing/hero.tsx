@@ -17,7 +17,8 @@ export function Hero() {
       <HeroContainer>
         <Image
           src="/hero-bg.jpeg"
-          alt="Eventshot Hero"
+          alt=""
+          aria-hidden="true"
           fill
           sizes="100vw"
           className="object-cover object-center brightness-[0.3]"
@@ -28,21 +29,23 @@ export function Hero() {
       <div className="container relative z-10">
         <StaggerContainer className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
-            <StaggerItem>
+            {/* Bewusst NICHT in StaggerItem: das schreibt style="opacity:0"
+                ins SSR-HTML und nimmt der H1 die LCP-Kandidatur. */}
+            <div>
               <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
                 Erlebe <span className="text-primary">Momente</span>,
                 <br />
                 geteilt in <span className="text-primary">Echtzeit</span>
               </h1>
-            </StaggerItem>
-            <StaggerItem>
+            </div>
+            <div>
               <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0">
                 Die Live-Fotowand & Slideshow für eure Hochzeit, den Geburtstag
                 und private Feiern: Gäste laden Fotos per QR-Code hoch – ganz
                 ohne App – und sehen sie live als elegante Slideshow. Danach
                 bleibt euch die digitale Galerie als Erinnerung.
               </p>
-            </StaggerItem>
+            </div>
             <StaggerItem>
               <HeroButtons />
             </StaggerItem>
@@ -61,8 +64,9 @@ export function Hero() {
           <FadeIn className="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden shadow-2xl">
             <Image
               src="/eventshot-how-to.png"
-              alt="EventShot Vorschau"
+              alt="EventShot in Aktion: Gäste laden per QR-Code Fotos hoch, die live als Slideshow auf dem Screen erscheinen"
               fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
               priority
             />

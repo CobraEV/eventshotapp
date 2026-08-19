@@ -12,6 +12,50 @@ import Link from 'next/link'
 import { FadeIn } from '@/components/ui/motion'
 import FooterNav from './footer-nav'
 
+
+const ANLAESSE = [
+  { label: 'Alle Anlässe', href: '/anlaesse' },
+  { label: 'Hochzeit', href: '/hochzeit' },
+  { label: 'Geburtstag', href: '/geburtstag' },
+  { label: 'Taufe', href: '/taufe' },
+  { label: 'Jubiläum', href: '/jubilaeum' },
+  { label: 'Konfirmation', href: '/konfirmation' },
+  { label: 'Polterabend', href: '/polterabend' },
+  { label: 'Familienfest', href: '/familienfest' },
+  { label: 'Team-Event', href: '/firmenanlass' },
+]
+
+const SERVICE = [
+  { label: 'Preise', href: '/preise' },
+  { label: 'Funktionen', href: '/funktionen' },
+  { label: 'Live-Slideshow', href: '/live-slideshow' },
+  { label: 'Ratgeber', href: '/ratgeber' },
+  { label: 'Häufige Fragen', href: '/faq' },
+  { label: 'Demo ansehen', href: '/demo' },
+  { label: 'Kontakt', href: '/kontakt' },
+  { label: 'Über uns', href: '/ueber-uns' },
+]
+
+const REGIONEN = [
+  { label: 'Zürich', href: '/hochzeit/zuerich' },
+  { label: 'Bern', href: '/hochzeit/bern' },
+  { label: 'Basel', href: '/hochzeit/basel' },
+  { label: 'Luzern', href: '/hochzeit/luzern' },
+  { label: 'St. Gallen', href: '/hochzeit/st-gallen' },
+  { label: 'Zug', href: '/hochzeit/zug' },
+  { label: 'Winterthur', href: '/hochzeit/winterthur' },
+  { label: 'Aarau', href: '/hochzeit/aarau' },
+]
+
+const VERGLEICH = [
+  { label: 'Fotobox-Alternative', href: '/fotobox-alternative' },
+  { label: 'Fotobox Kosten Schweiz', href: '/fotobox-kosten-schweiz' },
+  { label: 'Fotobox ohne App', href: '/fotobox-ohne-app' },
+  { label: 'Digitales Gästebuch', href: '/digitales-gaestebuch' },
+  { label: 'Fotichaschte-Alternative', href: '/fotichaschte-alternative' },
+  { label: 'Digitale Fotobox', href: '/digitale-fotobox' },
+]
+
 export function Footer() {
   // Statisch halten: new Date() würde den Footer unter cacheComponents
   // dynamisch machen und aus dem server-gerenderten HTML drängen (SEO).
@@ -20,7 +64,7 @@ export function Footer() {
   return (
     <footer className='bg-muted/80 pt-16 pb-8'>
       <div className='container'>
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12'>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-12'>
           <div>
             <Link href='/' className='flex items-center gap-2 mb-4'>
               <Camera className='w-6 h-6 text-primary' />
@@ -45,9 +89,13 @@ export function Footer() {
             <div className='flex gap-4'>
               <a
                 href='https://instagram.com/eventshot.ch'
+                target='_blank'
+                rel='noopener noreferrer'
+                aria-label='EventShot auf Instagram'
                 className='text-muted-foreground hover:text-primary transition-colors'
               >
                 <Instagram className='h-5 w-5' />
+                <span className='sr-only'>EventShot auf Instagram</span>
               </a>
               {/* <a
                 href="#"
@@ -78,21 +126,64 @@ export function Footer() {
           <div>
             <h3 className='font-semibold mb-4'>Anlässe</h3>
             <ul className='space-y-2 text-muted-foreground'>
-              <li>
-                <Link href='/hochzeit' className='hover:text-primary transition-colors'>
-                  Hochzeit
-                </Link>
-              </li>
-              <li>
-                <Link href='/geburtstag' className='hover:text-primary transition-colors'>
-                  Geburtstag
-                </Link>
-              </li>
-              <li>
-                <Link href='/firmenanlass' className='hover:text-primary transition-colors'>
-                  Firmenanlass
-                </Link>
-              </li>
+              {ANLAESSE.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className='hover:text-primary transition-colors'
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className='font-semibold mb-4'>Vergleich</h3>
+            <ul className='space-y-2 text-muted-foreground'>
+              {VERGLEICH.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className='hover:text-primary transition-colors'
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className='font-semibold mb-4'>Service</h3>
+            <ul className='space-y-2 text-muted-foreground'>
+              {SERVICE.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className='hover:text-primary transition-colors'
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className='font-semibold mb-4'>Hochzeit nach Region</h3>
+            <ul className='space-y-2 text-muted-foreground'>
+              {REGIONEN.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className='hover:text-primary transition-colors'
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

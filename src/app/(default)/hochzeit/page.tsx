@@ -1,22 +1,16 @@
+import { buildMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
 import {
   type UseCaseContent,
   UseCasePage,
 } from '@/components/landing/use-case-page'
 
-export const metadata: Metadata = {
-  title:
-    'Hochzeits-Fotowand & Slideshow – Live-Fotowand für eure Hochzeit | EventShot',
+export const metadata: Metadata = buildMetadata({
+  path: '/hochzeit',
+  title: 'Hochzeits-Fotowand & Slideshow für Gästefotos',
   description:
-    'Die Live-Fotowand & elegante Slideshow für eure Hochzeit: Gäste teilen ihre schönsten Momente per QR-Code – live im Festsaal und danach als digitale Galerie zur Erinnerung. Ohne App, DSG-konform, Schweizer Hosting.',
-  alternates: { canonical: 'https://eventshot.ch/hochzeit' },
-  openGraph: {
-    title: 'Hochzeits-Fotowand & Slideshow für eure Hochzeit',
-    description:
-      'Live-Fotowand, elegante Slideshow & digitale Galerie als Erinnerung für eure Hochzeit – ohne App, DSG-konform, Schweizer Hosting.',
-    url: 'https://eventshot.ch/hochzeit',
-  },
-}
+    'Gästefotos per QR-Code sammeln, live als Slideshow zeigen und danach als digitale Galerie behalten. Ohne App, DSG-konform, Schweizer Hosting.',
+})
 
 const content: UseCaseContent = {
   eyebrow: 'EventShot für Hochzeiten',
@@ -71,7 +65,7 @@ const content: UseCaseContent = {
   ctaTitle: 'Bereit für eure Foto-Wand?',
   ctaText:
     'Richtet euer Hochzeits-Event in wenigen Minuten ein – Registrierung kostenlos, ihr zahlt erst beim Buchen.',
-  breadcrumb: { name: 'Hochzeit', path: 'https://eventshot.ch/hochzeit' },
+  breadcrumb: { name: 'Hochzeit', path: '/hochzeit' },
 }
 
 export default function HochzeitPage() {

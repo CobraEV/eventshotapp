@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth'
 import { prismaAdapter } from 'better-auth/adapters/prisma'
 import { nextCookies } from 'better-auth/next-js'
+import { notifyAdminLogin, notifyAdminSignup } from '@/lib/admin-notify'
 import prisma from '@/lib/prisma'
 import { sendMail } from './mailer'
 
@@ -137,6 +138,45 @@ Wenn du das nicht angefordert hast, ignoriere diese E-Mail.`,
 </html>
         `,
       })
+    },
+  },
+
+  // --------------------------------------------------
+  // Betreiber-Benachrichtigungen (info@edelbyte.ch)
+  // --------------------------------------------------
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await notifyAdminSignup({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            emailVerified: user.emailVerified,
+          })
+        },
+      },
+    },
+    session: {
+      create: {
+        after: async (session) => {
+          // Session-Datensatz kennt nur die userId – Name/E-Mail nachladen.
+          const user = await prisma.user
+            .findUnique({
+              where: { id: session.userId },
+              select: { name: true, email: true },
+            })
+            .catch(() => null)
+
+          await notifyAdminLogin({
+            userId: session.userId,
+            name: user?.name,
+            email: user?.email,
+            ipAddress: session.ipAddress,
+            userAgent: session.userAgent,
+          })
+        },
+      },
     },
   },
 

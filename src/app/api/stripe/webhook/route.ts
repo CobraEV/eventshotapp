@@ -7,6 +7,10 @@ import { sendMail } from '@/lib/mailer'
 import { generateInvoicePdf } from '@/lib/invoice-pdf'
 import { saveInvoiceToMinio } from '@/lib/invoice-storage'
 import { getNextInvoiceNumber } from '@/lib/invoice-number'
+import {
+  notifyAdminEventCreated,
+  notifyAdminPayment,
+} from '@/lib/admin-notify'
 
 export async function POST(req: NextRequest) {
   const body = await req.text()
@@ -97,21 +101,29 @@ export async function POST(req: NextRequest) {
     ],
   })
 
-  // 📩 Admin-Mail
-  await sendMail({
-    to: 'info@edelbyte.ch',
-    subject: `🎉 Neues Event – ${createdEvent.name}`,
-    html: `
-      <p><strong>Event:</strong> ${createdEvent.name}</p>
-      <p><strong>Plan:</strong> ${createdEvent.plan}</p>
-      <p><strong>Kunde:</strong> ${session.customer_details?.email}</p>
-      <p><strong>Rechnung:</strong> ${invoiceNumber}</p>
-      <p><strong>Betrag:</strong> CHF ${(session.amount_total! / 100).toFixed(
-        2
-      )}</p>
-      <hr />
-      <p>Stripe Session ID: ${session.id}</p>
-    `,
+  // 📩 Betreiber-Benachrichtigungen (werfen nie – der Webhook darf dadurch
+  // nicht fehlschlagen, sonst wiederholt Stripe und die Idempotenz-Sperre
+  // verhindert den erneuten Rechnungsversand an den Kunden).
+  await notifyAdminEventCreated({
+    eventId: createdEvent.id,
+    name: createdEvent.name,
+    plan: createdEvent.plan,
+    date: createdEvent.date,
+    location: createdEvent.location,
+    description: createdEvent.description,
+    tenantId: createdEvent.tenantId,
+    customerEmail: session.customer_details?.email,
+    source: 'Self-Service (bezahlt)',
+  })
+
+  await notifyAdminPayment({
+    amountCHF: (session.amount_total ?? 0) / 100,
+    plan: createdEvent.plan,
+    eventName: createdEvent.name,
+    customerEmail: session.customer_details?.email,
+    customerName: session.customer_details?.name,
+    invoiceNumber,
+    stripeSessionId: session.id,
   })
 
   return NextResponse.json({ received: true })

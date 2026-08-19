@@ -1,22 +1,16 @@
+import { buildMetadata } from '@/lib/seo/metadata'
 import type { Metadata } from 'next'
 import {
   type UseCaseContent,
   UseCasePage,
 } from '@/components/landing/use-case-page'
 
-export const metadata: Metadata = {
-  title:
-    'Live-Fotowand für kleine Firmenanlässe – Team-Event & Apéro | EventShot',
+export const metadata: Metadata = buildMetadata({
+  path: '/firmenanlass',
+  title: 'Fotowand für Team-Event & Firmenessen',
   description:
-    'Die Live-Fotowand & Slideshow für kleine Firmenanlässe: Team-Event, Apéro, kleine Weihnachtsfeier oder Firmenessen. Gäste laden Fotos per QR-Code hoch, eigenes Branding, digitale Galerie danach. Grosser Anlass mit vielen Gästen? → social-wall.ch.',
-  alternates: { canonical: 'https://eventshot.ch/firmenanlass' },
-  openGraph: {
-    title: 'Live-Fotowand für kleine Firmenanlässe & Team-Events',
-    description:
-      'Live-Fotowand mit Branding für Team-Event, Apéro & kleine Firmenfeiern – DSG-konform, Schweizer Hosting. Grossanlass mit vielen Gästen? → social-wall.ch.',
-    url: 'https://eventshot.ch/firmenanlass',
-  },
-}
+    'Für Team-Event, Apéro, Firmenessen und kleine Weihnachtsfeier: Fotos per QR-Code, live als Slideshow, danach als Galerie. Ohne App, DSG-konform.',
+})
 
 const content: UseCaseContent = {
   eyebrow: 'EventShot für kleine Firmenanlässe',
@@ -73,7 +67,7 @@ const content: UseCaseContent = {
     'Richtet euer Firmen-Event in wenigen Minuten ein – Registrierung kostenlos, ihr zahlt erst beim Buchen.',
   breadcrumb: {
     name: 'Firmenanlass',
-    path: 'https://eventshot.ch/firmenanlass',
+    path: '/firmenanlass',
   },
 }
 

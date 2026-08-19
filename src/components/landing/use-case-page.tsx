@@ -192,13 +192,16 @@ export function UseCasePage({ content }: { content: UseCaseContent }) {
                   '@type': 'ListItem',
                   position: 2,
                   name: 'Anlässe',
-                  item: 'https://eventshot.ch/#anlaesse',
+                  // Echte Hub-Seite statt eines Ankers, den es nie gab.
+                  item: 'https://eventshot.ch/anlaesse',
                 },
                 {
                   '@type': 'ListItem',
                   position: 3,
                   name: content.breadcrumb.name,
-                  item: content.breadcrumb.path,
+                  item: content.breadcrumb.path.startsWith('http')
+                    ? content.breadcrumb.path
+                    : `https://eventshot.ch${content.breadcrumb.path}`,
                 },
               ],
             }),
