@@ -4,7 +4,14 @@
 FROM node:22-bookworm-slim AS deps
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# pnpm-Version bewusst gepinnt: `pnpm@latest` wird bei JEDEM Build neu
+# aufgeloest, ein Versionssprung upstream aendert damit das Build-Verhalten
+# ohne eine einzige Codeaenderung. Genau so hat es dieses Repo schon zweimal
+# erwischt (pnpm 11 ohne onlyBuiltDependencies, pnpm 11.5 mit Node >=22.13).
+# 11.24.0 ist die Version, mit der die Builds am 25.08.2026 liefen.
+# Beim Anheben pruefen, ob pnpm-workspace.yaml den passenden Schluessel hat:
+# allowBuilds (pnpm 11) bzw. onlyBuiltDependencies (pnpm 10).
+RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
@@ -22,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   openssl \
   && rm -rf /var/lib/apt/lists/*
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -66,7 +73,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   curl \
   && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@11.24.0 --activate
 
 # Non-root user
 RUN addgroup --system --gid 1001 nodejs \
