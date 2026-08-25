@@ -2,7 +2,8 @@
 set -e
 
 echo "Running Prisma migrations..."
-npx prisma migrate deploy
+# Pinned on purpose - see the CMD comment in the Dockerfile.
+npx prisma@7.4.0 migrate deploy
 
 echo "Starting Next.js server..."
 node server.js

@@ -84,4 +84,11 @@ USER nextjs
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "pnpm dlx prisma migrate deploy && node server.js"]
+# The Prisma CLI version MUST stay pinned here.
+# `pnpm dlx prisma` resolves the `latest` dist-tag on npm at EVERY container
+# start. On 2026-08-25 that tag moved to 8.0.0-rc.10, where `prisma migrate`
+# was renamed to `prisma migration`. The command exited 2, `&&` short-circuited,
+# server.js never ran and the container crash-looped without any deploy having
+# happened. Keep in sync with the `prisma` devDependency in package.json
+# (and therefore with the generated @prisma/client).
+CMD ["sh", "-c", "pnpm dlx prisma@7.4.0 migrate deploy && node server.js"]
