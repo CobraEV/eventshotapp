@@ -87,15 +87,37 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 
+# Migrations-Werkzeug im Image statt aus dem Netz.
+#
+# `pnpm dlx prisma@7.4.0` laedt die CLI bei JEDEM Containerstart von npm.
+# Die Version ist gepinnt (siehe Vorfall unten), die Netzabhaengigkeit bleibt
+# aber: ist die Registry langsam oder weg, faehrt kein Container hoch — und
+# zwar genau dann, wenn man am dringendsten deployen will.
+#
+# prisma.config.ts liefert die Datenbank-URL (der datasource-Block im Schema
+# hat keine) und importiert dafuer `prisma/config` und `dotenv`. Beide muessen
+# zur Laufzeit aufloesbar sein. Eigenes Verzeichnis, damit ein npm install
+# nicht mit den getracten Abhaengigkeiten des Standalone-Builds kollidiert.
+WORKDIR /migrate
+RUN npm install --no-save --no-audit --no-fund prisma@7.4.0 dotenv@17.3.1
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+RUN chown -R nextjs:nodejs /migrate
+WORKDIR /app
+
 USER nextjs
 
 EXPOSE 3000
 
-# The Prisma CLI version MUST stay pinned here.
-# `pnpm dlx prisma` resolves the `latest` dist-tag on npm at EVERY container
-# start. On 2026-08-25 that tag moved to 8.0.0-rc.10, where `prisma migrate`
-# was renamed to `prisma migration`. The command exited 2, `&&` short-circuited,
-# server.js never ran and the container crash-looped without any deploy having
-# happened. Keep in sync with the `prisma` devDependency in package.json
-# (and therefore with the generated @prisma/client).
-CMD ["sh", "-c", "pnpm dlx prisma@7.4.0 migrate deploy && node server.js"]
+# Migration vor dem Start, fail-closed: schlaegt sie fehl, faehrt der
+# Container nicht hoch und Swarm laesst die alten Tasks weiterlaufen.
+#
+# Die CLI liegt jetzt mit fester Version im Image (siehe /migrate oben).
+# Vorgeschichte, warum die Version ueberhaupt festgenagelt gehoert:
+# `pnpm dlx prisma` loeste den `latest`-Tag bei JEDEM Containerstart neu auf.
+# Am 25.08.2026 zeigte der auf 8.0.0-rc.10, wo `prisma migrate` in
+# `prisma migration` umbenannt wurde. Der Befehl endete mit 2, `&&` brach ab,
+# server.js lief nie, und die Container gingen in eine Absturzschleife, ohne
+# dass ein Deploy stattgefunden haette.
+# Version mit der `prisma`-devDependency in package.json synchron halten.
+CMD ["sh", "-c", "cd /migrate && ./node_modules/.bin/prisma migrate deploy && cd /app && exec node server.js"]
