@@ -51,6 +51,7 @@ export async function ensureDemoEvent(tenantId: number): Promise<void> {
 export type DemoEventInfo = {
   id: string
   used: number
+  limit: number
 }
 
 /**
@@ -63,22 +64,46 @@ export type DemoEventInfo = {
 export async function getOrCreateDemoEvent(
   tenantId: number,
 ): Promise<DemoEventInfo | null> {
+  // Zwei gleichzeitige erste Dashboard-Aufrufe koennen theoretisch zwei
+  // Demo-Events anlegen. Statt einer Sperre ueber den ganzen Vorgang: immer
+  // das aelteste nehmen. Dann zeigt das Dashboard verlaesslich dasselbe
+  // Event, statt zwischen zwei Zaehlerstaenden zu springen.
+  // `as const`, sonst weitet TypeScript die Literale zu string und Prisma
+  // erkennt weder die Sortierrichtung noch das _count-Feld wieder.
+  const select = {
+    id: true,
+    uploadLimit: true,
+    // Genauso gezaehlt wie in createUploadUrl — sonst zeigt der Balken eine
+    // andere Zahl als die, an der die Grenze tatsaechlich greift.
+    _count: { select: { photos: { where: { status: { not: 'failed' } } } } },
+  } as const
+  const oldest = { createdAt: 'asc' } as const
+
   try {
     let event = await prisma.event.findFirst({
       where: { tenantId, isDemo: true },
-      select: { id: true, _count: { select: { photos: true } } },
+      orderBy: oldest,
+      select,
     })
 
     if (!event) {
       await ensureDemoEvent(tenantId)
       event = await prisma.event.findFirst({
         where: { tenantId, isDemo: true },
-        select: { id: true, _count: { select: { photos: true } } },
+        orderBy: oldest,
+        select,
       })
     }
     if (!event) return null
 
-    return { id: event.id, used: event._count.photos }
+    return {
+      id: event.id,
+      used: event._count.photos,
+      // Die gespeicherte Grenze, nicht die Konstante: sonst zeigt die Anzeige
+      // 20 an, waehrend die Pruefung gegen einen anderen Wert laeuft, sobald
+      // jemand das Feld je von Hand aendert.
+      limit: event.uploadLimit ?? DEMO_UPLOAD_LIMIT,
+    }
   } catch (error) {
     console.error('[demo-event] konnte nicht geladen werden:', error)
     return null

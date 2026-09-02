@@ -2,7 +2,7 @@ import { ArrowRight, MonitorPlay, ScanLine } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { DEMO_UPLOAD_LIMIT, type DemoEventInfo } from '@/lib/demo-event'
+import type { DemoEventInfo } from '@/lib/demo-event'
 
 /**
  * Demo-Streifen ueber der Event-Liste.
@@ -13,9 +13,12 @@ import { DEMO_UPLOAD_LIMIT, type DemoEventInfo } from '@/lib/demo-event'
  * darunter sofort bei seinen echten Feiern.
  */
 export function DemoSection({ demo }: { demo: DemoEventInfo }) {
-  const left = Math.max(0, DEMO_UPLOAD_LIMIT - demo.used)
+  // Die Grenze kommt vom Event selbst, nicht aus der Konstante — angezeigt
+  // wird damit derselbe Wert, gegen den beim Hochladen geprueft wird.
+  const limit = demo.limit
+  const left = Math.max(0, limit - demo.used)
   const full = left === 0
-  const pct = Math.min(100, (demo.used / DEMO_UPLOAD_LIMIT) * 100)
+  const pct = Math.min(100, (demo.used / limit) * 100)
 
   return (
     <Card className='rounded-3xl border border-primary/20 bg-linear-to-br from-primary/10 via-card/50 to-card/50 shadow-xl backdrop-blur-sm'>
@@ -30,12 +33,12 @@ export function DemoSection({ demo }: { demo: DemoEventInfo }) {
           <p className='max-w-md text-sm leading-relaxed text-muted-foreground'>
             {full ? (
               <>
-                Alle {DEMO_UPLOAD_LIMIT} Demo-Fotos sind aufgebraucht. Für eine
+                Alle {limit} Demo-Fotos sind aufgebraucht. Für eine
                 echte Feier legst du ein Event ohne Grenze an.
               </>
             ) : (
               <>
-                Voller Funktionsumfang, begrenzt auf {DEMO_UPLOAD_LIMIT} Fotos.
+                Voller Funktionsumfang, begrenzt auf {limit} Fotos.
                 QR-Code scannen, hochladen, Slideshow öffnen — genau wie am Fest.
               </>
             )}
@@ -50,7 +53,7 @@ export function DemoSection({ demo }: { demo: DemoEventInfo }) {
               />
             </div>
             <p className='text-xs text-muted-foreground tabular-nums'>
-              {demo.used} von {DEMO_UPLOAD_LIMIT} Fotos
+              {demo.used} von {limit} Fotos
               {!full && ` · noch ${left} frei`}
             </p>
           </div>

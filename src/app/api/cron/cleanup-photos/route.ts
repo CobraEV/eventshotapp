@@ -32,7 +32,12 @@ async function handle(req: NextRequest) {
   const now = Date.now()
 
   const events = await prisma.event.findMany({
-    where: { photos: { some: {} } },
+    // Demo-Events bleiben verschont. Ihr Datum ist der Tag der Registrierung,
+    // ihr Plan ist ENTERPRISE — nach 90 Tagen wuerde der Aufraeumlauf also
+    // genau dem Kunden die Fotos loeschen, der die Demo spaeter ausprobiert,
+    // und der Zaehler spraenge stillschweigend auf 0 von 20 zurueck. Die
+    // Datenmenge ist durch uploadLimit ohnehin gedeckelt.
+    where: { photos: { some: {} }, isDemo: false },
     select: { id: true, plan: true, date: true, createdAt: true },
   })
 

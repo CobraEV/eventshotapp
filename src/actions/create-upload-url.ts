@@ -40,7 +40,14 @@ export async function createUploadUrl(
   // Demo-Kontingent ist ein Ausreisser von ein, zwei Bildern folgenlos; eine
   // Sperre ueber den ganzen Upload-Vorgang waere der teurere Fehler.
   if (event.uploadLimit !== null) {
-    const used = await prisma.photo.count({ where: { eventId } })
+    // `failed` zaehlt nicht mit: sonst verbraucht ein Bild, das die
+    // Verarbeitung nicht ueberstanden hat, einen Platz, den niemand je zu
+    // sehen bekommt — die Galerie zeigt nur `ready`. Zwanzig fehlgeschlagene
+    // HEIC-Uploads haetten die Demo sonst beendet, bevor ein einziges Foto
+    // erschienen ist.
+    const used = await prisma.photo.count({
+      where: { eventId, status: { not: 'failed' } },
+    })
     if (used >= event.uploadLimit) {
       return {
         ok: false,
