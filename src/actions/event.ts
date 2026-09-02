@@ -1,109 +1,71 @@
 'use server'
 
-import { notifyAdminEventCreated } from '@/lib/admin-notify'
-import prisma from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import crypto from 'crypto'
-import { PLAN } from '@/generated/prisma/enums'
 import { Prisma } from '@/generated/prisma/client'
+import { requireOwnedEventAction } from '@/lib/auth-guard'
+import prisma from '@/lib/prisma'
 
-// --- Server Action: Event anlegen ---
-export async function createEvent(formData: FormData) {
-  console.log(formData)
-  const tenantId = Number(formData.get('tenantId'))
-  const name = String(formData.get('name') ?? '').trim()
-  const plan = String(formData.get('plan') ?? '')
-    .trim()
-    .toUpperCase() as PLAN
-  const description = String(formData.get('description') ?? '').trim() || null
-  const location = String(formData.get('location') ?? '').trim() || null
-  const date = new Date(String(formData.get('date')))
-  // isActive is default true, but allow override if you want to add a toggle later
-
-  const errs = new URLSearchParams()
-  if (!name) errs.set('error', 'missing_name')
-  if (!['BASIC', 'PREMIUM', 'ENTERPRISE'].includes(plan))
-    errs.set('error', 'invalid_plan')
-  if (!date) errs.set('error', 'missing_date')
-  if ([...errs.keys()].length) redirect(`?${errs.toString()}`)
-  const token = crypto.randomBytes(32).toString('hex')
-
-  try {
-    const created = await prisma.event.create({
-      data: {
-        name,
-        plan,
-        description,
-        location,
-        date,
-        isActive: true,
-        tenant: { connect: { id: tenantId } },
-      },
-    })
-
-    await notifyAdminEventCreated({
-      eventId: created.id,
-      name: created.name,
-      plan: created.plan,
-      date: created.date,
-      location: created.location,
-      description: created.description,
-      tenantId: created.tenantId,
-      source: 'Admin-Bereich',
-    })
-  } catch (err) {
-    if (
-      err instanceof Prisma.PrismaClientKnownRequestError &&
-      err.code === 'P2002'
-    ) {
-      redirect(`?error=duplicate_name`)
-    }
-    // Unbekannte Fehler nicht verschlucken – sonst wirkt das Anlegen
-    // erfolgreich, obwohl kein Event entstanden ist.
-    throw err
-  }
-
-  revalidatePath(`/`)
-  revalidatePath(`/events`)
-
-  // redirect() wirft NEXT_REDIRECT und muss deshalb ausserhalb des try
-  // stehen – im try wuerde der catch-Block die Weiterleitung schlucken.
-  redirect(`?created=1`)
-}
+/**
+ * Hier stand bis 02.09.2026 zusaetzlich `createEvent`.
+ *
+ * Die Funktion nahm tenantId und plan unveraendert aus dem FormData und legte
+ * damit ein Event an — ohne Session, ohne Stripe. Server Actions sind
+ * HTTP-Endpunkte: dass sie nur von einer geschuetzten Seite aus aufgerufen
+ * wird, schuetzt sie nicht. Wer die Action-ID aus dem Bundle las, legte sich
+ * beliebig viele ENTERPRISE-Events gratis an, und weil tenantId eine
+ * fortlaufende Zahl ist, auch bei fremden Kunden.
+ *
+ * Entfernt statt bewacht, weil sie keinen Aufrufer hatte: NewEventDialog nahm
+ * die Prop `onCreate` entgegen, benutzte sie aber nie — das Formular ruft
+ * createEventCheckout auf. Ein Endpunkt, den niemand braucht, wird am besten
+ * gar nicht erst ausgeliefert.
+ */
 
 // --- Server Action: Event bearbeiten ---
 export async function updateEvent(eventId: string, formData: FormData) {
+  const guard = await requireOwnedEventAction(eventId, { id: true })
+  if (!guard.ok) {
+    return { ok: false as const, message: guard.message }
+  }
+
   const name = String(formData.get('name') ?? '').trim()
   const description = String(formData.get('description') ?? '').trim() || null
   const location = String(formData.get('location') ?? '').trim() || null
   const date = new Date(String(formData.get('date')))
 
-  const errs = new URLSearchParams()
-  if (!name) errs.set('error', 'missing_name')
-  if ([...errs.keys()].length) redirect(`?${errs.toString()}`)
+  if (!name) {
+    return { ok: false as const, message: 'Bitte gib einen Namen an.' }
+  }
+  if (Number.isNaN(date.getTime())) {
+    return { ok: false as const, message: 'Bitte gib ein gültiges Datum an.' }
+  }
 
   try {
     await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        name,
-        description,
-        location,
-        date,
-      },
+      where: { id: guard.event.id },
+      data: { name, description, location, date },
     })
-    redirect(`?updated=1`)
   } catch (err) {
     if (
       err instanceof Prisma.PrismaClientKnownRequestError &&
       err.code === 'P2002'
     ) {
-      redirect(`?error=duplicate_name`)
+      return { ok: false as const, message: 'Dieser Name ist schon vergeben.' }
     }
-    console.error('Event update error:', err)
+    // Unbekannte Fehler nicht verschlucken — sonst wirkt das Speichern
+    // erfolgreich, obwohl nichts geaendert wurde.
+    throw err
   }
 
-  revalidatePath(`/`)
-  revalidatePath(`/events`)
+  revalidatePath('/tenant')
+  revalidatePath('/tenant/events')
+  revalidatePath(`/tenant/event/${eventId}`)
+  // Der Name steht auf der Gaesteseite.
+  revalidatePath(`/event/${eventId}`)
+
+  // redirect() wirft NEXT_REDIRECT und steht deshalb ausserhalb jedes try.
+  // Vorher stand es IM try: der catch fing die Weiterleitung ab und meldete
+  // sie per console.error als Fehler — gespeichert wurde, weitergeleitet nie.
+  redirect('?updated=1')
 }

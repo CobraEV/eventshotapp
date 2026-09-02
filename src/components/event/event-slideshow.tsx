@@ -15,6 +15,8 @@ type Photo = {
 
 interface Props {
   eventId: string
+  /** Schluessel fuer den SSE-Stream — steht nicht auf der Tischkarte. */
+  publicCode: string
   interval?: number
   controls?: boolean
   fullscreen?: boolean
@@ -62,6 +64,7 @@ async function preload(src?: string) {
 
 export default function EventSlideshow({
   eventId,
+  publicCode,
   interval = 5000,
   controls = true,
   fullscreen,
@@ -96,7 +99,7 @@ export default function EventSlideshow({
     return () => {
       alive = false
     }
-  }, [eventId])
+  }, [eventId, publicCode])
 
   /* -----------------------
      SSE (SCREEN LIMIT!)
@@ -105,7 +108,7 @@ export default function EventSlideshow({
     clientIdRef.current = getClientId()
 
     const es = new EventSource(
-      `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}`,
+      `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`,
     )
 
     es.onmessage = async (e) => {
@@ -120,7 +123,7 @@ export default function EventSlideshow({
       // 403 → Screen-Limit
       try {
         const res = await fetch(
-          `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}`,
+          `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`,
         )
         if (res.status === 403) {
           setBlocked(true)
@@ -133,7 +136,7 @@ export default function EventSlideshow({
     return () => {
       es.close()
     }
-  }, [eventId])
+  }, [eventId, publicCode])
 
   const current = photos[index]
 

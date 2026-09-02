@@ -16,16 +16,22 @@ type Photo = {
   blurHash: string | null
 }
 
-export default function EventGallery({ photos }: { photos: Photo[] }) {
+export default function EventGallery({
+  photos,
+  eventId,
+}: {
+  photos: Photo[]
+  eventId: string
+}) {
   const [index, setIndex] = useState(-1)
 
   const slides = useMemo(
     () =>
       photos.map((p) => ({
         src: p.url,
-        download: `/api/photo/${p.id}/download`,
+        download: `/api/photo/${p.id}/download?event=${eventId}`,
       })),
-    [photos],
+    [photos, eventId],
   )
 
   if (photos.length === 0) {

@@ -35,13 +35,17 @@ export default function SlideshowSettings({ eventId }: { eventId: string }) {
   }, [eventId])
 
   const save = async () => {
-    await saveSlideshowSettings({
+    const res = await saveSlideshowSettings({
       eventId,
       intervalMs: interval * 1000,
       showControls: controls,
       hideWatermark,
       brandLogoUrl,
     })
+    if (!res.success) {
+      toast.error(res.message)
+      return
+    }
     toast.success('Einstellungen gespeichert')
   }
 

@@ -18,12 +18,23 @@ export async function GET(
   /* ----------------------------------
      Event + Plan
   ---------------------------------- */
+  // Diese Route liegt unter /api und wird vom Proxy-Matcher ('/tenant/:path*')
+  // nicht erfasst — sie war strukturell unbewacht. Der Platzzaehler haengt
+  // allein an einer frei waehlbaren clientId, und bei BASIC ist genau ein
+  // Platz vorhanden: ein Fremder mit der oeffentlichen eventId belegte ihn und
+  // die Leinwand der bezahlenden Hochzeit bekam den Abend lang 403.
+  //
+  // Kein Session-Zwang: der Beamer laeuft die Nacht durch, eine ablaufende
+  // Session risse den Stream mitten im Fest ab. Der publicCode des Events ist
+  // der richtige Schluessel — er steht nicht auf der Tischkarte.
+  const code = req.nextUrl.searchParams.get('code')
+
   const event = await prisma.event.findUnique({
     where: { id: eventId },
-    select: { plan: true },
+    select: { plan: true, publicCode: true, isActive: true },
   })
 
-  if (!event) {
+  if (!event || !event.isActive || !code || code !== event.publicCode) {
     return new Response('Event not found', { status: 404 })
   }
 
@@ -80,11 +91,25 @@ export async function GET(
   /* ----------------------------------
      SSE Stream
   ---------------------------------- */
+  // alive/closed/heartbeat stehen ausserhalb von start(), damit cancel() sie
+  // erreicht. Vorher lebten sie in der start()-Closure: bei einem
+  // Verbindungsabbruch loeschte cancel() nur die Sitzungszeile, waehrend die
+  // while-Schleife weiter alle zwei Sekunden die Datenbank abfragte — jede
+  // abgebrochene Beamer-Verbindung hinterliess einen Poller auf Dauer.
+  let alive = true
+  let closed = false
+  let heartbeat: ReturnType<typeof setInterval> | null = null
+
+  const stopStream = () => {
+    alive = false
+    closed = true
+    if (heartbeat) clearInterval(heartbeat)
+    heartbeat = null
+  }
+
   const stream = new ReadableStream({
     async start(controller) {
       let lastUpdate = new Date(0)
-      let alive = true
-      let closed = false
 
       const send = (data: any) => {
         if (closed) return
@@ -96,7 +121,7 @@ export async function GET(
       }
 
       /* ---------- Heartbeat ---------- */
-      const heartbeat = setInterval(async () => {
+      heartbeat = setInterval(async () => {
         if (!alive) return
 
         await prisma.slideshowSession.updateMany({
@@ -122,9 +147,7 @@ export async function GET(
       } catch (err) {
         console.error('[SSE] stream error', err)
       } finally {
-        closed = true
-        alive = false
-        clearInterval(heartbeat)
+        stopStream()
 
         await prisma.slideshowSession
           .deleteMany({ where: { id: sessionId } })
@@ -133,6 +156,7 @@ export async function GET(
     },
 
     cancel() {
+      stopStream()
       prisma.slideshowSession
         .deleteMany({ where: { id: sessionId } })
         .catch(() => {})

@@ -1,5 +1,6 @@
 'use client'
 
+import { toast } from 'sonner'
 import { createEventCheckout } from '@/actions/create-event-checkout'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -37,11 +38,9 @@ type PlanEnum = 'BASIC' | 'PREMIUM' | 'ENTERPRISE'
 
 export function NewEventDialog({
   tenantId,
-  onCreate,
   defaultPlan = 'PREMIUM',
 }: {
   tenantId: number
-  onCreate: (formData: FormData) => Promise<void> // Server Action vom Server-Component
   defaultPlan?: PlanEnum
 }) {
   const [open, setOpen] = React.useState(false)
@@ -119,13 +118,18 @@ export function NewEventDialog({
             action={async (fd) => {
               setLoading(true)
               const res = await createEventCheckout({
-                tenantId,
                 name: fd.get('name') as string,
                 location: fd.get('location') as string,
                 description: fd.get('description') as string,
                 date: fd.get('date') as string,
                 plan: fd.get('plan') as any,
               })
+
+              if (!res.ok) {
+                setLoading(false)
+                toast.error(res.message)
+                return
+              }
 
               window.location.href = res.url
             }}

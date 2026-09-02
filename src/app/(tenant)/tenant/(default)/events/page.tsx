@@ -1,11 +1,9 @@
 import { Layers3 } from 'lucide-react'
-import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { createEvent } from '@/actions/event'
 import { NewEventDialog } from '@/components/tenant/new-event-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { auth } from '@/lib/auth'
+import { getCurrentTenant, requireTenantPage } from '@/lib/auth-guard'
 import prisma from '@/lib/prisma'
 import { EventRow } from '../page'
 
@@ -46,14 +44,10 @@ export default Page
  * -------------------------------------------- */
 
 async function EventsList() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-
-  if (!session) redirect('/login')
+  const { id: tenantId } = await requireTenantPage()
 
   const tenant = await prisma.tenant.findUnique({
-    where: { email: session.user.email },
+    where: { id: tenantId },
     include: {
       events: {
         // Demo-Event gehoert nicht in die Liste der echten Feiern; es hat
@@ -99,23 +93,15 @@ async function EventsList() {
 }
 
 async function CreateButton() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-
-  if (!session) return null
-
-  const tenant = await prisma.tenant.findUnique({
-    where: { email: session.user.email },
-    select: { id: true },
-  })
-
+  // getCurrentTenant statt einer zweiten eigenen Aufloesung: cache() liefert
+  // hier das Ergebnis aus EventsList weiter, statt Session und Tenant im
+  // selben Request ein zweites Mal abzufragen.
+  const tenant = await getCurrentTenant()
   if (!tenant) return null
 
   return (
     <NewEventDialog
       tenantId={tenant.id}
-      onCreate={createEvent}
       defaultPlan='PREMIUM'
     />
   )
@@ -139,7 +125,6 @@ function EmptyState({ tenantId }: { tenantId: number }) {
 
         <NewEventDialog
           tenantId={tenantId}
-          onCreate={createEvent}
           defaultPlan='PREMIUM'
         />
       </CardContent>

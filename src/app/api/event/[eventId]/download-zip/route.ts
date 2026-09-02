@@ -28,11 +28,19 @@ export async function GET(
 ) {
   const { eventId } = await params
 
+  // Bleibt bewusst ohne Anmeldung: der Knopf steht in der Gaeste-Galerie, und
+  // die Gaeste haben kein Konto. Was fehlte, waren die Filter — das Archiv
+  // enthielt jedes Foto der Tabelle, auch aussortierte, auch aus einem
+  // abgeschalteten Event. Die Galerie zeigt nur approved + ready; das ZIP
+  // muss dieselbe Auswahl liefern, sonst gibt es spaeter genau die Bilder
+  // heraus, die jemand bewusst nicht freigegeben hat.
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     select: {
       name: true,
+      isActive: true,
       photos: {
+        where: { approved: true, status: 'ready' },
         select: {
           objectKey: true,
           originalName: true,
@@ -44,7 +52,7 @@ export async function GET(
     },
   })
 
-  if (!event) {
+  if (!event || !event.isActive) {
     return new Response('Event not found', { status: 404 })
   }
 

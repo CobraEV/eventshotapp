@@ -1,5 +1,6 @@
 'use server'
 
+import { requireOwnedEventAction } from '@/lib/auth-guard'
 import prisma from '@/lib/prisma'
 import { s3 } from '@/lib/s3'
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'
@@ -12,6 +13,21 @@ export async function deletePhoto({
   id: string
   eventId: string
 }) {
+  // 0️⃣ Gehoert das Event ueberhaupt dem Anrufer?
+  //
+  // Das findFirst({ id, eventId }) darunter ist eine Konsistenz-, keine
+  // Berechtigungspruefung. Die Foto-IDs liefert getEventPhotos jedem Gast im
+  // RSC-Payload der oeffentlichen Galerie, und eine Server Action ist ein
+  // HTTP-Endpunkt: bis hierher konnte jeder Hochzeitsgast die komplette
+  // Galerie loeschen — S3-Objekt und Datenbankzeile, ohne Papierkorb.
+  //
+  // Die Pruefung steht VOR dem idempotenten "nichts zu tun": sonst bekaeme
+  // ein Fremder eine Erfolgsmeldung fuer ein Foto, das es gar nicht gibt.
+  const guard = await requireOwnedEventAction(eventId, { id: true })
+  if (!guard.ok) {
+    return { success: false as const, message: guard.message }
+  }
+
   // 1️⃣ Foto laden & absichern
   const photo = await prisma.photo.findFirst({
     where: {
@@ -27,7 +43,7 @@ export async function deletePhoto({
 
   if (!photo) {
     // idempotent: nichts zu tun
-    return { success: true }
+    return { success: true as const }
   }
 
   // 2️⃣ Objekt aus MinIO / S3 löschen

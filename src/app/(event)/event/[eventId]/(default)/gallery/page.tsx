@@ -55,7 +55,7 @@ const PageContent = async ({
       </div>
 
       <main className='container mx-auto'>
-        <EventGallery photos={photos} />
+        <EventGallery photos={photos} eventId={eventId} />
       </main>
       <ScrollToTopButton />
     </div>

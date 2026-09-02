@@ -1,4 +1,16 @@
-'use server'
+/**
+ * Bildverarbeitung — bewusst KEINE Server Action.
+ *
+ * Die Datei lag bis 02.09.2026 unter src/actions/ und trug 'use server'.
+ * Damit war sie ein oeffentlicher HTTP-Endpunkt, obwohl nur intern gemeint:
+ * ein einzelner Aufruf laedt das Original aus S3, laesst sharp Metadaten,
+ * BlurHash und Thumbnail rechnen und schreibt zwei S3-Objekte — ein billiger
+ * Request wird zu CPU-, RAM- und Storage-Last.
+ *
+ * Eine Session-Pruefung waere der falsche Weg gewesen: finalizeUpload ruft
+ * die Funktion im Gast-Kontext ohne Session auf. Richtig ist, sie gar nicht
+ * erst als Endpunkt auszuliefern.
+ */
 
 import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3'
 import sharp from 'sharp'

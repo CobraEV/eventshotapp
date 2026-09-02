@@ -9,10 +9,22 @@ export async function GET(
   context: { params: Promise<{ photoId: string }> },
 ) {
   const { photoId } = await context.params
+  // Die eventId gehoert dazu, damit eine Foto-ID aus einem fremden Event hier
+  // nicht mehr genuegt. Zusaetzlich dieselben Filter wie in der Galerie:
+  // aussortierte Fotos und Bilder abgeschalteter Events waren bisher ladbar.
+  const eventId = new URL(_req.url).searchParams.get('event')
 
-  const photo = await prisma.photo.findUnique({
-    where: { id: photoId },
-  })
+  const photo = eventId
+    ? await prisma.photo.findFirst({
+        where: {
+          id: photoId,
+          eventId,
+          approved: true,
+          status: { in: ['processing', 'ready'] },
+          event: { isActive: true },
+        },
+      })
+    : null
 
   if (!photo) {
     return new NextResponse('Photo not found', { status: 404 })

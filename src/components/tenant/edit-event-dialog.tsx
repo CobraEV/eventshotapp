@@ -26,6 +26,7 @@ import { cn } from '@/lib/utils'
 import { de } from 'react-day-picker/locale'
 import { Event } from '@/generated/prisma/client'
 import { Calendar } from '@/components/ui/calendar'
+import { toast } from 'sonner'
 import { updateEvent } from '@/actions/event'
 import { EventWithCount } from '@/types/EventWithCount'
 
@@ -86,7 +87,15 @@ export function EditEventDialog({ event }: { event: EventWithCount }) {
           <form
             action={async (fd) => {
               setLoading(true)
-              await updateEvent(event.id, fd)
+              // Der Waechter meldet Ablehnung als Wert. Ohne diese Auswertung
+              // schloesse der Dialog sich auch dann, wenn nichts gespeichert
+              // wurde — der Kunde haelte die Aenderung fuer uebernommen.
+              const res = await updateEvent(event.id, fd)
+              if (res && !res.ok) {
+                setLoading(false)
+                toast.error(res.message)
+                return
+              }
               setOpen(false)
             }}
             className="space-y-6"

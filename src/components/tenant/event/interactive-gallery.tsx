@@ -107,7 +107,15 @@ export default function InteractiveGallery({
     setItems((prev) => prev.filter((p) => p.id !== photoId))
 
     try {
-      await deletePhoto({ id: photoId, eventId })
+      // Der Waechter lehnt als Wert ab, nicht als Ausnahme — ohne diese
+      // Abfrage bliebe das Foto optimistisch aus der Ansicht verschwunden,
+      // obwohl es noch da ist.
+      const res = await deletePhoto({ id: photoId, eventId })
+      if (!res.success) {
+        setItems(snapshot)
+        toast.error(res.message ?? 'Löschen fehlgeschlagen')
+        return
+      }
       toast.success('Foto gelöscht')
     } catch {
       setItems(snapshot)

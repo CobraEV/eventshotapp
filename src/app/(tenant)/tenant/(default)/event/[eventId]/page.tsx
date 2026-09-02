@@ -3,10 +3,7 @@ import InteractiveGallery from '@/components/tenant/event/interactive-gallery'
 import QRCodeGenerator from '@/components/tenant/event/qr-code-generator'
 import SlideshowSettings from '@/components/tenant/event/slideshow-settings'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { auth } from '@/lib/auth'
-import prisma from '@/lib/prisma'
-import { headers } from 'next/headers'
-import { redirect } from 'next/navigation'
+import { requireOwnedEventPage } from '@/lib/auth-guard'
 import { Suspense } from 'react'
 
 export default async function Page({
@@ -26,24 +23,18 @@ const PageContent = async ({
 }: {
   params: Promise<{ eventId: string }>
 }) => {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-
-  if (!session) redirect('/')
-
   const { eventId } = await params
 
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    select: {
-      id: true,
-      name: true,
-      isActive: true,
-    },
+  // Vorher wurde hier nur geprueft, DASS jemand angemeldet ist — das Event
+  // dann per findUnique ohne jeden Tenant-Bezug geladen. Jedes selbst
+  // angelegte Gratis-Konto oeffnete damit die Verwaltung einer fremden
+  // Feier: Fotos, QR-Code, Slideshow-Einstellungen, und ueber die
+  // eingebettete Galerie mit admin={true} auch den Loeschknopf.
+  const event = await requireOwnedEventPage(eventId, {
+    id: true,
+    name: true,
+    isActive: true,
   })
-
-  if (!event) redirect('/')
 
   // Fetch photos with presigned URLs
   const photos = await getEventPhotos(eventId)

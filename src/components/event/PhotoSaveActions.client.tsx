@@ -29,11 +29,11 @@ export function PhotoSaveActions({
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    getPhotoDownloadUrl(photoId).then((res) => {
+    getPhotoDownloadUrl(photoId, eventId).then((res) => {
       setDownloadUrl(res.url)
       setFilename(res.filename)
     })
-  }, [photoId])
+  }, [photoId, eventId])
 
   async function handleDownload() {
     if (!downloadUrl) return

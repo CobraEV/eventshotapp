@@ -9,17 +9,15 @@ import {
   ShareIcon,
   TrendingUp,
 } from 'lucide-react'
-import { headers } from 'next/headers'
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import { createEvent } from '@/actions/event'
 import { EditEventDialog } from '@/components/tenant/edit-event-dialog'
 import { DemoSection } from '@/components/tenant/demo-section'
 import { NewEventDialog } from '@/components/tenant/new-event-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { auth } from '@/lib/auth'
+import { requireTenantPage } from '@/lib/auth-guard'
 import { getOrCreateDemoEvent } from '@/lib/demo-event'
 import prisma from '@/lib/prisma'
 import type { EventWithCount } from '@/types/EventWithCount'
@@ -63,14 +61,10 @@ export default async function AdminEventsPage() {
  * -------------------------------------------- */
 
 async function DashboardContent() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  })
-
-  if (!session) redirect('/login')
+  const { id: tenantId } = await requireTenantPage()
 
   const tenant = await prisma.tenant.findUnique({
-    where: { email: session.user.email },
+    where: { id: tenantId },
     include: {
       events: {
         // Das Demo-Event steht in seiner eigenen Sektion und gehoert nicht in
@@ -157,7 +151,6 @@ async function DashboardContent() {
 
           <NewEventDialog
             tenantId={tenant.id}
-            onCreate={createEvent}
             defaultPlan='PREMIUM'
           />
         </div>
@@ -286,7 +279,6 @@ function EmptyState({ tenantId }: { tenantId: number }) {
       </p>
       <NewEventDialog
         tenantId={tenantId}
-        onCreate={createEvent}
         defaultPlan='PREMIUM'
       />
     </div>
