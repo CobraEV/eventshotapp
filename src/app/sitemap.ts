@@ -12,6 +12,8 @@ const BASE_URL = 'https://eventshot.ch'
  */
 const CONTENT_UPDATED = new Date('2026-08-19')
 const LEGAL_UPDATED = new Date('2026-06-29')
+/** Startseite und /demo: Demo-Event mit 20 Gratis-Fotos ergaenzt. */
+const DEMO_UPDATED = new Date('2026-09-02')
 
 type Entry = {
   path: string
@@ -21,11 +23,11 @@ type Entry = {
 }
 
 const ENTRIES: Entry[] = [
-  { path: '', priority: 1.0, changeFrequency: 'weekly', lastModified: CONTENT_UPDATED },
+  { path: '', priority: 1.0, changeFrequency: 'weekly', lastModified: DEMO_UPDATED },
   { path: '/agb', priority: 0.3, changeFrequency: 'yearly', lastModified: LEGAL_UPDATED },
   { path: '/anlaesse', priority: 0.9, changeFrequency: 'monthly', lastModified: CONTENT_UPDATED },
   { path: '/datenschutz', priority: 0.3, changeFrequency: 'yearly', lastModified: LEGAL_UPDATED },
-  { path: '/demo', priority: 0.7, changeFrequency: 'monthly', lastModified: CONTENT_UPDATED },
+  { path: '/demo', priority: 0.7, changeFrequency: 'monthly', lastModified: DEMO_UPDATED },
   { path: '/digitale-fotobox', priority: 0.7, changeFrequency: 'monthly', lastModified: CONTENT_UPDATED },
   { path: '/digitales-gaestebuch', priority: 0.8, changeFrequency: 'monthly', lastModified: CONTENT_UPDATED },
   { path: '/familienfest', priority: 0.7, changeFrequency: 'monthly', lastModified: CONTENT_UPDATED },
