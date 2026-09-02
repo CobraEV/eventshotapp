@@ -1,6 +1,5 @@
-import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
-import prisma from '@/lib/prisma'
+import { requireOwnedEventPage } from '@/lib/auth-guard'
 import { getSlideshowSettings } from '@/actions/get-slideshow-settings'
 import EventSlideshow from '@/components/event/event-slideshow'
 
@@ -21,13 +20,14 @@ export default async function Page({
 async function SlideShow({ params }: { params: Promise<{ eventId: string }> }) {
   const { eventId } = await params
 
-  // Der publicCode ist der Schluessel fuer den SSE-Stream. Bewusst hier
-  // serverseitig geholt statt vom Client geraten.
-  const event = await prisma.event.findUnique({
-    where: { id: eventId },
-    select: { publicCode: true },
-  })
-  if (!event) notFound()
+  // Eigentuemerpruefung, und zwar zwingend: seit der publicCode der
+  // Schluessel zum SSE-Stream ist, gibt diese Seite ihn an den Client weiter.
+  // Ohne Pruefung holte sich jeder mit einem Konto — oder mit einem selbst
+  // gesetzten Cookie, denn der Proxy liest den Cookie nur als Zeichenkette —
+  // den Code einer fremden Feier und belegte damit deren einzigen
+  // Beamer-Platz. Der Stream selbst bleibt sessionfrei, damit die Leinwand
+  // die Nacht durchlaeuft.
+  const event = await requireOwnedEventPage(eventId, { publicCode: true })
 
   const settings = await getSlideshowSettings(eventId)
 

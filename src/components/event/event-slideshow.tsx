@@ -107,34 +107,87 @@ export default function EventSlideshow({
   useEffect(() => {
     clientIdRef.current = getClientId()
 
-    const es = new EventSource(
-      `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`,
-    )
+    // Der Beamer laeuft stundenlang in einem Festsaal-WLAN. Vorher gab ein
+    // einziger Wackler ihn endgueltig auf: onerror rief per fetch denselben
+    // SSE-Endpunkt noch einmal auf — was serverseitig eine zweite Sitzung
+    // samt Heartbeat und Poll-Schleife anlegte, deren Antwort niemand las —
+    // und schloss danach die EventSource. es.close() schaltet aber deren
+    // eingebaute Wiederverbindung ab. Ab da kam kein neues Foto mehr auf die
+    // Leinwand; auffallen tat es erst, wenn dieselben Bilder zum dritten Mal
+    // durchliefen.
+    let stopped = false
+    let es: EventSource | null = null
+    let retry: ReturnType<typeof setTimeout> | null = null
+    let versuche = 0
 
-    es.onmessage = async (e) => {
-      const msg = JSON.parse(e.data)
-      if (msg.type === 'photos-updated') {
-        const data = await getEventPhotosSlideshow(eventId)
-        setPhotos(data)
-      }
+    const url = `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`
+
+    const spaeterNeuVerbinden = () => {
+      if (stopped || retry) return
+      // 3s, 6s, 12s, 24s, dann alle 30s. Ein belegter Platz wird irgendwann
+      // frei; die Wand soll sich dann von selbst erholen, ohne dass jemand
+      // im Saal die Fernbedienung sucht.
+      const wartezeit = Math.min(3000 * 2 ** versuche, 30_000)
+      versuche += 1
+      retry = setTimeout(() => {
+        retry = null
+        verbinden()
+      }, wartezeit)
     }
 
-    es.onerror = async () => {
-      // 403 → Screen-Limit
-      try {
-        const res = await fetch(
-          `/api/slideshow/stream/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`,
-        )
-        if (res.status === 403) {
+    function verbinden() {
+      if (stopped) return
+      es?.close()
+      es = new EventSource(url)
+
+      es.onopen = () => {
+        versuche = 0
+        // Beides zuruecksetzen: setPlaying(false) kam von der Sperre, nicht
+        // vom Menschen. Ohne das bliebe die Wand nach dem Wiederverbinden auf
+        // dem letzten Bild stehen.
+        setBlocked(false)
+        setPlaying(true)
+      }
+
+      es.onmessage = async (e) => {
+        versuche = 0
+        const msg = JSON.parse(e.data)
+        if (msg.type === 'photos-updated') {
+          const data = await getEventPhotosSlideshow(eventId)
+          setPhotos(data)
+        }
+      }
+
+      es.onerror = async () => {
+        es?.close()
+        if (stopped) return
+
+        // Getrennte, billige Auskunft statt eines zweiten Streams.
+        let belegt = false
+        try {
+          const res = await fetch(
+            `/api/slideshow/limit/${eventId}?clientId=${clientIdRef.current}&code=${publicCode}`,
+            { signal: AbortSignal.timeout(3000), cache: 'no-store' },
+          )
+          if (res.ok) belegt = (await res.json()).blocked === true
+        } catch {
+          // Keine Auskunft heisst Netzproblem, nicht Platzmangel.
+        }
+
+        if (belegt) {
           setBlocked(true)
           setPlaying(false)
         }
-      } catch {}
-      es.close()
+        spaeterNeuVerbinden()
+      }
     }
 
+    verbinden()
+
     return () => {
-      es.close()
+      stopped = true
+      if (retry) clearTimeout(retry)
+      es?.close()
     }
   }, [eventId, publicCode])
 

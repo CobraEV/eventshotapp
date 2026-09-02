@@ -22,11 +22,62 @@ function buildFilename(photo: {
   return `photo_${photo.createdAt.getTime()}.${ext}`
 }
 
+/**
+ * Drossel pro IP und Event.
+ *
+ * Eine einzige Anfrage stoesst bis zu 5000 GetObject-Aufrufe an und streamt
+ * die komplette Galerie aus dem Objektspeicher. Ohne Bremse genuegen zwanzig
+ * parallele Verbindungen, um Egress- und Requestkosten zu vervielfachen.
+ *
+ * Gezaehlt wird pro IP, nicht pro Event: nach dem Fest druecken vierzig Gaeste
+ * gleichzeitig auf den Knopf, jeder aus einem anderen Netz. Eine Bremse pro
+ * Event haette genau diese vierzig gegenseitig ausgesperrt.
+ *
+ * Im Speicher gehalten, nicht in der Datenbank: die Bremse muss billiger sein
+ * als das, wovor sie schuetzt. Nach einem Neustart ist sie leer — das ist der
+ * Preis und fuer diesen Zweck vertretbar.
+ */
+const FENSTER_MS = 60_000
+const MAX_PRO_FENSTER = 3
+const letzteZugriffe = new Map<string, number[]>()
+
+function zuVieleAnfragen(schluessel: string) {
+  const jetzt = Date.now()
+  const bisher = (letzteZugriffe.get(schluessel) ?? []).filter(
+    (t) => jetzt - t < FENSTER_MS,
+  )
+  if (bisher.length >= MAX_PRO_FENSTER) {
+    letzteZugriffe.set(schluessel, bisher)
+    return true
+  }
+  bisher.push(jetzt)
+  letzteZugriffe.set(schluessel, bisher)
+
+  // Die Map darf nicht unbegrenzt wachsen.
+  if (letzteZugriffe.size > 5000) {
+    for (const [k, v] of letzteZugriffe) {
+      if (!v.some((t) => jetzt - t < FENSTER_MS)) letzteZugriffe.delete(k)
+    }
+  }
+  return false
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ eventId: string }> },
 ) {
   const { eventId } = await params
+
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unbekannt'
+  if (zuVieleAnfragen(`${ip}:${eventId}`)) {
+    return new Response('Zu viele Anfragen. Bitte kurz warten.', {
+      status: 429,
+      headers: { 'Retry-After': '60' },
+    })
+  }
 
   // Bleibt bewusst ohne Anmeldung: der Knopf steht in der Gaeste-Galerie, und
   // die Gaeste haben kein Konto. Was fehlte, waren die Filter — das Archiv

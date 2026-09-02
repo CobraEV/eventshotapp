@@ -35,12 +35,17 @@ export type Denied = {
  * und mit rund zwanzig neuen Waechtern vervielfacht sich die Last genau dann,
  * wenn ein Event laeuft.
  */
+export const getSessionEmail = cache(async (): Promise<string | null> => {
+  const session = await auth.api.getSession({ headers: await headers() })
+  return session?.user?.email ?? null
+})
+
 export const getCurrentTenant = cache(
   async (): Promise<CurrentTenant | null> => {
-    const session = await auth.api.getSession({ headers: await headers() })
-    if (!session?.user?.email) return null
+    const email = await getSessionEmail()
+    if (!email) return null
     return prisma.tenant.findUnique({
-      where: { email: session.user.email },
+      where: { email },
       select: { id: true, email: true, name: true },
     })
   },
@@ -50,9 +55,20 @@ export const getCurrentTenant = cache(
 // Fuer Seiten (Server Components): umleiten statt zurueckgeben
 // ---------------------------------------------------------------------------
 
+/**
+ * Angemeldet und mit Kundendatensatz — sonst Umleitung.
+ *
+ * Die beiden Faelle muessen getrennt bleiben: addTenant legt User und Tenant
+ * nacheinander und ohne Transaktion an. Scheitert der zweite Schritt, gibt es
+ * eine Session ohne Tenant. Ein pauschales redirect('/login') schickte diesen
+ * Kunden im Kreis — angemeldet ist er ja, also kaeme er sofort auf /tenant
+ * zurueck und von dort wieder auf /login.
+ */
 export async function requireTenantPage(): Promise<CurrentTenant> {
+  const email = await getSessionEmail()
+  if (!email) redirect('/login')
   const tenant = await getCurrentTenant()
-  if (!tenant) redirect('/login')
+  if (!tenant) notFound()
   return tenant
 }
 
@@ -68,8 +84,10 @@ export async function requireOwnedEventPage<S extends Prisma.EventSelect>(
   eventId: string,
   select: S,
 ): Promise<Prisma.EventGetPayload<{ select: S }>> {
+  const email = await getSessionEmail()
+  if (!email) redirect('/login')
   const tenant = await getCurrentTenant()
-  if (!tenant) redirect('/login')
+  if (!tenant) notFound()
   const event = await prisma.event.findFirst({
     where: { id: eventId, tenantId: tenant.id },
     select,

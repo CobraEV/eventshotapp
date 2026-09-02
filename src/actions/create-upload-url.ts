@@ -16,10 +16,47 @@ export type CreateUploadUrlResult =
   | { ok: true; uploadUrl: string; objectKey: string }
   | { ok: false; message: string }
 
+/**
+ * Was ein Handy nach dem QR-Scan hochladen darf. HEIC und HEIF gehoeren
+ * ausdruecklich dazu — das ist das Standardformat der iPhone-Kamera, und ohne
+ * sie waere die Haelfte der Gaeste ausgesperrt.
+ */
+const ERLAUBTE_TYPEN: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/pjpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/heic': 'heic',
+  'image/heif': 'heif',
+  'image/avif': 'avif',
+}
+
+/** 25 MB — grosszuegig fuer ein Handyfoto, eng genug gegen Missbrauch. */
+const MAX_BYTES = 25 * 1024 * 1024
+
 export async function createUploadUrl(
   eventId: string,
   mimeType: string,
+  size?: number,
 ): Promise<CreateUploadUrlResult> {
+  // Die Endung kam bisher aus dem Client-String (mimeType.split('/')[1]) und
+  // der Typ wurde gar nicht geprueft: die signierte URL nahm jede Datei
+  // entgegen, in beliebiger Groesse. Beides kostet Speicher und Egress und
+  // laesst sich nicht zurueckdrehen, wenn es einmal im Bucket liegt.
+  const extension = ERLAUBTE_TYPEN[mimeType.toLowerCase()]
+  if (!extension) {
+    return {
+      ok: false,
+      message: 'Dieses Dateiformat können wir nicht annehmen.',
+    }
+  }
+  if (typeof size === 'number' && size > MAX_BYTES) {
+    return {
+      ok: false,
+      message: `Das Bild ist zu gross (maximal ${MAX_BYTES / 1024 / 1024} MB).`,
+    }
+  }
   const event = await prisma.event.findUnique({
     where: { id: eventId },
     select: { isActive: true, uploadLimit: true },
@@ -56,7 +93,6 @@ export async function createUploadUrl(
     }
   }
 
-  const extension = mimeType.split('/')[1] ?? 'jpg'
   const objectKey = `events/${eventId}/original/${randomUUID()}.${extension}`
 
   const command = new PutObjectCommand({
@@ -65,6 +101,14 @@ export async function createUploadUrl(
     ContentType: mimeType,
     CacheControl: 'public, max-age=31536000, immutable',
   })
+  // ContentLength bewusst NICHT mitsigniert: das waere die harte Variante —
+  // die URL naehme dann nur noch genau diese Bytezahl an —, laesst sich von
+  // hier aus aber nicht gegen MinIO durchspielen. Schlaegt sie fehl, faellt
+  // jeder Gaeste-Upload aus, und das ist der Weg, an dem am Hochzeitsabend
+  // alles haengt. Die Groessenpruefung oben bleibt damit eine Angabe des
+  // Clients; zusammen mit der Typ-Whitelist und den 60 Sekunden Gueltigkeit
+  // deckelt sie den Missbrauch ausreichend, bis das jemand an einer echten
+  // Instanz nachziehen kann.
 
   const uploadUrl = await getSignedUrl(s3, command, { expiresIn: 60 })
 

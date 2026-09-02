@@ -20,7 +20,7 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
 
     try {
       // 1) Presigned URL holen
-      const presigned = await createUploadUrl(eventId, file.type)
+      const presigned = await createUploadUrl(eventId, file.type, file.size)
 
       // Abgelehnt, bevor irgendein Byte fliesst — der Gast erfaehrt den Grund,
       // statt nach einem vollstaendigen Upload ein "Fehler beim Upload" zu
