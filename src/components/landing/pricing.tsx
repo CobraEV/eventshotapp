@@ -1,6 +1,7 @@
 import { ScrollReveal } from '@/components/ui/motion'
 import { pricingPlans } from '@/lib/constants'
 import { Check } from 'lucide-react'
+import Link from 'next/link'
 export function Pricing() {
   return (
     <section id="pricing" className="py-16 bg-muted/30">
@@ -13,6 +14,23 @@ export function Pricing() {
             <p className="text-muted-foreground text-lg">
               Wähle das passende Paket für dein Event – ohne versteckte Kosten
               oder Überraschungen.
+            </p>
+
+            {/* Vor den Preisen, nicht danach: die Frage "was kostet mich das
+                Ausprobieren" beantwortet sich sonst erst, wenn man schon
+                dreimal CHF gelesen hat. */}
+            <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-2 rounded-full border border-primary/25 bg-primary/[0.07] px-5 py-2.5 text-sm">
+              <span className="font-semibold text-primary">Gratis testen</span>
+              <span className="text-muted-foreground">
+                Zu jedem Konto gehört ein Demo-Event für 20 Fotos.
+              </span>
+              <Link
+                href="/register"
+                data-umami-event="pricing-demo-register"
+                className="font-medium text-primary underline underline-offset-4"
+              >
+                Konto anlegen
+              </Link>
             </p>
           </div>
         </ScrollReveal>

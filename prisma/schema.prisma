@@ -101,6 +101,15 @@ model Event {
   publicCode String  @unique @default(uuid())
   pin        String?
 
+  // Demo-Event: jeder Kunde bekommt eines, damit er das Produkt vor der
+  // ersten Buchung mit echten Fotos ausprobieren kann. Technisch ein normales
+  // Event mit vollem Funktionsumfang, begrenzt ueber uploadLimit.
+  isDemo Boolean @default(false)
+
+  // Harte Obergrenze fuer Uploads. null = unbegrenzt. Wird beim Anfordern der
+  // Upload-URL geprueft.
+  uploadLimit Int?
+
   stripeSessionId String? @unique
 
   photos    Photo[]

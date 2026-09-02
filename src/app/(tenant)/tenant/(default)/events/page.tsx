@@ -56,6 +56,9 @@ async function EventsList() {
     where: { email: session.user.email },
     include: {
       events: {
+        // Demo-Event gehoert nicht in die Liste der echten Feiern; es hat
+        // seine eigene Sektion im Dashboard.
+        where: { isDemo: false },
         select: {
           id: true,
           name: true,

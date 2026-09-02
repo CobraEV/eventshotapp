@@ -22,7 +22,7 @@ export const metadata: Metadata = buildMetadata({
   path: '/demo',
   title: 'Demo-Video ansehen – ohne Registrierung',
   description:
-    'Ein kurzes Video zeigt die Live-Slideshow im Saal. Dazu der Ablauf in drei Schritten und der Weg zu einer begleiteten Demo – ohne Registrierung.',
+    'Ein kurzes Video zeigt die Live-Slideshow im Saal – ohne Registrierung. Mit Konto bekommst du dazu ein eigenes Demo-Event: 20 Fotos gratis, voller Funktionsumfang.',
 })
 
 // Weboptimierte Fassungen aus /public, identisch zur Startseiten-Sektion.
@@ -57,7 +57,7 @@ const screen = [
 const grenzen = [
   {
     title: 'Keine offene Slideshow',
-    copy: 'Jede Slideshow hängt an einem angelegten Event und zeigt die Bilder echter Gäste. Eine öffentliche Instanz zum Herumklicken gibt es deshalb nicht.',
+    copy: 'Jede Slideshow hängt an einem angelegten Event und zeigt die Bilder echter Gäste. Eine öffentliche Instanz zum Herumklicken gibt es deshalb nicht – dafür dein eigenes Demo-Event nach der Anmeldung.',
   },
   {
     title: 'Keine fremde Beispielgalerie',
@@ -73,12 +73,17 @@ const faq = [
   {
     question: 'Müssen wir uns registrieren, um die Demo zu sehen?',
     answer:
-      'Nein. Das Video läuft direkt hier im Browser, ohne Konto und ohne Formular. Eine Registrierung brauchst du erst, wenn du ein eigenes Event anlegen willst.',
+      'Für das Video nicht: Es läuft direkt hier im Browser, ohne Konto und ohne Formular. Wer selbst hochladen und die Slideshow bedienen will, legt ein kostenloses Konto an – dazu gehört ein Demo-Event mit 20 Gratis-Fotos, ohne Zahlungsdaten.',
+  },
+  {
+    question: 'Was kostet das Demo-Event?',
+    answer:
+      'Nichts. Das Demo-Event ist im kostenlosen Konto enthalten, hat den vollen Funktionsumfang und ist auf 20 Fotos begrenzt. Es läuft nicht ab und verlängert sich nicht in ein Abo – für eine echte Feier buchst du danach ein Event ohne Foto-Grenze.',
   },
   {
     question: 'Gibt es eine Beispielgalerie zum Anklicken?',
     answer:
-      'Nein. Slideshow und Galerie gehören immer zu einem angelegten Event mit echten Gästefotos, darum steht keine offene Demo-Galerie im Netz. Für einen Blick auf die Oberfläche vereinbaren wir eine begleitete Demo.',
+      'Keine fremde. Slideshow und Galerie gehören immer zu einem angelegten Event mit echten Gästefotos, darum steht keine offene Demo-Galerie im Netz. Stattdessen bekommst du nach der Anmeldung ein eigenes Demo-Event mit 20 Gratis-Fotos und siehst Galerie und Slideshow mit deinen eigenen Bildern.',
   },
   {
     question: 'Zeigt das Video ein echtes Kundenevent?',
@@ -133,6 +138,32 @@ export default function DemoPage() {
             was davor passiert, was danach bleibt und wie du die Oberfläche
             gemeinsam mit uns anschaust.
           </p>
+
+          {/* Der Unterschied zum Video darunter: hier bekommt man ein eigenes
+              Event mit eigenen Fotos. Das gehoert vor den Player und nicht ans
+              Seitenende — sonst schaut jemand 5 Sekunden zu und geht wieder,
+              ohne je erfahren zu haben, dass er es selbst ausprobieren kann. */}
+          <div className='rounded-2xl border border-primary/25 bg-primary/[0.07] p-6'>
+            <p className='text-xs font-semibold uppercase tracking-[0.18em] text-primary'>
+              Neu · Dein eigenes Demo-Event
+            </p>
+            <p className='mt-3 text-base leading-relaxed'>
+              Statt nur zuzuschauen: Nach der Anmeldung wartet ein fertiges
+              Event auf dich – mit QR-Code, Galerie und Slideshow im vollen
+              Funktionsumfang, für <strong>20 Fotos gratis</strong>.
+            </p>
+            <p className='mt-2 text-sm text-muted-foreground'>
+              Keine Zahlungsdaten, keine Frist zum Kündigen. Du lädst mit dem
+              Handy ein paar Bilder hoch und siehst sie auf der Leinwand – genau
+              wie deine Gäste am Fest.
+            </p>
+            <Button className='mt-5' asChild>
+              <Link href='/register' data-umami-event='demo-register'>
+                Demo-Event holen
+                <ArrowRight className='ml-2 size-4' />
+              </Link>
+            </Button>
+          </div>
         </div>
       </ScrollReveal>
 

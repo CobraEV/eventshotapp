@@ -1,5 +1,6 @@
 import { ServerIcon, ShieldCheckIcon, Trash2Icon } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { FadeIn, StaggerContainer, StaggerItem } from '../ui/motion'
 import HeroButtons from './hero-buttons'
 import HeroContainer from './hero-container'
@@ -13,7 +14,10 @@ const TRUST = [
 
 export function Hero() {
   return (
-    <section className="relative h-[calc(100svh-64px)] pt-48 sm:pt-0 flex items-center justify-center overflow-hidden">
+        // `min-h` statt `h`: bei fester Hoehe und zentriertem Inhalt schneidet ein
+    // kurzes Display oben und unten ab — auf 360x780 stand die H1 schon vorher
+    // hinter dem Header. Jetzt waechst der Hero stattdessen mit.
+    <section className="relative min-h-[calc(100svh-64px)] pt-28 pb-16 sm:pt-0 sm:pb-0 flex items-center justify-center overflow-hidden">
       <HeroContainer>
         <Image
           src="/hero-bg.jpeg"
@@ -32,14 +36,14 @@ export function Hero() {
             {/* Bewusst NICHT in StaggerItem: das schreibt style="opacity:0"
                 ins SSR-HTML und nimmt der H1 die LCP-Kandidatur. */}
             <div>
-              <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-6">
+              <h1 className="font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white mb-4 sm:mb-6">
                 Erlebe <span className="text-primary">Momente</span>,
                 <br />
                 geteilt in <span className="text-primary">Echtzeit</span>
               </h1>
             </div>
             <div>
-              <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto lg:mx-0">
+              <p className="text-lg md:text-xl text-white/80 mb-5 sm:mb-8 max-w-2xl mx-auto lg:mx-0">
                 Die Live-Fotowand & Slideshow für eure Hochzeit, den Geburtstag
                 und private Feiern: Gäste laden Fotos per QR-Code hoch – ganz
                 ohne App – und sehen sie live als elegante Slideshow. Danach
@@ -49,8 +53,23 @@ export function Hero() {
             <StaggerItem>
               <HeroButtons />
             </StaggerItem>
+            {/* Der Hinweis steht direkt unter den Knoepfen und nicht bei den
+                Preisen: wer hier abspringt, hat den Preisblock nie gesehen. */}
             <StaggerItem>
-              <ul className="mt-8 flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-white/70">
+              <p className="mt-4 text-xs sm:text-sm text-white/70">
+                Erst ausprobieren:{' '}
+                <Link
+                  href="/register"
+                  data-umami-event="hero-demo-register"
+                  className="font-semibold text-white underline underline-offset-4 decoration-primary"
+                >
+                  Demo-Event mit 20 Gratis-Fotos
+                </Link>
+                <span className="hidden sm:inline"> – ohne Zahlungsdaten.</span>
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <ul className="mt-4 sm:mt-6 flex flex-wrap justify-center lg:justify-start gap-x-5 gap-y-2 text-xs sm:text-sm text-white/70">
                 {TRUST.map((item) => (
                   <li key={item.label} className="flex items-center gap-1.5">
                     <item.icon className="size-4 shrink-0" strokeWidth={1.75} />

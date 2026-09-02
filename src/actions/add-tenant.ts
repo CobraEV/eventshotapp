@@ -1,5 +1,6 @@
 'use server'
 
+import { ensureDemoEvent } from '@/lib/demo-event'
 import prisma from '@/lib/prisma'
 import { Prisma } from '@/generated/prisma/client'
 import { auth } from '@/lib/auth'
@@ -72,13 +73,18 @@ export async function addTenant(
     }
 
     // 2️⃣ Tenant anlegen
-    await prisma.tenant.create({
+    const tenant = await prisma.tenant.create({
       data: {
         company: input.company,
         name,
         email,
       },
     })
+
+    // 3️⃣ Demo-Event dazu. Bewusst hier und nicht im better-auth-Hook
+    // `user.create.after`: dort gibt es den Tenant noch gar nicht, er
+    // entsteht erst in der Zeile darueber.
+    await ensureDemoEvent(tenant.id)
 
     return {
       ok: true,

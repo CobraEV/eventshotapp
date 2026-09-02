@@ -20,7 +20,17 @@ export default function PhotoUploadPresigned({ eventId }: { eventId: string }) {
 
     try {
       // 1) Presigned URL holen
-      const { uploadUrl, objectKey } = await createUploadUrl(eventId, file.type)
+      const presigned = await createUploadUrl(eventId, file.type)
+
+      // Abgelehnt, bevor irgendein Byte fliesst — der Gast erfaehrt den Grund,
+      // statt nach einem vollstaendigen Upload ein "Fehler beim Upload" zu
+      // sehen.
+      if (!presigned.ok) {
+        toast.error(presigned.message)
+        return
+      }
+
+      const { uploadUrl, objectKey } = presigned
 
       // 2) Upload direkt zu MinIO (XHR für Progress)
       await new Promise<void>((resolve, reject) => {

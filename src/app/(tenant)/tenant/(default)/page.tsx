@@ -15,10 +15,12 @@ import { notFound, redirect } from 'next/navigation'
 import { Suspense } from 'react'
 import { createEvent } from '@/actions/event'
 import { EditEventDialog } from '@/components/tenant/edit-event-dialog'
+import { DemoSection } from '@/components/tenant/demo-section'
 import { NewEventDialog } from '@/components/tenant/new-event-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { auth } from '@/lib/auth'
+import { getOrCreateDemoEvent } from '@/lib/demo-event'
 import prisma from '@/lib/prisma'
 import type { EventWithCount } from '@/types/EventWithCount'
 
@@ -71,6 +73,10 @@ async function DashboardContent() {
     where: { email: session.user.email },
     include: {
       events: {
+        // Das Demo-Event steht in seiner eigenen Sektion und gehoert nicht in
+        // die Liste der echten Feiern — sonst verzerrt es auch die
+        // Kennzahlen, etwa "Fotos pro Event".
+        where: { isDemo: false },
         select: {
           id: true,
           name: true,
@@ -87,6 +93,7 @@ async function DashboardContent() {
 
   if (!tenant) notFound()
 
+  const demo = await getOrCreateDemoEvent(tenant.id)
   const stats = getDashboardStats(tenant.events)
 
   const sortedEvents = [...tenant.events].sort((a, b) => {
@@ -102,6 +109,8 @@ async function DashboardContent() {
 
   return (
     <>
+      {demo && <DemoSection demo={demo} />}
+
       {/* KPI */}
       {stats.totalEvents > 0 && (
         <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-4'>
