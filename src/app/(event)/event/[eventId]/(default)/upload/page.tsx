@@ -13,10 +13,11 @@ export default async function Page({
     <div className='flex-1 flex flex-col justify-center items-center gap-6'>
       <div className='text-center max-w-md space-y-2'>
         <h1 className='text-3xl font-semibold'>
-          Lade dein <span className='text-primary'>Foto</span> hoch
+          Lade deine <span className='text-primary'>Fotos</span> hoch
         </h1>
         <p className='text-sm text-muted-foreground'>
-          Dein Foto erscheint live auf der Eventwall.
+          Einzeln oder mehrere auf einmal — sie erscheinen live auf der
+          Eventwall.
         </p>
       </div>
       <Suspense>

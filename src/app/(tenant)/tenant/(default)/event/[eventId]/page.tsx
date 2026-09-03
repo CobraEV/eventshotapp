@@ -1,5 +1,6 @@
 import { getEventPhotos } from '@/actions/get-event-photos'
 import InteractiveGallery from '@/components/tenant/event/interactive-gallery'
+import PhotoUploadPresigned from '@/components/event/photo-upload-presigned'
 import QRCodeGenerator from '@/components/tenant/event/qr-code-generator'
 import SlideshowSettings from '@/components/tenant/event/slideshow-settings'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -46,8 +47,9 @@ const PageContent = async ({
       </h1>
 
       <Tabs defaultValue='photos' className='w-full'>
-        <TabsList className='grid grid-cols-3 w-full'>
+        <TabsList className='grid grid-cols-4 w-full'>
           <TabsTrigger value='photos'>Fotos</TabsTrigger>
+          <TabsTrigger value='upload'>Hochladen</TabsTrigger>
           <TabsTrigger value='qrcode'>QR-Code</TabsTrigger>
           <TabsTrigger value='settings'>Einstellungen</TabsTrigger>
         </TabsList>
@@ -60,6 +62,26 @@ const PageContent = async ({
               photos={photos}
               eventId={eventId}
             />
+          </TabsContent>
+
+          {/* ---------------- Hochladen ----------------
+              Der Veranstalter bereitet Fotos am Rechner vor, bevor der erste
+              Gast scannt. Ueber den QR-Code ginge das auch, aber dann muesste
+              er sich die Gaeste-URL erst heraussuchen. */}
+          <TabsContent value='upload'>
+            <div className='mx-auto flex max-w-xl flex-col items-center gap-4'>
+              <div className='text-center'>
+                <h2 className='text-xl font-semibold'>Fotos vorbereiten</h2>
+                <p className='mt-1 text-sm text-muted-foreground'>
+                  Lade eigene Bilder hoch, bevor das Fest beginnt. Sie laufen
+                  in der Slideshow wie Gästefotos mit.
+                </p>
+              </div>
+              <PhotoUploadPresigned
+                eventId={eventId}
+                galerieHref={`/tenant/event/${eventId}`}
+              />
+            </div>
           </TabsContent>
 
           {/* ---------------- QR ---------------- */}
