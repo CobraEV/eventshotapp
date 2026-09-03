@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { adminRoutes } from '@/lib/admin/routes'
+import { adminRoutes, betreiberRoutes } from '@/lib/admin/routes'
 import { authClient } from '@/lib/auth-client'
 import { cn } from '@/lib/utils'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -11,7 +11,8 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-const AdminNav = () => {
+const AdminNav = ({ isAdmin = false }: { isAdmin?: boolean }) => {
+  const routes = isAdmin ? [...adminRoutes, ...betreiberRoutes] : adminRoutes
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
   const router = useRouter()
@@ -64,7 +65,7 @@ const AdminNav = () => {
        * Desktop Navigation
        * ========================= */}
       <nav className="hidden lg:flex items-center gap-2">
-        {adminRoutes.map((route) => (
+        {routes.map((route) => (
           <Link
             key={route.url}
             href={route.url}
@@ -127,7 +128,7 @@ const AdminNav = () => {
                     },
                   }}
                 >
-                  {adminRoutes.map((route) => (
+                  {routes.map((route) => (
                     <motion.div
                       key={route.url}
                       variants={{

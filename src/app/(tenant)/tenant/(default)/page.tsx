@@ -17,9 +17,13 @@ import { DemoSection } from '@/components/tenant/demo-section'
 import { NewEventDialog } from '@/components/tenant/new-event-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { requireTenantPage } from '@/lib/auth-guard'
+import { getKundenForAdmin } from '@/actions/admin-events'
+import { AdminNewEventDialog } from '@/components/tenant/admin-new-event-dialog'
+import { getVisibleEvents } from '@/lib/admin-data'
+import { isCurrentUserAdmin } from '@/lib/auth-guard'
 import { getOrCreateDemoEvent } from '@/lib/demo-event'
 import prisma from '@/lib/prisma'
+import type { EventForList } from '@/lib/admin-data'
 import type { EventWithCount } from '@/types/EventWithCount'
 
 /* --------------------------------------------
@@ -35,7 +39,9 @@ export default async function AdminEventsPage() {
           <div className='inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20'>
             <div className='w-2 h-2 bg-primary rounded-full animate-pulse' />
             <span className='text-sm font-medium text-primary'>
-              Live Dashboard
+              <Suspense fallback='Dashboard'>
+                <RollenHinweis />
+              </Suspense>
             </span>
           </div>
 
@@ -56,41 +62,34 @@ export default async function AdminEventsPage() {
   )
 }
 
+/**
+ * Steht in der Kopfzeile, damit der Betreiber auf einen Blick sieht, dass er
+ * gerade fremde Daten vor sich hat und nicht die eigenen.
+ */
+async function RollenHinweis() {
+  return (await isCurrentUserAdmin()) ? 'Betreiber · alle Kunden' : 'Live Dashboard'
+}
+
 /* --------------------------------------------
  * DATA + LOGIC
  * -------------------------------------------- */
 
 async function DashboardContent() {
-  const { id: tenantId } = await requireTenantPage()
+  const isAdmin = await isCurrentUserAdmin()
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    include: {
-      events: {
-        // Das Demo-Event steht in seiner eigenen Sektion und gehoert nicht in
-        // die Liste der echten Feiern — sonst verzerrt es auch die
-        // Kennzahlen, etwa "Fotos pro Event".
-        where: { isDemo: false },
-        select: {
-          id: true,
-          name: true,
-          date: true,
-          location: true,
-          description: true,
-          plan: true,
-          isActive: true,
-          _count: { select: { photos: true } },
-        },
-      },
-    },
-  })
+  // Der Betreiber sieht alles, inklusive der Demo-Events aller Kunden — genau
+  // dafuer ist der Bereich da. Ein Kunde sieht nur seine eigenen Feiern; sein
+  // Demo steht in einer eigenen Sektion und wuerde sonst die Kennzahlen
+  // verzerren ("Fotos pro Event").
+  const { events, tenantId } = await getVisibleEvents(isAdmin)
 
-  if (!tenant) notFound()
+  // Der Betreiber braucht keinen eigenen Kundendatensatz, um hier
+  // hereinzukommen — hat er aber einen, bekommt auch er sein Demo.
+  const demo = tenantId ? await getOrCreateDemoEvent(tenantId) : null
+  const kunden = isAdmin ? await getKundenForAdmin() : []
+  const stats = getDashboardStats(events)
 
-  const demo = await getOrCreateDemoEvent(tenant.id)
-  const stats = getDashboardStats(tenant.events)
-
-  const sortedEvents = [...tenant.events].sort((a, b) => {
+  const sortedEvents = [...events].sort((a, b) => {
     if (!a.date || !b.date) return 0
     const now = new Date()
 
@@ -143,31 +142,39 @@ async function DashboardContent() {
       <div className='space-y-6'>
         <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
           <div>
-            <h2 className='text-3xl font-bold'>Events verwalten</h2>
+            <h2 className='text-3xl font-bold'>
+              {isAdmin ? 'Alle Events' : 'Events verwalten'}
+            </h2>
             <p className='text-muted-foreground'>
-              Erstelle und verwalte deine EventShot Events
+              {isAdmin
+                ? 'Alle Kunden, inklusive Demo-Events'
+                : 'Erstelle und verwalte deine EventShot Events'}
             </p>
           </div>
 
-          <NewEventDialog
-            tenantId={tenant.id}
-            defaultPlan='PREMIUM'
-          />
+          <div className='flex flex-wrap gap-2'>
+            {isAdmin && <AdminNewEventDialog kunden={kunden} />}
+            {tenantId !== null && (
+              <NewEventDialog tenantId={tenantId} defaultPlan='PREMIUM' />
+            )}
+          </div>
         </div>
 
         <Card className='rounded-3xl border-0 shadow-xl bg-card/50 backdrop-blur-sm'>
           <CardHeader>
             <CardTitle className='text-xl flex items-center gap-2'>
               <Layers3 className='h-5 w-5 text-primary' />
-              Bevorstehende Events
+              {isAdmin ? `Events (${sortedEvents.length})` : 'Bevorstehende Events'}
             </CardTitle>
           </CardHeader>
 
           <CardContent className='space-y-4'>
-            {sortedEvents.length === 0 && <EmptyState tenantId={tenant.id} />}
+            {sortedEvents.length === 0 && tenantId !== null && (
+              <EmptyState tenantId={tenantId} />
+            )}
 
             {sortedEvents.map((ev) => (
-              <EventRow key={ev.id} event={ev} />
+              <EventRow key={ev.id} event={ev} showOwner={isAdmin} />
             ))}
           </CardContent>
         </Card>
@@ -200,18 +207,62 @@ function getDashboardStats(events: EventWithCount[]) {
  * COMPONENTS
  * -------------------------------------------- */
 
-export function EventRow({ event }: { event: EventWithCount }) {
+export function EventRow({
+  event,
+  showOwner = false,
+}: {
+  event: EventForList | EventWithCount
+  /** Nur im Betreiber-Blick: wem gehoert das, und war es bezahlt? */
+  showOwner?: boolean
+}) {
+  // EventWithCount kennt diese Felder nicht — die Kundenansicht braucht sie
+  // auch nicht, deshalb hier nachsichtig statt zwei getrennte Komponenten.
+  const voll = event as Partial<EventForList>
+
   return (
     <div className='p-6 rounded-2xl border border-border/50 hover:bg-muted/30 transition'>
       <div className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'>
         <div className='space-y-2'>
-          <div className='flex items-center gap-3'>
+          <div className='flex flex-wrap items-center gap-3'>
             <h3 className='font-semibold text-lg'>{event.name}</h3>
 
             <span className='rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary border border-primary/20'>
               {event.plan}
             </span>
+
+            {voll.isDemo && (
+              <span className='rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground'>
+                Demo
+              </span>
+            )}
+
+            {showOwner && !voll.isDemo && (
+              <span
+                className={
+                  voll.stripeSessionId
+                    ? 'rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-600'
+                    : 'rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-600'
+                }
+              >
+                {voll.stripeSessionId ? 'bezahlt' : 'gratis'}
+              </span>
+            )}
+
+            {!event.isActive && (
+              <span className='rounded-full border border-border bg-muted px-3 py-1 text-xs font-medium text-muted-foreground'>
+                inaktiv
+              </span>
+            )}
           </div>
+
+          {showOwner && voll.tenant && (
+            <p className='text-sm font-medium text-muted-foreground'>
+              {voll.tenant.company
+                ? `${voll.tenant.name} · ${voll.tenant.company}`
+                : voll.tenant.name}{' '}
+              <span className='font-normal'>({voll.tenant.email})</span>
+            </p>
+          )}
 
           <div className='flex flex-wrap gap-4 text-sm text-muted-foreground'>
             {event.date && (

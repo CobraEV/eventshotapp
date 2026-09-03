@@ -3,7 +3,10 @@ import { notFound } from 'next/navigation'
 import { Suspense } from 'react'
 import { NewEventDialog } from '@/components/tenant/new-event-dialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { getCurrentTenant, requireTenantPage } from '@/lib/auth-guard'
+import { getKundenForAdmin } from '@/actions/admin-events'
+import { AdminNewEventDialog } from '@/components/tenant/admin-new-event-dialog'
+import { getVisibleEvents } from '@/lib/admin-data'
+import { getCurrentTenant, isCurrentUserAdmin } from '@/lib/auth-guard'
 import prisma from '@/lib/prisma'
 import { EventRow } from '../page'
 
@@ -44,34 +47,13 @@ export default Page
  * -------------------------------------------- */
 
 async function EventsList() {
-  const { id: tenantId } = await requireTenantPage()
+  const isAdmin = await isCurrentUserAdmin()
+  // Der Betreiber sieht hier alles, auch die Demo-Events. Ein Kunde sieht nur
+  // seine echten Feiern; sein Demo hat seine eigene Sektion im Dashboard.
+  const { events, tenantId } = await getVisibleEvents(isAdmin)
 
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    include: {
-      events: {
-        // Demo-Event gehoert nicht in die Liste der echten Feiern; es hat
-        // seine eigene Sektion im Dashboard.
-        where: { isDemo: false },
-        select: {
-          id: true,
-          name: true,
-          date: true,
-          location: true,
-          description: true,
-          plan: true,
-          isActive: true,
-          _count: { select: { photos: true } },
-        },
-        orderBy: { date: 'desc' },
-      },
-    },
-  })
-
-  if (!tenant) notFound()
-
-  if (tenant.events.length === 0) {
-    return <EmptyState tenantId={tenant.id} />
+  if (events.length === 0) {
+    return tenantId !== null ? <EmptyState tenantId={tenantId} /> : null
   }
 
   return (
@@ -79,13 +61,13 @@ async function EventsList() {
       <CardHeader>
         <CardTitle className='flex items-center gap-2'>
           <Layers3 className='h-5 w-5 text-primary' />
-          Alle Events
+          {isAdmin ? `Alle Events aller Kunden (${events.length})` : 'Alle Events'}
         </CardTitle>
       </CardHeader>
 
       <CardContent className='space-y-4'>
-        {tenant.events.map((event) => (
-          <EventRow key={event.id} event={event} />
+        {events.map((event) => (
+          <EventRow key={event.id} event={event} showOwner={isAdmin} />
         ))}
       </CardContent>
     </Card>
@@ -96,14 +78,17 @@ async function CreateButton() {
   // getCurrentTenant statt einer zweiten eigenen Aufloesung: cache() liefert
   // hier das Ergebnis aus EventsList weiter, statt Session und Tenant im
   // selben Request ein zweites Mal abzufragen.
+  const isAdmin = await isCurrentUserAdmin()
   const tenant = await getCurrentTenant()
-  if (!tenant) return null
+  const kunden = isAdmin ? await getKundenForAdmin() : []
+
+  if (!isAdmin && !tenant) return null
 
   return (
-    <NewEventDialog
-      tenantId={tenant.id}
-      defaultPlan='PREMIUM'
-    />
+    <div className='flex flex-wrap gap-2'>
+      {isAdmin && <AdminNewEventDialog kunden={kunden} />}
+      {tenant && <NewEventDialog tenantId={tenant.id} defaultPlan='PREMIUM' />}
+    </div>
   )
 }
 

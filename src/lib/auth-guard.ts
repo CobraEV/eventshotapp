@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { notFound, redirect } from 'next/navigation'
 import { cache } from 'react'
 import type { Prisma } from '@/generated/prisma/client'
+import { isAdminEmail } from '@/lib/admin'
 import { auth } from '@/lib/auth'
 import prisma from '@/lib/prisma'
 
@@ -39,6 +40,16 @@ export const getSessionEmail = cache(async (): Promise<string | null> => {
   const session = await auth.api.getSession({ headers: await headers() })
   return session?.user?.email ?? null
 })
+
+/**
+ * Ist der Anfragende Betreiber? Stuetzt sich auf getSessionEmail, das in
+ * cache() steckt — die Frage taucht auf einer Seite mehrfach auf
+ * (Navigation, Kopfzeile, Datenabfrage) und kostet trotzdem nur eine
+ * Sitzungsabfrage.
+ */
+export async function isCurrentUserAdmin(): Promise<boolean> {
+  return isAdminEmail(await getSessionEmail())
+}
 
 export const getCurrentTenant = cache(
   async (): Promise<CurrentTenant | null> => {
@@ -86,12 +97,18 @@ export async function requireOwnedEventPage<S extends Prisma.EventSelect>(
 ): Promise<Prisma.EventGetPayload<{ select: S }>> {
   const email = await getSessionEmail()
   if (!email) redirect('/login')
-  const tenant = await getCurrentTenant()
-  if (!tenant) notFound()
-  const event = await prisma.event.findFirst({
-    where: { id: eventId, tenantId: tenant.id },
-    select,
-  })
+
+  // Der Betreiber sieht jedes Event. Das ist keine Aufweichung der Pruefung,
+  // sondern ihre bewusste Ausnahme: er muss einem Kunden am Telefon helfen
+  // koennen, ohne sich dessen Zugangsdaten geben zu lassen.
+  const where: Prisma.EventWhereInput = { id: eventId }
+  if (!isAdminEmail(email)) {
+    const tenant = await getCurrentTenant()
+    if (!tenant) notFound()
+    where.tenantId = tenant.id
+  }
+
+  const event = await prisma.event.findFirst({ where, select })
   if (!event) notFound()
   return event as Prisma.EventGetPayload<{ select: S }>
 }
@@ -124,20 +141,39 @@ export async function requireOwnedEventAction<S extends Prisma.EventSelect>(
   eventId: string,
   select: S,
 ): Promise<
-  | { ok: true; tenant: CurrentTenant; event: Prisma.EventGetPayload<{ select: S }> }
+  | {
+      ok: true
+      /** null nur beim Betreiber ohne eigenen Kundendatensatz. */
+      tenant: CurrentTenant | null
+      event: Prisma.EventGetPayload<{ select: S }>
+    }
   | Denied
 > {
-  const tenant = await getCurrentTenant()
-  if (!tenant) {
+  const email = await getSessionEmail()
+  if (!email) {
     return {
       ok: false,
       error: 'UNAUTHENTICATED',
       message: 'Bitte melde dich an.',
     }
   }
+
+  const admin = isAdminEmail(email)
+  const tenant = await getCurrentTenant()
+
+  // Der Betreiber braucht keinen eigenen Tenant, um zu helfen; jeder andere
+  // schon.
+  if (!tenant && !admin) {
+    return {
+      ok: false,
+      error: 'UNAUTHENTICATED',
+      message: 'Bitte melde dich an.',
+    }
+  }
+
   // findFirst statt findUnique: id + tenantId sind zusammen kein unique index.
   const event = await prisma.event.findFirst({
-    where: { id: eventId, tenantId: tenant.id },
+    where: admin ? { id: eventId } : { id: eventId, tenantId: tenant?.id },
     select,
   })
   if (!event) {
@@ -147,11 +183,47 @@ export async function requireOwnedEventAction<S extends Prisma.EventSelect>(
       message: 'Dieses Event gehört nicht zu deinem Konto.',
     }
   }
+  // Bewusst null statt eines erfundenen Tenants mit id 0: ein Platzhalter
+  // waere still falsch, sobald ihn jemand als Fremdschluessel benutzt.
   return {
     ok: true,
     tenant,
     event: event as Prisma.EventGetPayload<{ select: S }>,
   }
+}
+
+/**
+ * Nur fuer den Betreiber. Wie requireTenantPage: leitet um statt zu werfen.
+ *
+ * notFound() und nicht redirect('/'): ein angemeldeter Kunde, der die
+ * Kundenuebersicht aufruft, soll nicht erfahren, dass es sie gibt.
+ */
+export async function requireAdminPage(): Promise<string> {
+  const email = await getSessionEmail()
+  if (!email) redirect('/login')
+  if (!isAdminEmail(email)) notFound()
+  return email
+}
+
+export async function requireAdminAction(): Promise<
+  { ok: true; email: string } | Denied
+> {
+  const email = await getSessionEmail()
+  if (!email) {
+    return {
+      ok: false,
+      error: 'UNAUTHENTICATED',
+      message: 'Bitte melde dich an.',
+    }
+  }
+  if (!isAdminEmail(email)) {
+    return {
+      ok: false,
+      error: 'FORBIDDEN',
+      message: 'Dieser Bereich ist dem Betreiber vorbehalten.',
+    }
+  }
+  return { ok: true, email }
 }
 
 // ---------------------------------------------------------------------------
